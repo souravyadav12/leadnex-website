@@ -8,8 +8,8 @@ import { colors, pointer, scrollState, syncColors, clamp } from './common';
 
    One field of particles that re-forms itself as you scroll down the page, one
    shape per chapter of the AI-calling story:
-     0  hero         voice terrain      — a field of waves, the agent's voice
-     1  demo         call signal        — rings rippling out of a connected call
+     0  hero         call signal rings  — spinning concentric rings, rotates on scroll
+     1  demo         voice terrain      — a field of waves, the agent's voice
      2  how it works pipeline           — a helix of leads flowing through stages
      3  features      global network    — a sphere of nodes: calls worldwide
      4  security       lattice           — an encrypted grid
@@ -48,16 +48,16 @@ function buildShapes(N) {
 
   // rings: radius ~ sqrt of rank so density is even
   for (let i = 0; i < N; i++) {
-    // 0 — voice terrain (a wide sheet, waves added in the shader)
-    const cx = i % cols;
-    const cz = Math.floor(i / cols);
-    set(0, i, (cx / cols - 0.5) * 46 + (rnd(i, 1) - 0.5) * 0.3, -5.6, 8 - (cz / rows) * 40 + (rnd(i, 2) - 0.5) * 0.3);
-
-    // 1 — call-signal rings, centred right of the text
+    // 0 — call-signal rings (hero, 1st page: spinning concentric rings)
     const ringN = 22;
     const k = 1 + Math.floor(Math.sqrt(rnd(i, 3)) * ringN);
     const a = rnd(i, 4) * Math.PI * 2;
-    set(1, i, 6.5 + Math.cos(a) * k * 0.62, Math.sin(a) * k * 0.62, -4 + (rnd(i, 5) - 0.5) * 0.4);
+    set(0, i, 6.0 + Math.cos(a) * k * 0.62, Math.sin(a) * k * 0.62, -4 + (rnd(i, 5) - 0.5) * 0.4);
+
+    // 1 — voice terrain (moved down to stage 1: call-3d & demo)
+    const cx = i % cols;
+    const cz = Math.floor(i / cols);
+    set(1, i, (cx / cols - 0.5) * 46 + (rnd(i, 1) - 0.5) * 0.3, -5.6, 8 - (cz / rows) * 40 + (rnd(i, 2) - 0.5) * 0.3);
 
     // 2 — helix of leads (3 strands)
     const t = i / N;
@@ -93,9 +93,10 @@ function buildShapes(N) {
 const VERT = /* glsl */ `
 attribute vec3 aS1; attribute vec3 aS2; attribute vec3 aS3; attribute vec3 aS4; attribute vec3 aS5;
 attribute float aSeed;
-uniform float uStage; uniform float uTime; uniform float uSurge; uniform float uPx;
+uniform float uStage; uniform float uTime; uniform float uSurge; uniform float uScroll; uniform float uPx;
 varying float vA; varying float vSeed;
 vec3 rotY(vec3 p, float a){ float c=cos(a), s=sin(a); return vec3(c*p.x + s*p.z, p.y, -s*p.x + c*p.z); }
+vec3 rotZ(vec3 p, float a){ float c=cos(a), s=sin(a); return vec3(c*p.x - s*p.y, s*p.x + c*p.y, p.z); }
 void main(){
   float w0 = max(0.0, 1.0 - abs(uStage - 0.0));
   float w1 = max(0.0, 1.0 - abs(uStage - 1.0));
@@ -106,11 +107,17 @@ void main(){
   vec3 p = position*w0 + aS1*w1 + aS2*w2 + aS3*w3 + aS4*w4 + aS5*w5;
 
   float surge = 1.0 + uSurge * 1.6;
-  // voice terrain: travelling waves
-  p.y += w0 * (sin(p.x*0.55 + uTime*1.3)*1.1 + sin(p.z*0.45 - uTime*0.9)*0.8 + sin((p.x+p.z)*0.3 + uTime*0.6)*0.7) * surge;
-  // call rings: ripple outward
-  float rr = length(p.xy - vec2(6.5, 0.0));
-  p.z += w1 * sin(rr*0.9 - uTime*2.4) * 0.9 * surge;
+
+  // 0 — call rings (1st page / hero): ripple outward and spin when user scrolls
+  vec3 c0 = vec3(6.0, 0.0, -4.0);
+  float rr0 = length(p.xy - c0.xy);
+  p.z += w0 * sin(rr0 * 0.9 - uTime * 2.4) * 0.9 * surge;
+  float spin0 = (uScroll * 0.003 + uTime * 0.12 + uSurge * 0.4) * w0;
+  p = c0 + rotZ(p - c0, spin0);
+
+  // 1 — voice terrain (moved down to stage 1): travelling waves
+  p.y += w1 * (sin(p.x * 0.55 + uTime * 1.3) * 1.1 + sin(p.z * 0.45 - uTime * 0.9) * 0.8 + sin((p.x + p.z) * 0.3 + uTime * 0.6) * 0.7) * surge;
+
   // lattice shimmer
   p += w4 * 0.12 * vec3(sin(uTime*1.7 + aSeed*30.0), cos(uTime*1.3 + aSeed*20.0), sin(uTime*1.1 + aSeed*10.0));
 
@@ -158,6 +165,7 @@ function Field({ small }) {
       uStage: { value: 0 },
       uTime: { value: 0 },
       uSurge: { value: 0 },
+      uScroll: { value: 0 },
       uPx: { value: 2 },
       uOpacity: { value: 0.5 },
       uA: { value: new THREE.Color() },
@@ -191,6 +199,7 @@ function Field({ small }) {
   }, []);
 
   const stage = useRef(0);
+  const smoothScroll = useRef(0);
   const lastY = useRef(0);
   const lastVel = useRef(0);
 
@@ -198,6 +207,9 @@ function Field({ small }) {
     const dt = Math.min(delta, 0.25); // generous cap so the morph still settles on slow devices
     const t = state.clock.elapsedTime;
     const y = window.scrollY + window.innerHeight * 0.5;
+
+    // smooth scroll tracking for interactive rotation
+    smoothScroll.current += (window.scrollY - smoothScroll.current) * (1 - Math.exp(-8 * dt));
 
     // scroll → stage (hold near each section's centre, ease between sections)
     const a = anchors.current;
@@ -226,6 +238,7 @@ function Field({ small }) {
     u.uStage.value = stage.current;
     u.uTime.value = t;
     u.uSurge.value = lastVel.current;
+    u.uScroll.value = smoothScroll.current;
     u.uPx.value = gl.getPixelRatio() * (small ? 1.6 : 1.9);
     u.uA.value.copy(colors.accent);
     u.uB.value.copy(colors.soft);
