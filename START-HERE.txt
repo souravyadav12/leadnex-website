@@ -1,0 +1,108 @@
+LeadNex AI — website (v4: 3D roller + palette picker, live widgets, sticky
+workflow, colour themes)
+========================================================================
+
+Run it
+------
+  npm install
+  npm run dev        -> http://localhost:5173
+  npm run build      -> dist/  (static, deployable as-is)
+
+What changed in this pass
+-------------------------
+1. COLOUR PALETTE PICKER — the navbar now has a palette control (three swatch
+   dots + the current name). It opens a panel listing every palette; the pick
+   is saved in localStorage and applied before first paint, so there is no
+   flash. Panel: src/components/layout/ThemePalette.jsx (mobile menu has the
+   same row).
+   The themes — blue / black / gray family, one token set:
+     · Blue (default)  accent #3b82f6 · slate second hue · base #06080c
+     · Slate           accent #94a3b8 · slate second hue · base #090a0c
+     · Black           accent #e4e6eb · gray second hue  · base #050506
+   Page background, surfaces, blooms, gradients, chips and the "live" colour
+   all retint together; Black is fully monochrome.
+2. REAL 3D SCROLLERS (src/motion/ThreeD.jsx)
+   · Roller3D — testimonials sit on a 3D coverflow roller: the wheel turns as
+     you scroll it (spring-eased, one card per slot so two cards never rest on
+     top of each other) and you can grab it and drag to spin; dots track the
+     active card. lg and up; the flat grid stays for tablet/phone.
+   · Band3D — the oversized word strips are drums now: the text block rotates
+     back in X and travels as you scroll through it (three on the home page).
+   · Cube3D — two wireframe cubes turn slowly on opposite axes in the CTA
+     banner, parallaxed against the scroll.
+3. LIVE CONVERSATION IS NOW PINNED — the section used overflow:hidden, which
+   silently killed position:sticky. Sections now use overflow:clip, so the
+   panel stays fixed while the six steps scroll past, and it is scroll-driven:
+   transcript lines fill in → qualification chips tick on → calendar card
+   appears, matching whichever step you are reading.
+4. WORKING WIDGETS (all auto-updating, all pausing when off screen):
+   · Hero dashboard: drifting call counts, ticking clock, cycling status,
+     cycling transcript, live waveform.
+   · Demo console: scenario + voice pickers, start/send/end, intent-matched
+     replies, streaming Live Activity ticker with countdown bar.
+   · Features: typing agent line + live sentiment, sweeping latency meter,
+     running voice-clone waveform, cycling language chips (click to pin),
+     drifting telemetry numbers, pulsing integration dots.
+   · Security: a packet travels the pipeline and lights each stage.
+5. THEME-AWARE ATMOSPHERE — background blooms, section auras and the hero glow
+   all read the theme tokens, so switching palettes retints the scene.
+6. PERF — every live timer is gated by an IntersectionObserver (no re-renders
+   for widgets nobody is looking at), ambient layers stay compositor-only,
+   waveforms animate scaleY. ~30 ms average frame in a GPU-less headless
+   browser (i.e. 60 fps on real hardware).
+
+Unchanged
+---------
+- All copy is still the original repo's copy, verbatim, in src/data/site.js.
+- Routes: /  ·  /features  ·  /pricing  ·  * (404).
+- Lenis smooth scroll, atmosphere, scroll bands, scroll-linked reveals,
+  intro curtain, reduced-motion support.
+
+Verified
+--------
+- 390 / 820 / 1440 px on / /features /pricing: zero horizontal overflow, zero
+  console or page errors.
+- Demo call, pricing toggle, FAQ search, contact form (errors + success),
+  mobile menu, theme switch + persistence, reduced motion — all pass.
+
+Files worth opening first
+-------------------------
+  src/index.css                  theme tokens (all 3 palettes), utilities
+  src/motion/Atmosphere.jsx      background scene + scroll primitives
+  src/motion/ThreeD.jsx          3D roller · word drum · cube
+  src/sections/WorkflowSection.jsx   pinned, scroll-driven live panel
+  src/sections/FeaturesSection.jsx   live widget implementations
+  src/sections/Hero.jsx          live dashboard panel
+  src/components/layout/ThemePalette.jsx   palette picker + themes
+  src/data/site.js               all copy (single source of truth)
+
+v5 — WEBGL 3D SCENE (AI-calling story, home page)
+-------------------------------------------------
+One fixed three.js canvas (src/three/) sits over the home page. Each 3D object
+is pinned to an empty placeholder <div data-3d="name"> in the layout, so it
+follows the page through Lenis smooth-scroll, pops in when its section arrives,
+turns with scroll progress, reacts to the mouse, and retints with the palette.
+  phone   hero          incoming AI call: live screen (caller, timer, waveform,
+                        transcript, status), sonar rings, orbiting leads. Flies in on load.
+  orb     demo          the agent's voice: noise-displaced orb + voice-bar ring,
+                        louder when you scroll fast
+  funnel  workflow      leads fall through qualification stages -> "meeting booked" card
+  globe   features      dotted globe, live call arcs between hubs, pulsing hubs
+  shield  security      shield + lock, scan line, encrypted packets orbiting
+Rules: home page only, >=1024px, off under prefers-reduced-motion, lazy-loaded
+(three.js is its own chunk), nothing renders while no object is on screen.
+To add one: write src/three/actors/X.jsx (wrap in <Actor name="x">), mount it in
+Scene3D.jsx, add the name to ANCHOR_NAMES in common.jsx, and drop a
+<div data-3d="x"/> (or <SectionHead anchor3d="x">) where it should appear.
+
+v5.1 — SCROLL-MORPHING BACKGROUND (home page only)
+--------------------------------------------------
+src/three/Background3D.jsx: one particle field behind the whole page that
+re-forms itself as you scroll, one shape per chapter of the AI-calling story:
+  hero          voice terrain (waves)        demo        call-signal rings
+  how it works  helix of leads               features    sphere of nodes (global)
+  security      lattice                      pricing->   calm spiral
+Morph runs on the GPU (single draw call); scroll speed adds a surge; mouse
+parallax; colours follow the palette. Runs on all widths (fewer particles on
+mobile), off under reduced-motion, home route only. Tweak the section->shape map
+in STAGE_BY_ID, particle look in VERT/FRAG, strength via uOpacity.

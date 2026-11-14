@@ -1,0 +1,182 @@
+/* ── Hero ───────────────────────────────────────────────────────────────── */
+export default function Hero() {
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end end'],
+  });
+
+  // Chapter 1 (Initial hero view): fades and glides up as camera begins travelling down corridor
+  const c1Opacity = useTransform(scrollYProgress, [0, 0.28], [1.0, 0.0]);
+  const c1Y = useTransform(scrollYProgress, [0, 0.28], [0, -60]);
+  const c1Pointer = useTransform(scrollYProgress, (v) => (v > 0.25 ? 'none' : 'auto'));
+
+  // Chapter 2 ("01 THE ENGINE"): appears while traveling down corridor towards glowing circle portal
+  const c2Opacity = useTransform(scrollYProgress, [0.24, 0.38, 0.68, 0.88], [0.0, 1.0, 1.0, 0.0]);
+  const c2Y = useTransform(scrollYProgress, [0.24, 0.38, 0.68, 0.88], [40, 0, 0, -60]);
+  const c2Pointer = useTransform(scrollYProgress, (v) => (v >= 0.25 && v <= 0.85 ? 'auto' : 'none'));
+
+  return (
+    <section id="hero" ref={containerRef} className="relative h-[230vh]">
+      {/* Sticky viewport frame: pinned while camera travels corridor and flies through circle portal */}
+      <div className="sticky top-0 flex h-screen w-full flex-col justify-between overflow-hidden pt-24 sm:pt-28 pb-0">
+        {/* backdrop */}
+        <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+          <div className="bg-grid absolute inset-0 opacity-[0.35] mask-fade-y" />
+          <motion.div
+            className="absolute inset-0"
+            animate={{
+              background: [
+                'radial-gradient(58% 55% at 18% 0%, rgba(var(--a1-rgb),0.14), transparent 65%), radial-gradient(45% 45% at 85% 25%, rgba(var(--a2-rgb),0.08), transparent 70%)',
+                'radial-gradient(58% 55% at 26% 4%, rgba(var(--a1-rgb),0.18), transparent 65%), radial-gradient(45% 45% at 78% 32%, rgba(var(--a2-rgb),0.11), transparent 70%)',
+                'radial-gradient(58% 55% at 18% 0%, rgba(var(--a1-rgb),0.14), transparent 65%), radial-gradient(45% 45% at 85% 25%, rgba(var(--a2-rgb),0.08), transparent 70%)',
+              ],
+            }}
+            transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
+          />
+        </div>
+
+        {/* Chapter 1: Initial Landing View (exact Finansol style) */}
+        <motion.div
+          style={{
+            opacity: c1Opacity,
+            y: c1Y,
+            pointerEvents: c1Pointer,
+          }}
+          className="u-shell my-auto will-change-transform"
+        >
+          <div className="grid grid-cols-[minmax(0,1fr)] items-center gap-10 pb-4 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16 lg:pb-8">
+            <div>
+              <Reveal direction="up" duration={0.7}>
+                <span className="inline-flex items-center gap-2 rounded-full border border-line bg-white/[0.03] px-2.5 py-1">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inset-0 animate-pulse-ring rounded-full bg-accent" />
+                    <span className="relative h-1.5 w-1.5 rounded-full bg-accent" />
+                  </span>
+                  <span className="label-mono-xs text-white/70">AI voice agent engineering · since 2021</span>
+                </span>
+              </Reveal>
+
+              <h1 className="h-display mt-6 text-[clamp(2.4rem,5.6vw,4.2rem)] font-extrabold tracking-tight text-white">
+                Voice agents that <span className="gradient-text-animated">close deals</span>, not AI that demos.
+              </h1>
+
+              <Reveal delay={0.3} className="mt-6 max-w-xl">
+                <p className="text-[15px] leading-relaxed text-muted sm:text-[16.5px]">
+                  Deploy human-like AI calling agents that handle inbound and outbound calls 24/7. Qualify leads, book meetings, and close sales — at enterprise scale.
+                </p>
+              </Reveal>
+
+              <Reveal delay={0.48} className="mt-8">
+                <div className="flex flex-wrap items-center gap-3">
+                  <Magnetic strength={0.22}>
+                    <ActionButton
+                      onClick={() => smoothScrollTo('#contact')}
+                      variant="solid"
+                      size="lg"
+                      iconRight={<ArrowRight className="h-4 w-4" />}
+                    >
+                      {hero.primaryCta}
+                    </ActionButton>
+                  </Magnetic>
+                  <Magnetic strength={0.18}>
+                    <ActionButton
+                      onClick={() => smoothScrollTo('#demo')}
+                      variant="outline"
+                      size="lg"
+                      icon={<Play className="h-3.5 w-3.5 fill-current" />}
+                    >
+                      {hero.secondaryCta}
+                    </ActionButton>
+                  </Magnetic>
+                </div>
+              </Reveal>
+            </div>
+
+            <div className="relative hidden lg:block">
+              <DashboardPanel />
+              <motion.div data-3d="phone" aria-hidden="true" style={{ opacity: c1Opacity }} className="pointer-events-none absolute -left-[182px] top-[231px] hidden h-[264px] w-[184px] min-[1280px]:block" />
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Chapter 2: "01 THE ENGINE" (emerges while gliding down the corridor towards the portal) */}
+        <motion.div
+          style={{
+            opacity: c2Opacity,
+            y: c2Y,
+            pointerEvents: c2Pointer,
+          }}
+          className="pointer-events-none absolute inset-0 flex items-center px-4"
+        >
+          <div className="u-shell w-full">
+            <div className="max-w-xl">
+              <span className="font-mono text-[11px] uppercase tracking-wider text-accent-soft">
+                01 · THE ENGINE
+              </span>
+
+              <h2 className="h-display mt-4 text-[clamp(2.2rem,4.8vw,3.6rem)] font-bold tracking-tight text-white">
+                We build the machine, <br />
+                <span className="gradient-text-animated">not the slide deck.</span>
+              </h2>
+
+              <p className="mt-4 text-[15px] leading-relaxed text-muted sm:text-[16.5px]">
+                Sub-300ms natural latency, 98.7% qualification accuracy, CRM auto-sync in &lt;1s. Seventeen enterprise AI capabilities, fully autonomous.
+              </p>
+
+              <div className="mt-7 flex flex-wrap items-center gap-3">
+                <Magnetic strength={0.22}>
+                  <ActionButton
+                    onClick={() => smoothScrollTo('#contact')}
+                    variant="solid"
+                    size="md"
+                    iconRight={<ArrowRight className="h-4 w-4" />}
+                  >
+                    Start a project
+                  </ActionButton>
+                </Magnetic>
+                <Magnetic strength={0.18}>
+                  <ActionButton
+                    onClick={() => smoothScrollTo('#ai-call-3d')}
+                    variant="outline"
+                    size="md"
+                  >
+                    See all 17 capabilities
+                  </ActionButton>
+                </Magnetic>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* stat strip at bottom of Chapter 1 */}
+        <motion.div
+          style={{
+            opacity: c1Opacity,
+            pointerEvents: c1Pointer,
+          }}
+          className="border-y border-line bg-[var(--base-2)]/60 will-change-transform"
+        >
+          <div className="u-shell grid grid-cols-2 gap-px overflow-hidden lg:grid-cols-4">
+            {hero.stats.map((s, i) => (
+              <motion.div
+                key={s.label}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ delay: i * 0.08, duration: 0.6, ease: EASE }}
+                whileHover={{ backgroundColor: 'rgba(255,255,255,0.03)' }}
+                className="px-1 py-4 text-center sm:py-6"
+              >
+                <div className="gradient-text font-mono text-[22px] font-bold sm:text-[26px]">
+                  <CountNum end={s.value} suffix={s.suffix} decimals={s.decimals ?? 0} />
+                </div>
+                <div className="mt-1 text-[10.5px] text-dim">{s.label}</div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}

@@ -1,0 +1,181 @@
+/* ── Hero ───────────────────────────────────────────────────────────────── */
+export default function Hero() {
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end end'],
+  });
+
+  // Z-Axis motion on scroll:
+  // Fly forward straight into and through the 3D circle portal (like reference video)
+  const zScale = useTransform(scrollYProgress, [0, 0.75], [1.0, 2.2]);
+  const zTranslate = useTransform(scrollYProgress, [0, 0.75], [0, 420]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.45, 0.75], [1.0, 0.85, 0.0]);
+  const statsOpacity = useTransform(scrollYProgress, [0, 0.35, 0.65], [1.0, 0.7, 0.0]);
+  const pointerEvents = useTransform(scrollYProgress, (v) => (v > 0.75 ? 'none' : 'auto'));
+
+  return (
+    <section id="hero" ref={containerRef} className="relative h-[160vh]">
+      {/* Sticky viewport frame: remains pinned only during the circle fly-through, then unpins for normal scroll */}
+      <div className="sticky top-0 flex h-screen w-full flex-col justify-between overflow-hidden pt-24 sm:pt-28 pb-0">
+        {/* backdrop */}
+        <motion.div
+          className="pointer-events-none absolute inset-0 -z-10"
+          aria-hidden="true"
+          style={{ opacity: heroOpacity }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.4, ease: EASE }}
+        >
+          <div className="bg-grid absolute inset-0 opacity-[0.45] mask-fade-y" />
+          <motion.div
+            className="absolute inset-0"
+            animate={{
+              background: [
+                'radial-gradient(58% 55% at 18% 0%, rgba(var(--a1-rgb),0.14), transparent 65%), radial-gradient(45% 45% at 85% 25%, rgba(var(--a2-rgb),0.08), transparent 70%)',
+                'radial-gradient(58% 55% at 26% 4%, rgba(var(--a1-rgb),0.18), transparent 65%), radial-gradient(45% 45% at 78% 32%, rgba(var(--a2-rgb),0.11), transparent 70%)',
+                'radial-gradient(58% 55% at 18% 0%, rgba(var(--a1-rgb),0.14), transparent 65%), radial-gradient(45% 45% at 85% 25%, rgba(var(--a2-rgb),0.08), transparent 70%)',
+              ],
+            }}
+            transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
+          />
+        </motion.div>
+
+        {/* Main hero grid: zooms forward into 3D space as user flies through the circle */}
+        <motion.div
+          style={{
+            scale: zScale,
+            z: zTranslate,
+            opacity: heroOpacity,
+            pointerEvents,
+            transformPerspective: 1200,
+            transformStyle: 'preserve-3d',
+          }}
+          className="u-shell my-auto will-change-transform"
+        >
+          <div className="grid grid-cols-[minmax(0,1fr)] items-center gap-10 pb-4 lg:grid-cols-[1.06fr_1fr] lg:gap-16 lg:pb-8">
+            <div>
+              <Reveal direction="up" duration={0.7}>
+                <span className="inline-flex items-center gap-2 rounded-full border border-line bg-white/[0.03] px-2.5 py-1">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inset-0 animate-pulse-ring rounded-full bg-accent" />
+                    <span className="relative h-1.5 w-1.5 rounded-full bg-accent" />
+                  </span>
+                  <span className="label-mono-xs text-white/70">{hero.badge}</span>
+                </span>
+              </Reveal>
+
+              <h1 className="h-display mt-6 text-[clamp(2.3rem,5.4vw,3.85rem)] text-white">
+                <SplitText text={hero.headline[0]} />{' '}
+                <span className="gradient-text-animated">
+                  <SplitText text={hero.headline[1]} delay={0.12} />
+                </span>{' '}
+                <br className="hidden sm:block" />
+                <SplitText text={hero.headline[2]} delay={0.24} />
+              </h1>
+
+              <Reveal delay={0.3} className="mt-6 max-w-xl">
+                <p className="text-[15px] leading-relaxed text-muted sm:text-[16.5px]">{hero.description}</p>
+              </Reveal>
+
+              <Reveal delay={0.4} className="mt-6">
+                <div className="flex flex-wrap gap-2">
+                  {hero.trust.map((t) => (
+                    <motion.div
+                      key={t.label}
+                      whileHover={{ y: -3, scale: 1.03 }}
+                      transition={SPRING_SOFT}
+                      className="flex items-center gap-1.5 rounded-full border border-line bg-white/[0.03] px-3 py-1.5"
+                    >
+                      <span className="font-mono text-[11px] font-bold text-accent-soft">{t.stat}</span>
+                      <span className="text-[10px] text-muted">{t.label}</span>
+                    </motion.div>
+                  ))}
+                </div>
+              </Reveal>
+
+              <Reveal delay={0.48} className="mt-8">
+                <div className="flex flex-wrap items-center gap-3">
+                  <Magnetic strength={0.22}>
+                    <ActionButton
+                      onClick={() => smoothScrollTo('#contact')}
+                      variant="solid"
+                      size="lg"
+                      iconRight={<ArrowRight className="h-4 w-4" />}
+                    >
+                      {hero.primaryCta}
+                    </ActionButton>
+                  </Magnetic>
+                  <Magnetic strength={0.18}>
+                    <ActionButton
+                      onClick={() => smoothScrollTo('#demo')}
+                      variant="outline"
+                      size="lg"
+                      icon={<Play className="h-3.5 w-3.5 fill-current" />}
+                    >
+                      {hero.secondaryCta}
+                    </ActionButton>
+                  </Magnetic>
+                </div>
+              </Reveal>
+
+              <Reveal delay={0.56} className="mt-6">
+                <div className="flex flex-wrap items-center gap-4">
+                  {[ShieldCheck, Lock, FileCheck].map((Icon, i) => (
+                    <motion.span
+                      key={hero.compliance[i].label}
+                      whileHover={{ y: -2 }}
+                      className="flex items-center gap-1.5 text-[11px] text-dim"
+                    >
+                      <Icon className="h-3.5 w-3.5 text-accent-soft/70" strokeWidth={2} />
+                      {hero.compliance[i].label}
+                    </motion.span>
+                  ))}
+                </div>
+              </Reveal>
+
+              <Reveal delay={0.64} className="mt-9">
+                <p className="label-mono-xs text-dim">{hero.marqueeLabel}</p>
+                <Marquee items={hero.logos} className="mt-3 max-w-md" itemClassName="text-[12.5px] font-semibold tracking-wide text-white/30" speed={30} />
+              </Reveal>
+            </div>
+
+            <div className="relative">
+              <DashboardPanel />
+              {/* placeholder the WebGL scene pins the 3D phone to (see src/three) */}
+              <motion.div data-3d="phone" aria-hidden="true" style={{ opacity: heroOpacity }} className="pointer-events-none absolute -left-[182px] top-[231px] hidden h-[264px] w-[184px] min-[1280px]:block" />
+            </div>
+          </div>
+        </motion.div>
+
+        {/* stat strip */}
+        <motion.div
+          style={{
+            opacity: statsOpacity,
+            pointerEvents,
+          }}
+          className="border-y border-line bg-[var(--base-2)]/60 will-change-transform"
+        >
+          <div className="u-shell grid grid-cols-2 gap-px overflow-hidden lg:grid-cols-4">
+            {hero.stats.map((s, i) => (
+              <motion.div
+                key={s.label}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ delay: i * 0.08, duration: 0.6, ease: EASE }}
+                whileHover={{ backgroundColor: 'rgba(255,255,255,0.03)' }}
+                className="px-1 py-4 text-center sm:py-6"
+              >
+                <div className="gradient-text font-mono text-[22px] font-bold sm:text-[26px]">
+                  <CountNum end={s.value} suffix={s.suffix} decimals={s.decimals ?? 0} />
+                </div>
+                <div className="mt-1 text-[10.5px] text-dim">{s.label}</div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}

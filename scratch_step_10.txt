@@ -1,0 +1,183 @@
+Created At: 2026-11-14T16:39:37+05:30
+Completed At: 2026-11-14T16:39:38+05:30
+Created At: 2026-11-14T16:39:37+05:30
+Completed At: 2026-11-14T16:39:38+05:30
+Showing lines 100-277 of 277
+100:   float w0 = max(0.0, 1.0 - abs(uStage - 0.0));
+101:   float w1 = max(0.0, 1.0 - abs(uStage - 1.0));
+102:   float w2 = max(0.0, 1.0 - abs(uStage - 2.0));
+103:   float w3 = max(0.0, 1.0 - abs(uStage - 3.0));
+104:   float w4 = max(0.0, 1.0 - abs(uStage - 4.0));
+105:   float w5 = max(0.0, 1.0 - abs(uStage - 5.0));
+106:   vec3 p = position*w0 + aS1*w1 + aS2*w2 + aS3*w3 + aS4*w4 + aS5*w5;
+107: 
+108:   float surge = 1.0 + uSurge * 1.6;
+109:   // voice terrain: travelling waves
+110:   p.y += w0 * (sin(p.x*0.55 + uTime*1.3)*1.1 + sin(p.z*0.45 - uTime*0.9)*0.8 + sin((p.x+p.z)*0.3 + uTime*0.6)*0.7) * surge;
+111:   // call rings: ripple outward
+112:   float rr = length(p.xy - vec2(6.5, 0.0));
+113:   p.z += w1 * sin(rr*0.9 - uTime*2.4) * 0.9 * surge;
+114:   // lattice shimmer
+115:   p += w4 * 0.12 * vec3(sin(uTime*1.7 + aSeed*30.0), cos(uTime*1.3 + aSeed*20.0), sin(uTime*1.1 + aSeed*10.0));
+116: 
+117:   // slow spin about each shape's own centre
+118:   vec3 c = vec3(5.0, 0.0, -6.0) * (w2 + w3 + w4) + vec3(0.0, 0.0, -10.0) * w5;
+119:   float spin = uTime * (0.22*w2 + 0.1*w3 + 0.05*w4 + 0.05*w5) + uSurge * 0.6 * (w2 + w3 + w4 + w5);
+120:   p = c + rotY(p - c, spin);
+121: 
+122:   vec4 mv = modelViewMatrix * vec4(p, 1.0);
+123:   gl_Position = projectionMatrix * mv;
+124:   float d = -mv.z;
+125:   gl_PointSize = uPx * (1.1 + aSeed * 1.9) * (24.0 / d);
+126:   vA = (0.3 + 0.7 * aSeed) * smoothstep(70.0, 10.0, d) * smoothstep(1.0, 4.0, d);
+127:   vSeed = aSeed;
+128: }`;
+129: 
+130: const FRAG = /* glsl */ `
+131: uniform vec3 uA; uniform vec3 uB; uniform float uOpacity;
+132: varying float vA; varying float vSeed;
+133: void main(){
+134:   vec2 q = gl_PointCoord - 0.5;
+135:   float d = length(q);
+136:   float soft = smoothstep(0.5, 0.0, d);
+137:   vec3 col = mix(uA, uB, step(0.72, vSeed));
+138:   gl_FragColor = vec4(col, soft * vA * uOpacity);
+139:   #include <colorspace_fragment>
+140: }`;
+141: 
+142: function Field({ small }) {
+143:   const N = small ? 2400 : 5200;
+144:   const mat = useRef();
+145:   const { gl, camera } = useThree();
+146:   const geo = useMemo(() => {
+147:     const S = buildShapes(N);
+148:     const g = new THREE.BufferGeometry();
+149:     g.setAttribute('position', new THREE.BufferAttribute(S[0], 3));
+150:     for (let k = 1; k < 6; k++) g.setAttribute(`aS${k}`, new THREE.BufferAttribute(S[k], 3));
+151:     g.setAttribute('aSeed', new THREE.BufferAttribute(Float32Array.from({ length: N }, (_, i) => rnd(i, 11)), 1));
+152:     g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 200);
+153:     return g;
+154:   }, [N]);
+155: 
+156:   const uniforms = useMemo(
+157:     () => ({
+158:       uStage: { value: 0 },
+159:       uTime: { value: 0 },
+160:       uSurge: { value: 0 },
+161:       uPx: { value: 2 },
+162:       uOpacity: { value: 0.5 },
+163:       uA: { value: new THREE.Color() },
+164:       uB: { value: new THREE.Color() },
+165:     }),
+166:     [],
+167:   );
+168: 
+169:   // chapter anchors: document-space centre of each section, refreshed as layout settles
+170:   const anchors = useRef([]);
+171:   const refresh = () => {
+172:     const list = [];
+173:     document.querySelectorAll('main > section[id]').forEach((el) => {
+174:       const st = STAGE_BY_ID[el.id];
+175:       if (st === undefined) return;
+176:       const r = el.getBoundingClientRect();
+177:       list.push({ y: r.top + window.scrollY + r.height / 2, stage: st });
+178:     });
+179:     list.sort((a, b) => a.y - b.y);
+180:     anchors.current = list;
+181:   };
+182: 
+183:   useEffect(() => {
+184:     refresh();
+185:     const id = setInterval(refresh, 1200);
+186:     window.addEventListener('resize', refresh);
+187:     return () => {
+188:       clearInterval(id);
+189:       window.removeEventListener('resize', refresh);
+190:     };
+191:   }, []);
+192: 
+193:   const stage = useRef(0);
+194:   const lastY = useRef(0);
+195:   const lastVel = useRef(0);
+196: 
+197:   useFrame((state, delta) => {
+198:     const dt = Math.min(delta, 0.25); // generous cap so the morph still settles on slow devices
+199:     const t = state.clock.elapsedTime;
+200:     const y = window.scrollY + window.innerHeight * 0.5;
+201: 
+202:     // scroll → stage (hold near each section's centre, ease between sections)
+203:     const a = anchors.current;
+204:     let target = 0;
+205:     if (a.length) {
+206:       if (y <= a[0].y) target = a[0].stage;
+207:       else if (y >= a[a.length - 1].y) target = a[a.length - 1].stage;
+208:       else {
+209:         for (let i = 0; i < a.length - 1; i++) {
+210:           if (y >= a[i].y && y <= a[i + 1].y) {
+211:             const k = (y - a[i].y) / (a[i + 1].y - a[i].y);
+212:             const e = THREE.MathUtils.smoothstep(k, 0.2, 0.8);
+213:             target = a[i].stage + (a[i + 1].stage - a[i].stage) * e;
+214:             break;
+215:           }
+216:         }
+217:       }
+218:     }
+219:     stage.current += (target - stage.current) * (1 - Math.exp(-4 * dt));
+220: 
+221:     const vel = clamp(Math.abs(scrollState.vel) / 2800, 0, 1);
+222:     lastVel.current += (vel - lastVel.current) * (1 - Math.exp(-5 * dt));
+223: 
+224:     const u = mat.current?.uniforms;
+225:     if (!u) return;
+226:     u.uStage.value = stage.current;
+227:     u.uTime.value = t;
+228:     u.uSurge.value = lastVel.current;
+229:     u.uPx.value = gl.getPixelRatio() * (small ? 1.6 : 1.9);
+230:     u.uA.value.copy(colors.accent);
+231:     u.uB.value.copy(colors.soft);
+232: 
+233:     // gentle camera drift + pointer parallax, and a slow tilt through the page
+234:     camera.position.x += (pointer.sx * 1.2 - camera.position.x) * (1 - Math.exp(-3 * dt));
+235:     camera.position.y += (1.6 - pointer.sy * 0.8 - camera.position.y) * (1 - Math.exp(-3 * dt));
+236:     camera.lookAt(0, -0.5, 0);
+237:   });
+238: 
+239:   return (
+240:     <points geometry={geo} frustumCulled={false}>
+241:       <shaderMaterial
+242:         ref={mat}
+243:         uniforms={uniforms}
+244:         vertexShader={VERT}
+245:         fragmentShader={FRAG}
+246:         transparent
+247:         depthWrite={false}
+248:         blending={THREE.AdditiveBlending}
+249:       />
+250:     </points>
+251:   );
+252: }
+253: 
+254: function ThemeSync() {
+255:   useEffect(() => {
+256:     syncColors();
+257:     const id = setInterval(syncColors, 400);
+258:     return () => clearInterval(id);
+259:   }, []);
+260:   return null;
+261: }
+262: 
+263: export default function Background3D({ small = false }) {
+264:   return (
+265:     <div className="pointer-events-none fixed inset-0 -z-[5]" aria-hidden="true">
+266:       <Canvas
+267:         dpr={[1, small ? 1.25 : 1.5]}
+268:         gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }}
+269:         camera={{ position: [0, 1.6, 14], fov: 52, near: 0.5, far: 200 }}
+270:         style={{ pointerEvents: 'none' }}
+271:       >
+272:         <ThemeSync />
+273:         <Field small={small} />
+274:       </Canvas>
+275:     </div>
+276:   );
+277: }
