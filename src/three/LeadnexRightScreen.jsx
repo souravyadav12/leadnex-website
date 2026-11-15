@@ -252,3 +252,4 @@ export default function LeadnexRightScreen({ position = [0, 0, 0], rotation = [0
     </group>
   );
 }
+

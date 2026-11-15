@@ -73,38 +73,48 @@ export default function Navbar() {
           <Logo onClick={() => setMobile(false)} />
 
           <nav className="hidden items-center gap-1 lg:flex" aria-label="Main navigation">
-            {nav.links.map((link) => (
-              <NavLink key={link.to} to={link.to} end={link.to === '/'} className="relative">
-                {({ isActive }) => (
-                  <motion.span
-                    whileHover={{ y: -1 }}
-                    className={cn(
-                      'relative flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[13px] transition-colors',
-                      isActive ? 'text-white' : 'text-muted hover:text-white',
-                    )}
-                  >
-                    {isActive && (
-                      <motion.span
-                        layoutId="nav-pill"
-                        transition={{ type: 'spring', stiffness: 420, damping: 34 }}
-                        className="absolute inset-0 rounded-full border border-line bg-white/[0.06]"
-                      />
-                    )}
-                    <span className="relative font-mono text-[9px] text-accent-soft/70">{link.number}</span>
-                    <span className="relative">{link.label}</span>
-                  </motion.span>
-                )}
-              </NavLink>
-            ))}
+            {nav.links.map((link) => {
+              const isHash = link.to.includes('#');
+              const hashId = isHash ? link.to.substring(link.to.indexOf('#')) : '';
 
-            <motion.button
-              type="button"
-              onClick={() => smoothScrollTo('#contact')}
-              whileHover={{ y: -1 }}
-              className="relative rounded-full px-3.5 py-2 text-[13px] text-muted transition-colors hover:text-white"
-            >
-              Contact
-            </motion.button>
+              if (isHash && pathname === '/') {
+                return (
+                  <button
+                    key={link.to}
+                    type="button"
+                    onClick={() => smoothScrollTo(hashId)}
+                    className="relative flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[13px] text-muted transition-colors hover:text-white"
+                  >
+                    <span className="font-mono text-[9px] text-accent-soft/70">{link.number}</span>
+                    <span>{link.label}</span>
+                  </button>
+                );
+              }
+
+              return (
+                <NavLink key={link.to} to={link.to} end={link.to === '/'} className="relative">
+                  {({ isActive }) => (
+                    <motion.span
+                      whileHover={{ y: -1 }}
+                      className={cn(
+                        'relative flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[13px] transition-colors',
+                        isActive ? 'text-white' : 'text-muted hover:text-white',
+                      )}
+                    >
+                      {isActive && (
+                        <motion.span
+                          layoutId="nav-pill"
+                          transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                          className="absolute inset-0 rounded-full border border-line bg-white/[0.06]"
+                        />
+                      )}
+                      <span className="relative font-mono text-[9px] text-accent-soft/70">{link.number}</span>
+                      <span className="relative">{link.label}</span>
+                    </motion.span>
+                  )}
+                </NavLink>
+              );
+            })}
           </nav>
 
           <div className="flex items-center gap-2">
@@ -169,33 +179,47 @@ export default function Navbar() {
               variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06, delayChildren: 0.08 } } }}
               className="u-shell py-8"
             >
-              {nav.links.map((link) => (
-                <motion.div
-                  key={link.to}
-                  variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } } }}
-                >
-                  <Link
-                    to={link.to}
-                    className="flex items-baseline justify-between border-b border-line py-3.5 text-xl font-medium tracking-tight text-white"
-                  >
-                    {link.label}
-                    <span className="font-mono text-[10px] text-dim">{link.number}</span>
-                  </Link>
-                </motion.div>
-              ))}
+              {nav.links.map((link) => {
+                const isHash = link.to.includes('#');
+                const hashId = isHash ? link.to.substring(link.to.indexOf('#')) : '';
 
-              <motion.button
-                type="button"
-                variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } } }}
-                onClick={() => {
-                  setMobile(false);
-                  smoothScrollTo('#contact');
-                }}
-                className="flex w-full items-baseline justify-between border-b border-line py-3.5 text-xl font-medium tracking-tight text-white"
-              >
-                Contact
-                <span className="font-mono text-[10px] text-dim">04</span>
-              </motion.button>
+                if (isHash && pathname === '/') {
+                  return (
+                    <motion.div
+                      key={link.to}
+                      variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } } }}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMobile(false);
+                          smoothScrollTo(hashId);
+                        }}
+                        className="flex w-full items-baseline justify-between border-b border-line py-3.5 text-xl font-medium tracking-tight text-white text-left"
+                      >
+                        {link.label}
+                        <span className="font-mono text-[10px] text-dim">{link.number}</span>
+                      </button>
+                    </motion.div>
+                  );
+                }
+
+                return (
+                  <motion.div
+                    key={link.to}
+                    variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } } }}
+                  >
+                    <Link
+                      to={link.to}
+                      onClick={() => setMobile(false)}
+                      className="flex items-baseline justify-between border-b border-line py-3.5 text-xl font-medium tracking-tight text-white"
+                    >
+                      {link.label}
+                      <span className="font-mono text-[10px] text-dim">{link.number}</span>
+                    </Link>
+                  </motion.div>
+                );
+              })}
 
               <motion.div
                 variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } } }}
