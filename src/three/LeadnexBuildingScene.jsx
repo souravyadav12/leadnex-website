@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import LeadnexBillboard from './LeadnexBillboard';
+import LeadnexRightScreen from './LeadnexRightScreen';
 import { scrollState, initScrollController } from './ScrollController';
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -203,30 +204,12 @@ function RightSkyscraper() {
         <meshBasicMaterial color="#ffffff" toneMapped={false} />
       </mesh>
 
-      {/* Front-Facing Telemetry / Architectural Window Matrix on Tower 2 */}
-      <group position={[0, 15.5, 4.88]}>
-        <mesh>
-          <planeGeometry args={[5.2, 11.0]} />
-          <meshBasicMaterial color="#040b18" />
-        </mesh>
-        <lineSegments>
-          <edgesGeometry args={[new THREE.PlaneGeometry(5.24, 11.04)]} />
-          <lineBasicMaterial color="#0284c7" transparent opacity={0.75} />
-        </lineSegments>
-        {/* Subtle interior vertical matrix columns */}
-        {[-1.6, 0, 1.6].map((x, idx) => (
-          <line key={idx}>
-            <bufferGeometry
-              attach="geometry"
-              onUpdate={(self) => {
-                const pts = [new THREE.Vector3(x, -5.2, 0.02), new THREE.Vector3(x, 5.2, 0.02)];
-                self.setFromPoints(pts);
-              }}
-            />
-            <lineBasicMaterial color="#00f0ff" transparent opacity={0.5} />
-          </line>
-        ))}
-      </group>
+      {/* 4. PROMINENT FRONT-FACING VERTICAL DIGITAL LED MATRIX SCREEN ON TOWER 2 */}
+      <LeadnexRightScreen
+        position={[0, 15.5, 4.88]}
+        rotation={[0, 0, 0]}
+        scale={[0.88, 0.95, 0.88]}
+      />
     </group>
   );
 }

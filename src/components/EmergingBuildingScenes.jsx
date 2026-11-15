@@ -17,6 +17,10 @@ import {
   ArrowRight,
   Sparkles,
   ChevronDown,
+  Globe,
+  Radio,
+  Play,
+  Pause,
 } from 'lucide-react';
 import { ActionButton, Magnetic } from '../motion/kit';
 import { smoothScrollTo } from '../motion/SmoothScroll';
@@ -24,62 +28,71 @@ import { cn } from '../utils/cn';
 
 gsap.registerPlugin(ScrollTrigger);
 
-/* ── Interactive Waveform Visualizer for Scene 2 & 3 ──────────────────────── */
-function VoiceWaveformPreview() {
+/* ── Interactive Speech Stream Player & Audio Waveform (Scene 2) ─────────── */
+function VoiceStreamSimulator() {
   const [isPlaying, setIsPlaying] = useState(true);
-  const [bars, setBars] = useState(() => Array.from({ length: 32 }, () => Math.random() * 0.6 + 0.25));
+  const [bars, setBars] = useState(() => Array.from({ length: 30 }, () => Math.random() * 0.6 + 0.25));
 
   useEffect(() => {
     if (!isPlaying) return;
     const interval = setInterval(() => {
-      setBars(Array.from({ length: 32 }, () => Math.random() * 0.75 + 0.2));
+      setBars(Array.from({ length: 30 }, () => Math.random() * 0.75 + 0.2));
     }, 110);
     return () => clearInterval(interval);
   }, [isPlaying]);
 
   return (
-    <div className="rounded-2xl border border-cyan/30 bg-black/60 p-4 backdrop-blur-xl">
-      <div className="flex items-center justify-between pb-2.5 border-b border-white/[0.08]">
-        <div className="flex items-center gap-2">
-          <span className="relative flex h-2 w-2">
+    <div className="rounded-2xl border border-cyan/40 bg-black/70 p-5 backdrop-blur-xl shadow-[0_15px_50px_rgba(0,240,255,0.18)]">
+      <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+        <div className="flex items-center gap-2.5">
+          <span className="relative flex h-2.5 w-2.5">
             <span className="absolute inset-0 animate-ping rounded-full bg-cyan opacity-75" />
-            <span className="relative h-2 w-2 rounded-full bg-cyan" />
+            <span className="relative h-2.5 w-2.5 rounded-full bg-cyan" />
           </span>
-          <span className="font-mono text-[10px] font-semibold uppercase tracking-wider text-cyan">
-            Neural Voice Stream · Active
+          <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-cyan">
+            Live Audio Stream · Sarah (AI Voice)
           </span>
         </div>
         <button
           onClick={() => setIsPlaying(!isPlaying)}
-          className="flex items-center gap-1 rounded border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[9px] font-mono text-slate-300 hover:text-white"
+          className="flex items-center gap-1.5 rounded-lg border border-cyan/30 bg-cyan/[0.1] px-2.5 py-1 text-[10px] font-mono font-semibold text-cyan hover:bg-cyan/[0.2] transition-colors"
         >
-          <Volume2 className="h-2.5 w-2.5 text-cyan" />
-          {isPlaying ? 'Mute' : 'Play'}
+          {isPlaying ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+          {isPlaying ? 'Pause Audio' : 'Play Audio'}
         </button>
       </div>
 
+      {/* Dynamic Soundwave Spectrum */}
       <div className="flex items-center justify-between gap-1 h-14 py-2 px-1">
         {bars.map((h, i) => (
           <div
             key={i}
             className="w-1.5 rounded-full bg-gradient-to-t from-blue-600 via-cyan to-white transition-all duration-100"
-            style={{ height: `${isPlaying ? h * 100 : 10}%` }}
+            style={{ height: `${isPlaying ? h * 100 : 12}%` }}
           />
         ))}
       </div>
 
-      <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/[0.06] text-center font-mono">
+      {/* Live Transcript Snippet */}
+      <div className="mt-3 rounded-xl bg-white/[0.04] p-3 border border-white/[0.06] font-mono text-[11px]">
+        <div className="text-cyan font-bold">AI Agent (Sarah):</div>
+        <div className="text-slate-200 mt-0.5 leading-relaxed">
+          &ldquo;Hello! Calling from LEADNEX.AI regarding your enterprise voice demo request. Do you have two minutes?&rdquo;
+        </div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-2 pt-3 mt-3 border-t border-white/[0.06] text-center font-mono">
         <div>
-          <div className="text-[8.5px] text-slate-400 uppercase">Latency</div>
-          <div className="text-[12px] font-bold text-cyan">274ms</div>
+          <div className="text-[9px] text-slate-400 uppercase">Response Latency</div>
+          <div className="text-[13px] font-bold text-cyan">274ms</div>
         </div>
         <div>
-          <div className="text-[8.5px] text-slate-400 uppercase">Voice MOS</div>
-          <div className="text-[12px] font-bold text-emerald-400">4.92 / 5.0</div>
+          <div className="text-[9px] text-slate-400 uppercase">Voice MOS Score</div>
+          <div className="text-[13px] font-bold text-emerald-400">4.92 / 5.0</div>
         </div>
         <div>
-          <div className="text-[8.5px] text-slate-400 uppercase">Concurrency</div>
-          <div className="text-[12px] font-bold text-white">10,000+</div>
+          <div className="text-[9px] text-slate-400 uppercase">Speech Rate</div>
+          <div className="text-[13px] font-bold text-white">165 wpm</div>
         </div>
       </div>
     </div>
@@ -87,20 +100,20 @@ function VoiceWaveformPreview() {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
-   EmergingBuildingScenes — Pinned 3D Presentation Experience
+   EmergingBuildingScenes — Pinned 3D Presentation Sequence
    
    Mechanics:
-     - Viewport is pinned while user scrolls through 6 distinct intervals.
+     - Screen is pinned as user scrolls.
      - Content panels physically emerge from the central opening between the
-       two corporate buildings (translateZ: -700px -> 0px, scale: 0.25 -> 1.0).
+       two corporate buildings (translateZ: -750px -> 0px, scale: 0.25 -> 1.0).
      - Settles centered in the viewport (65-80% width) with both buildings
-       flanking the left and right.
-     - Fully reversible and freezes immediately when scrolling stops.
+       clearly visible on the left and right flanks.
+     - Stopping scroll freezes panels at that exact frame with zero drift.
    ───────────────────────────────────────────────────────────────────────── */
 export default function EmergingBuildingScenes() {
   const containerRef = useRef(null);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [selectedVoice, setSelectedVoice] = useState('Sarah (Executive)');
+  const [selectedVoice, setSelectedVoice] = useState('Sarah');
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -108,7 +121,7 @@ export default function EmergingBuildingScenes() {
     const st = ScrollTrigger.create({
       trigger: containerRef.current,
       start: 'top top',
-      end: '+=4800',
+      end: '+=4500',
       pin: true,
       scrub: true,
       invalidateOnRefresh: true,
@@ -122,12 +135,6 @@ export default function EmergingBuildingScenes() {
     };
   }, []);
 
-  /**
-   * Helper to calculate 3D transformation for an emerging panel:
-   *   - enterStart to settleStart: emerges from central gap (-700px -> 0px, scale: 0.25 -> 1.0, opacity: 0 -> 1)
-   *   - settleStart to settleEnd: static in center (translateZ: 0px, scale: 1.0, opacity: 1)
-   *   - settleEnd to exitEnd: glides forward past camera (translateZ: 0px -> 350px, scale: 1.0 -> 1.2, opacity: 1 -> 0)
-   */
   const getPanelStyle = (enterStart, settleStart, settleEnd, exitEnd) => {
     const p = scrollProgress;
 
@@ -145,17 +152,17 @@ export default function EmergingBuildingScenes() {
 
     if (p >= enterStart && p < settleStart) {
       const t = (p - enterStart) / (settleStart - enterStart);
-      tz = -700 + t * 700;
+      tz = -750 + t * 750;
       scale = 0.25 + t * 0.75;
-      opacity = Math.max(0, Math.min(1, t * 1.2));
+      opacity = Math.max(0, Math.min(1, t * 1.25));
     } else if (p >= settleStart && p <= settleEnd) {
       tz = 0;
       scale = 1;
       opacity = 1;
     } else if (p > settleEnd && p <= exitEnd) {
       const t = (p - settleEnd) / (exitEnd - settleEnd);
-      tz = t * 320;
-      scale = 1.0 + t * 0.2;
+      tz = t * 350;
+      scale = 1.0 + t * 0.22;
       opacity = Math.max(0, 1 - t * 1.2);
     }
 
@@ -173,7 +180,7 @@ export default function EmergingBuildingScenes() {
     <div ref={containerRef} className="relative z-10 w-full h-screen overflow-hidden">
       {/* 3D Perspective Stage Container */}
       <div
-        className="relative w-full h-full flex items-center justify-center p-4 sm:p-6"
+        className="relative w-full h-full flex items-center justify-center p-4 sm:p-8"
         style={{ perspective: '1100px', transformStyle: 'preserve-3d' }}
       >
         {/* ── SCENE 1: INITIAL VIEW (Prompt & Building Framing) (p: 0.00 - 0.09) ── */}
@@ -185,20 +192,20 @@ export default function EmergingBuildingScenes() {
             }}
             className="absolute inset-x-0 bottom-12 sm:bottom-16 flex flex-col items-center justify-center text-center pointer-events-auto"
           >
-            <div className="glass-hero rounded-full px-6 py-2.5 border border-cyan/40 bg-black/60 shadow-[0_0_30px_rgba(0,240,255,0.3)]">
+            <div className="glass-hero rounded-full px-7 py-3 border border-cyan/50 bg-black/70 shadow-[0_0_35px_rgba(0,240,255,0.35)]">
               <div className="flex items-center gap-3">
                 <span className="relative flex h-2.5 w-2.5">
                   <span className="absolute inset-0 animate-ping rounded-full bg-cyan opacity-75" />
                   <span className="relative h-2.5 w-2.5 rounded-full bg-cyan" />
                 </span>
-                <span className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-cyan">
+                <span className="font-mono text-[11.5px] font-bold uppercase tracking-[0.22em] text-cyan">
                   LEADNEX.AI HEADQUARTERS · SCROLL TO ENTER PORTAL
                 </span>
                 <ChevronDown className="h-4 w-4 text-cyan animate-bounce" />
               </div>
             </div>
-            <p className="mt-3 font-mono text-[10px] text-slate-400 uppercase tracking-widest drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-              Two Corporate Towers · Content Emerges From Center Portal
+            <p className="mt-3 font-mono text-[10.5px] text-slate-300 uppercase tracking-widest drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
+              Twin Corporate Towers · Presentation Emerges from Central Opening
             </p>
           </div>
         )}
@@ -206,24 +213,24 @@ export default function EmergingBuildingScenes() {
         {/* ── SCENE 2: AI CALLING (p: 0.08 - 0.24) ── */}
         <div
           style={getPanelStyle(0.08, 0.14, 0.20, 0.25)}
-          className="w-full max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border border-cyan/40 bg-black/75 p-6 sm:p-10 backdrop-blur-2xl shadow-[0_25px_90px_rgba(0,240,255,0.22)]"
+          className="w-full max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border border-cyan/40 bg-black/80 p-6 sm:p-10 backdrop-blur-2xl shadow-[0_25px_90px_rgba(0,240,255,0.25)]"
         >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center w-full">
             <div className="lg:col-span-7">
               <div className="inline-flex items-center gap-2 rounded-full border border-cyan/40 bg-cyan/[0.1] px-3.5 py-1">
-                <Mic className="h-3.5 w-3.5 text-cyan" />
+                <Radio className="h-3.5 w-3.5 text-cyan animate-pulse" />
                 <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-cyan">
-                  STAGE 01 · CORE PLATFORM
+                  STAGE 01 · AUTONOMOUS CALLING CORE
                 </span>
               </div>
 
-              <h2 className="mt-4 text-[clamp(1.8rem,3.6vw,3.0rem)] font-extrabold tracking-tight text-white leading-tight">
+              <h2 className="mt-4 text-[clamp(1.9rem,3.8vw,3.2rem)] font-extrabold tracking-tight text-white leading-tight">
                 AI Calling, Built for <br />
                 <span className="gradient-text font-bold">Real Conversations.</span>
               </h2>
 
-              <p className="mt-3.5 text-[15px] leading-relaxed text-slate-300">
-                Automate customer conversations, qualify leads, follow up instantly and scale your business with intelligent AI-powered voice agents running in production.
+              <p className="mt-3.5 text-[15.5px] leading-relaxed text-slate-200">
+                Automate customer conversations, qualify leads in seconds, and scale your sales with intelligent AI voice agents operating under real-world load.
               </p>
 
               <div className="mt-6 flex flex-wrap gap-4">
@@ -248,7 +255,7 @@ export default function EmergingBuildingScenes() {
             </div>
 
             <div className="lg:col-span-5">
-              <VoiceWaveformPreview />
+              <VoiceStreamSimulator />
             </div>
           </div>
         </div>
@@ -256,50 +263,91 @@ export default function EmergingBuildingScenes() {
         {/* ── SCENE 3: AI VOICE AGENTS (p: 0.24 - 0.40) ── */}
         <div
           style={getPanelStyle(0.24, 0.30, 0.36, 0.41)}
-          className="w-full max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border border-cyan/40 bg-black/75 p-6 sm:p-10 backdrop-blur-2xl shadow-[0_25px_90px_rgba(0,240,255,0.22)]"
+          className="w-full max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border border-cyan/40 bg-black/80 p-6 sm:p-10 backdrop-blur-2xl shadow-[0_25px_90px_rgba(0,240,255,0.25)]"
         >
           <div className="w-full">
             <div className="inline-flex items-center gap-2 rounded-full border border-cyan/40 bg-cyan/[0.1] px-3.5 py-1">
-              <Zap className="h-3.5 w-3.5 text-cyan" />
+              <Mic className="h-3.5 w-3.5 text-cyan" />
               <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-cyan">
-                STAGE 02 · VOICE SYNTHESIS
+                STAGE 02 · STUDIO VOICE SYNTHESIS
               </span>
             </div>
 
-            <h2 className="mt-4 text-[clamp(1.8rem,3.6vw,3.0rem)] font-extrabold tracking-tight text-white leading-tight">
+            <h2 className="mt-4 text-[clamp(1.9rem,3.8vw,3.2rem)] font-extrabold tracking-tight text-white leading-tight">
               Meet Your Autonomous <br />
               <span className="gradient-text font-bold">AI Voice Agent.</span>
             </h2>
 
-            <p className="mt-3 text-[15px] leading-relaxed text-slate-300 max-w-2xl">
-              Natural human-like conversations with ultra-low latency (&lt;300ms), dynamic sentiment adaptation, and zero robotic tone.
+            <p className="mt-3 text-[15.5px] leading-relaxed text-slate-200 max-w-2xl">
+              Natural human-like conversations with ultra-low latency (&lt;300ms), dynamic sentiment adaptation, and zero robotic tone. Select a persona below:
             </p>
 
             {/* Voice Profile Selector */}
-            <div className="mt-6">
-              <div className="font-mono text-[11px] text-slate-400 uppercase mb-2">Select Active Voice Model:</div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {[
-                  { name: 'Sarah (Executive)', tone: 'Warm & Conversational', latency: '265ms' },
-                  { name: 'Marcus (Enterprise SDR)', tone: 'Authoritative & Sharp', latency: '280ms' },
-                  { name: 'Rachel (Support & Care)', tone: 'Empathetic & Calm', latency: '270ms' },
-                ].map((v) => (
-                  <button
-                    key={v.name}
-                    onClick={() => setSelectedVoice(v.name)}
-                    className={cn(
-                      'rounded-2xl border p-4 text-left transition-all',
-                      selectedVoice === v.name
-                        ? 'border-cyan bg-cyan/[0.15] shadow-[0_0_20px_rgba(0,240,255,0.25)]'
-                        : 'border-white/10 bg-white/[0.03] hover:border-white/25',
-                    )}
-                  >
-                    <div className="font-bold text-[13px] text-white">{v.name}</div>
-                    <div className="font-mono text-[10px] text-cyan mt-1">{v.tone}</div>
-                    <div className="font-mono text-[9px] text-slate-400 mt-2">Latency: {v.latency}</div>
-                  </button>
-                ))}
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+              {[
+                {
+                  id: 'Sarah',
+                  title: 'Sarah (Executive)',
+                  desc: 'Warm, authoritative B2B conversational voice',
+                  tag: 'Inbound & Outbound',
+                  latency: '265ms',
+                },
+                {
+                  id: 'Marcus',
+                  title: 'Marcus (Enterprise SDR)',
+                  desc: 'Sharp objection handler & appointment closer',
+                  tag: 'Speed-to-Lead',
+                  latency: '280ms',
+                },
+                {
+                  id: 'Rachel',
+                  title: 'Rachel (Support & Care)',
+                  desc: 'Empathetic 24/7 receptionist & problem solver',
+                  tag: 'Zero Wait Times',
+                  latency: '270ms',
+                },
+              ].map((v) => (
+                <button
+                  key={v.id}
+                  onClick={() => setSelectedVoice(v.id)}
+                  className={cn(
+                    'rounded-2xl border p-4 text-left transition-all',
+                    selectedVoice === v.id
+                      ? 'border-cyan bg-cyan/[0.16] shadow-[0_0_25px_rgba(0,240,255,0.3)]'
+                      : 'border-white/10 bg-white/[0.04] hover:border-white/25',
+                  )}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-[14px] text-white">{v.title}</span>
+                    <span className="h-2 w-2 rounded-full bg-cyan" />
+                  </div>
+                  <div className="text-[12px] text-slate-300 mt-1.5 leading-snug">{v.desc}</div>
+                  <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-white/[0.08] font-mono text-[9.5px]">
+                    <span className="text-cyan uppercase">{v.tag}</span>
+                    <span className="text-emerald-400 font-bold">{v.latency}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-6 rounded-2xl bg-white/[0.03] p-4 border border-white/[0.06] flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center gap-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-cyan/20 border border-cyan/40">
+                  <Activity className="h-5 w-5 text-cyan" />
+                </span>
+                <div>
+                  <div className="text-[13px] font-bold text-white">Active Voice Model: {selectedVoice}</div>
+                  <div className="font-mono text-[10px] text-slate-400">Speech Naturalness MOS 4.92 / 5.0 · Sub-300ms Turnaround</div>
+                </div>
               </div>
+              <ActionButton
+                onClick={() => smoothScrollTo('#contact')}
+                variant="accent"
+                size="sm"
+                className="bg-cyan hover:bg-cyan/90 text-black font-bold"
+              >
+                Deploy This Voice
+              </ActionButton>
             </div>
           </div>
         </div>
@@ -307,34 +355,34 @@ export default function EmergingBuildingScenes() {
         {/* ── SCENE 4: OUTBOUND CALLING (p: 0.40 - 0.56) ── */}
         <div
           style={getPanelStyle(0.40, 0.46, 0.52, 0.57)}
-          className="w-full max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border border-blue-500/40 bg-black/75 p-6 sm:p-10 backdrop-blur-2xl shadow-[0_25px_90px_rgba(2,132,199,0.22)]"
+          className="w-full max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border border-blue-500/40 bg-black/80 p-6 sm:p-10 backdrop-blur-2xl shadow-[0_25px_90px_rgba(2,132,199,0.25)]"
         >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center w-full">
             <div className="lg:col-span-7">
               <div className="inline-flex items-center gap-2 rounded-full border border-blue-400/40 bg-blue-500/[0.1] px-3.5 py-1">
                 <PhoneOutgoing className="h-3.5 w-3.5 text-blue-400" />
                 <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-blue-400">
-                  STAGE 03 · OUTBOUND SPEED-TO-LEAD
+                  STAGE 03 · AUTOMATED OUTBOUND SPEED-TO-LEAD
                 </span>
               </div>
 
-              <h2 className="mt-4 text-[clamp(1.8rem,3.6vw,3.0rem)] font-extrabold tracking-tight text-white leading-tight">
-                Never Miss a Lead <br />
-                <span className="gradient-text font-bold">Again.</span>
+              <h2 className="mt-4 text-[clamp(1.9rem,3.8vw,3.2rem)] font-extrabold tracking-tight text-white leading-tight">
+                Never Miss a High-Value <br />
+                <span className="gradient-text font-bold">Lead Again.</span>
               </h2>
 
-              <p className="mt-3.5 text-[15px] leading-relaxed text-slate-300">
-                Instant speed-to-lead outbound dialing within seconds of form submission. Qualify prospects, handle objections, and auto-book calendar slots directly onto rep schedules.
+              <p className="mt-3.5 text-[15.5px] leading-relaxed text-slate-200">
+                The moment a prospect enters your funnel, LEADNEX.AI initiates a phone conversation within seconds. Qualify budget, authority, timeline, answer objections, and lock down calendar meetings.
               </p>
 
-              <div className="mt-5 grid grid-cols-2 gap-3 font-mono">
-                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-center">
-                  <div className="text-[22px] font-bold text-cyan">&lt; 12s</div>
-                  <div className="text-[9px] text-slate-400 uppercase">Speed to Lead Dial Time</div>
+              <div className="mt-5 grid grid-cols-2 gap-3.5 font-mono">
+                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3.5 text-center">
+                  <div className="text-[24px] font-black text-cyan">&lt; 12s</div>
+                  <div className="text-[9.5px] text-slate-300 uppercase mt-1">Speed to Lead Dial Time</div>
                 </div>
-                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-center">
-                  <div className="text-[22px] font-bold text-white">3.4x</div>
-                  <div className="text-[9px] text-slate-400 uppercase">Booking Conversion vs Reps</div>
+                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3.5 text-center">
+                  <div className="text-[24px] font-black text-white">3.4x</div>
+                  <div className="text-[9.5px] text-slate-300 uppercase mt-1">Booking Conversion vs Reps</div>
                 </div>
               </div>
             </div>
@@ -346,10 +394,10 @@ export default function EmergingBuildingScenes() {
                 { time: 'T + 20.0s', action: 'BANT Qualification', status: 'Budget $50k+' },
                 { time: 'T + 1m 10s', action: 'Calendar Demo Locked', status: 'Confirmed' },
               ].map((step, i) => (
-                <div key={i} className="flex items-center justify-between rounded-xl bg-white/[0.04] p-2.5 border border-white/[0.06]">
+                <div key={i} className="flex items-center justify-between rounded-xl bg-white/[0.04] p-3 border border-white/[0.06]">
                   <div>
-                    <div className="text-[12px] font-semibold text-white">{step.action}</div>
-                    <div className="font-mono text-[9px] text-cyan">{step.status}</div>
+                    <div className="text-[12.5px] font-semibold text-white">{step.action}</div>
+                    <div className="font-mono text-[9px] text-cyan mt-0.5">{step.status}</div>
                   </div>
                   <span className="font-mono text-[10px] font-bold text-emerald-400">{step.time}</span>
                 </div>
@@ -361,7 +409,7 @@ export default function EmergingBuildingScenes() {
         {/* ── SCENE 5: INBOUND CALLING (p: 0.56 - 0.72) ── */}
         <div
           style={getPanelStyle(0.56, 0.62, 0.68, 0.73)}
-          className="w-full max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border border-cyan/40 bg-black/75 p-6 sm:p-10 backdrop-blur-2xl shadow-[0_25px_90px_rgba(0,240,255,0.22)]"
+          className="w-full max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border border-cyan/40 bg-black/80 p-6 sm:p-10 backdrop-blur-2xl shadow-[0_25px_90px_rgba(0,240,255,0.25)]"
         >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center w-full">
             <div className="lg:col-span-7">
@@ -372,17 +420,17 @@ export default function EmergingBuildingScenes() {
                 </span>
               </div>
 
-              <h2 className="mt-4 text-[clamp(1.8rem,3.6vw,3.0rem)] font-extrabold tracking-tight text-white leading-tight">
+              <h2 className="mt-4 text-[clamp(1.9rem,3.8vw,3.2rem)] font-extrabold tracking-tight text-white leading-tight">
                 Every Call Answered. <br />
                 <span className="gradient-text font-bold">Every Time.</span>
               </h2>
 
-              <p className="mt-3.5 text-[15px] leading-relaxed text-slate-300">
-                24/7 autonomous receptionist and support. Zero wait times, multi-lingual support in 40+ languages, and smart routing with instant escalation.
+              <p className="mt-3.5 text-[15.5px] leading-relaxed text-slate-200">
+                Eliminate dropped calls and frustrating IVR menus. LEADNEX answers on the first ring 24/7/365, converses in 40+ native languages, and provides warm transfers when human escalation is required.
               </p>
 
-              <div className="mt-5 flex flex-wrap gap-2">
-                {['Zero Hold Times', '40+ Languages', 'Instant Human Escalation', 'HIPAA & SOC 2'].map((tag) => (
+              <div className="mt-5 flex flex-wrap gap-2.5">
+                {['Zero Hold Times', '40+ Languages', 'Warm Human Escalation', 'HIPAA & SOC 2'].map((tag) => (
                   <span key={tag} className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 font-mono text-[10px] text-slate-300">
                     <CheckCircle2 className="h-3 w-3 text-cyan" />
                     {tag}
@@ -391,22 +439,23 @@ export default function EmergingBuildingScenes() {
               </div>
             </div>
 
-            <div className="lg:col-span-5 rounded-2xl border border-cyan/30 bg-black/60 p-5">
-              <div className="font-mono text-[10px] text-cyan font-bold pb-2 border-b border-white/[0.08]">
-                INBOUND CALL MONITOR
+            <div className="lg:col-span-5 rounded-2xl border border-cyan/30 bg-black/70 p-5">
+              <div className="font-mono text-[10px] text-cyan font-bold pb-2.5 border-b border-white/[0.08] flex items-center justify-between">
+                <span>INBOUND QUEUE MONITOR</span>
+                <span className="text-emerald-400 font-bold">● LIVE</span>
               </div>
-              <div className="pt-3 space-y-3 font-mono">
+              <div className="pt-3.5 space-y-3 font-mono">
                 <div>
                   <div className="text-[9px] text-slate-400 uppercase">Call Queue Status</div>
-                  <div className="text-[14px] font-bold text-white">0 Callers Waiting (Instant Pickup)</div>
+                  <div className="text-[15px] font-bold text-white">0 Callers Waiting (Zero Queue)</div>
                 </div>
                 <div>
                   <div className="text-[9px] text-slate-400 uppercase">Language Routing</div>
-                  <div className="text-[13px] font-semibold text-cyan">Auto-detecting 40+ dialects</div>
+                  <div className="text-[13px] font-semibold text-cyan">Auto-detecting 40+ languages</div>
                 </div>
                 <div>
                   <div className="text-[9px] text-slate-400 uppercase">First-Call Resolution</div>
-                  <div className="text-[14px] font-bold text-emerald-400">89.4% Autonomous</div>
+                  <div className="text-[15px] font-bold text-emerald-400">89.4% Autonomous</div>
                 </div>
               </div>
             </div>
@@ -416,62 +465,62 @@ export default function EmergingBuildingScenes() {
         {/* ── SCENE 6: ANALYTICS & AUTOMATION (p: 0.72 - 0.88) ── */}
         <div
           style={getPanelStyle(0.72, 0.78, 0.84, 0.89)}
-          className="w-full max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border border-indigo-500/40 bg-black/75 p-6 sm:p-10 backdrop-blur-2xl shadow-[0_25px_90px_rgba(99,102,241,0.22)]"
+          className="w-full max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border border-indigo-500/40 bg-black/80 p-6 sm:p-10 backdrop-blur-2xl shadow-[0_25px_90px_rgba(99,102,241,0.25)]"
         >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center w-full">
             <div className="lg:col-span-7">
               <div className="inline-flex items-center gap-2 rounded-full border border-indigo-400/40 bg-indigo-500/[0.1] px-3.5 py-1">
                 <BarChart3 className="h-3.5 w-3.5 text-indigo-400" />
                 <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-indigo-300">
-                  STAGE 05 · REVENUE TELEMETRY
+                  STAGE 05 · REVENUE TELEMETRY & CRM
                 </span>
               </div>
 
-              <h2 className="mt-4 text-[clamp(1.8rem,3.6vw,3.0rem)] font-extrabold tracking-tight text-white leading-tight">
+              <h2 className="mt-4 text-[clamp(1.9rem,3.8vw,3.2rem)] font-extrabold tracking-tight text-white leading-tight">
                 Conversation Intelligence & <br />
                 <span className="gradient-text font-bold">CRM Automation.</span>
               </h2>
 
-              <p className="mt-3.5 text-[15px] leading-relaxed text-slate-300">
-                Real-time transcription, automated CRM logging, sentiment analysis, objection tracking, and bi-directional sync with Salesforce and HubSpot.
+              <p className="mt-3.5 text-[15.5px] leading-relaxed text-slate-200">
+                Transform voice conversations into structured revenue intelligence. Real-time transcription, automated CRM logging, sentiment analysis, and bi-directional sync with Salesforce and HubSpot.
               </p>
 
-              <div className="mt-5 grid grid-cols-3 gap-2 text-center font-mono">
-                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-2.5">
-                  <div className="text-[18px] font-bold text-emerald-400">96%</div>
-                  <div className="text-[8.5px] text-slate-400">Sentiment Score</div>
+              <div className="mt-5 grid grid-cols-3 gap-2.5 text-center font-mono">
+                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                  <div className="text-[20px] font-bold text-emerald-400">96%</div>
+                  <div className="text-[9px] text-slate-300 mt-0.5">Sentiment Score</div>
                 </div>
-                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-2.5">
-                  <div className="text-[18px] font-bold text-cyan">&lt; 1s</div>
-                  <div className="text-[8.5px] text-slate-400">CRM Sync Time</div>
+                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                  <div className="text-[20px] font-bold text-cyan">&lt; 1s</div>
+                  <div className="text-[9px] text-slate-300 mt-0.5">CRM Sync Time</div>
                 </div>
-                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-2.5">
-                  <div className="text-[18px] font-bold text-white">100%</div>
-                  <div className="text-[8.5px] text-slate-400">Auto-Logged</div>
+                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                  <div className="text-[20px] font-bold text-white">100%</div>
+                  <div className="text-[9px] text-slate-300 mt-0.5">Auto-Logged</div>
                 </div>
               </div>
             </div>
 
-            <div className="lg:col-span-5 rounded-2xl border border-indigo-400/30 bg-black/60 p-5 font-mono text-[11px]">
-              <div className="text-cyan font-bold pb-2 border-b border-white/[0.08]">
-                CRM SYNC VERIFICATION
+            <div className="lg:col-span-5 rounded-2xl border border-indigo-400/30 bg-black/70 p-5 font-mono text-[11px]">
+              <div className="text-cyan font-bold pb-2.5 border-b border-white/[0.08]">
+                CRM SYNC ENGINE VERIFICATION
               </div>
-              <div className="pt-3 space-y-2">
+              <div className="pt-3.5 space-y-2.5">
                 <div className="flex justify-between text-slate-300">
                   <span>Salesforce Deal:</span>
-                  <span className="text-emerald-400 font-bold">Updated</span>
+                  <span className="text-emerald-400 font-bold">Updated (Stage 3)</span>
                 </div>
                 <div className="flex justify-between text-slate-300">
                   <span>HubSpot Contact:</span>
-                  <span className="text-emerald-400 font-bold">Synced</span>
+                  <span className="text-emerald-400 font-bold">Synced in 0.4s</span>
                 </div>
                 <div className="flex justify-between text-slate-300">
                   <span>Google Calendar:</span>
-                  <span className="text-cyan font-bold">Locked</span>
+                  <span className="text-cyan font-bold">Slot Confirmed</span>
                 </div>
                 <div className="flex justify-between text-slate-300">
-                  <span>SMS Confirmation:</span>
-                  <span className="text-white font-bold">Delivered</span>
+                  <span>SMS Follow-up:</span>
+                  <span className="text-white font-bold">Sent to Prospect</span>
                 </div>
               </div>
             </div>
@@ -481,22 +530,22 @@ export default function EmergingBuildingScenes() {
         {/* ── SCENE 7: FINAL CTA (p: 0.88 - 1.00) ── */}
         <div
           style={getPanelStyle(0.88, 0.94, 1.0, 1.0)}
-          className="w-full max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border border-cyan/40 bg-black/80 p-8 sm:p-12 backdrop-blur-2xl shadow-[0_30px_100px_rgba(0,240,255,0.25)] text-center"
+          className="w-full max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border border-cyan/40 bg-black/85 p-8 sm:p-12 backdrop-blur-2xl shadow-[0_30px_100px_rgba(0,240,255,0.3)] text-center"
         >
           <div className="mx-auto max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full border border-cyan/40 bg-cyan/[0.1] px-4 py-1.5 shadow-[0_0_20px_rgba(0,240,255,0.3)]">
               <Sparkles className="h-3.5 w-3.5 text-cyan" />
               <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-cyan">
-                FINAL STAGE · LEADNEX HEADQUARTERS
+                FINAL STAGE · LEADNEX HEADQUARTERS SUMMIT
               </span>
             </div>
 
-            <h2 className="mt-5 text-[clamp(2.0rem,4.2vw,3.6rem)] font-extrabold tracking-tight text-white leading-tight">
+            <h2 className="mt-5 text-[clamp(2.1rem,4.4vw,3.8rem)] font-extrabold tracking-tight text-white leading-tight">
               Ready to Transform Your <br />
               <span className="gradient-text font-bold">Business Conversations?</span>
             </h2>
 
-            <p className="mx-auto mt-4 max-w-xl text-[16px] leading-relaxed text-slate-300">
+            <p className="mx-auto mt-4 max-w-xl text-[16px] leading-relaxed text-slate-200">
               Deploy your first production AI voice agent today. Zero hardware, instant deployment, sub-300ms latency, and enterprise SLA guarantee.
             </p>
 
@@ -535,7 +584,7 @@ export default function EmergingBuildingScenes() {
               </span>
               <span className="flex items-center gap-1.5">
                 <CheckCircle2 className="h-3.5 w-3.5 text-cyan" />
-                Sub-300ms SLA
+                Sub-300ms SLA Guarantee
               </span>
             </div>
           </div>
@@ -544,4 +593,3 @@ export default function EmergingBuildingScenes() {
     </div>
   );
 }
-

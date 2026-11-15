@@ -14,9 +14,8 @@ export const site = {
 export const nav = {
   links: [
     { number: '01', label: 'Home', to: '/' },
-    { number: '02', label: 'AI Calling', to: '/#demo' },
-    { number: '03', label: 'Capabilities', to: '/#features' },
-    { number: '04', label: 'Pricing', to: '/pricing' },
+    { number: '02', label: 'Pricing', to: '/pricing' },
+    { number: '03', label: 'Contact', to: '/#contact' },
   ],
   signIn: 'Console Login',
   cta: 'Book a Demo',

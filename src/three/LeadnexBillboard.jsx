@@ -3,14 +3,12 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 /**
- * LeadnexBillboard — Massive Vertical Digital LED Billboard
- * Mounted on the facade of the LEADNEX.AI Corporate Headquarters.
+ * LeadnexBillboard — Left Skyscraper LED Billboard
  *
- * Features:
- * - High-resolution 1024x2048 dynamic CanvasTexture.
- * - Bold illuminated typography: "LEADNEX.AI" + "AI CALLING. SMARTER CONVERSATIONS."
- * - Dynamic real-time animations: scanline sweep, telemetry tickers, audio frequency bars.
- * - High emissive intensity with neon edge framing and light casting.
+ * Prominently displays:
+ *   LEADNEX.AI
+ *   AI CALLING. SMARTER CONVERSATIONS.
+ *   Live voice engine telemetry and active audio spectrum bars.
  */
 export default function LeadnexBillboard({ position = [0, 0, 0], rotation = [0, 0, 0], scale = [1, 1, 1] }) {
   const meshRef = useRef();
@@ -18,7 +16,6 @@ export default function LeadnexBillboard({ position = [0, 0, 0], rotation = [0, 
   const canvasRef = useRef();
   const animTimeRef = useRef(0);
 
-  // Create canvas texture once
   const { canvas, texture } = useMemo(() => {
     const c = document.createElement('canvas');
     c.width = 1024;
@@ -29,152 +26,154 @@ export default function LeadnexBillboard({ position = [0, 0, 0], rotation = [0, 
     tex.wrapT = THREE.ClampToEdgeWrapping;
     tex.minFilter = THREE.LinearFilter;
     tex.magFilter = THREE.LinearFilter;
+    tex.generateMipmaps = false;
 
     canvasRef.current = c;
     textureRef.current = tex;
     return { canvas: c, texture: tex };
   }, []);
 
-  // Frame animation for billboard content
-  useFrame((state, delta) => {
-    animTimeRef.current += delta;
-    const t = animTimeRef.current;
+  const drawBillboard = (t) => {
     const ctx = canvasRef.current?.getContext('2d');
     if (!ctx) return;
 
     const w = 1024;
     const h = 2048;
 
-    // 1. Dark Futuristic LED Glass Background
-    ctx.fillStyle = '#040915';
+    // 1. Deep Midnight Blue LED Panel Background
+    ctx.fillStyle = '#061329';
     ctx.fillRect(0, 0, w, h);
 
-    // Subtle LED Matrix Dot Grid
-    ctx.fillStyle = 'rgba(0, 240, 255, 0.035)';
-    const dotSpacing = 16;
-    for (let x = 8; x < w; x += dotSpacing) {
-      for (let y = 8; y < h; y += dotSpacing) {
-        ctx.fillRect(x, y, 2, 2);
-      }
+    // Glowing Cyber Grid Pattern
+    ctx.strokeStyle = 'rgba(0, 240, 255, 0.08)';
+    ctx.lineWidth = 2;
+    for (let x = 0; x < w; x += 32) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, h);
+      ctx.stroke();
+    }
+    for (let y = 0; y < h; y += 32) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(w, y);
+      ctx.stroke();
     }
 
-    // 2. Neon Cyan Outer Framing & Corner Brackets
+    // 2. Neon Cyan Outer Framing & Corner Accents
     ctx.strokeStyle = '#00f0ff';
-    ctx.lineWidth = 14;
+    ctx.lineWidth = 16;
     ctx.shadowColor = '#00f0ff';
-    ctx.shadowBlur = 30;
-    ctx.strokeRect(30, 30, w - 60, h - 60);
+    ctx.shadowBlur = 35;
+    ctx.strokeRect(32, 32, w - 64, h - 64);
 
-    // High-tech Corner Accents
+    // High-tech Corner Brackets
     ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 18;
-    const cornerSize = 90;
+    ctx.lineWidth = 20;
+    const corner = 90;
     // Top-Left
     ctx.beginPath();
-    ctx.moveTo(30, 30 + cornerSize);
-    ctx.lineTo(30, 30);
-    ctx.lineTo(30 + cornerSize, 30);
+    ctx.moveTo(32, 32 + corner);
+    ctx.lineTo(32, 32);
+    ctx.lineTo(32 + corner, 32);
     ctx.stroke();
     // Top-Right
     ctx.beginPath();
-    ctx.moveTo(w - 30 - cornerSize, 30);
-    ctx.lineTo(w - 30, 30);
-    ctx.lineTo(w - 30, 30 + cornerSize);
+    ctx.moveTo(w - 32 - corner, 32);
+    ctx.lineTo(w - 32, 32);
+    ctx.lineTo(w - 32, 32 + corner);
     ctx.stroke();
     // Bottom-Left
     ctx.beginPath();
-    ctx.moveTo(30, h - 30 - cornerSize);
-    ctx.lineTo(30, h - 30);
-    ctx.lineTo(30 + cornerSize, h - 30);
+    ctx.moveTo(32, h - 32 - corner);
+    ctx.lineTo(32, h - 32);
+    ctx.lineTo(32 + corner, h - 32);
     ctx.stroke();
     // Bottom-Right
     ctx.beginPath();
-    ctx.moveTo(w - 30 - cornerSize, h - 30);
-    ctx.lineTo(w - 30, h - 30);
-    ctx.lineTo(w - 30, h - 30 - cornerSize);
+    ctx.moveTo(w - 32 - corner, h - 32);
+    ctx.lineTo(w - 32, h - 32);
+    ctx.lineTo(w - 32, h - 32 - corner);
     ctx.stroke();
 
-    // Reset shadow
     ctx.shadowBlur = 0;
 
-    // 3. Header Telemetry Bar
-    ctx.fillStyle = 'rgba(0, 240, 255, 0.15)';
-    ctx.fillRect(60, 80, w - 120, 100);
-    ctx.strokeStyle = 'rgba(0, 240, 255, 0.5)';
-    ctx.lineWidth = 3;
-    ctx.strokeRect(60, 80, w - 120, 100);
+    // 3. Top Status Ribbon
+    ctx.fillStyle = 'rgba(0, 240, 255, 0.2)';
+    ctx.fillRect(60, 80, w - 120, 110);
+    ctx.strokeStyle = '#00f0ff';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(60, 80, w - 120, 110);
 
-    ctx.font = 'bold 36px "JetBrains Mono", monospace';
+    ctx.font = 'bold 38px "JetBrains Mono", monospace';
     ctx.fillStyle = '#00f0ff';
     ctx.textAlign = 'left';
-    ctx.fillText('LEADNEX // HQ TOWER 01', 90, 142);
+    ctx.fillText('LEADNEX // TOWER 01', 95, 150);
 
-    ctx.fillStyle = '#10b981';
+    // Live Pulse Dot
+    const pulseAlpha = Math.sin(t * 4) * 0.3 + 0.7;
+    ctx.fillStyle = `rgba(16, 185, 129, ${pulseAlpha})`;
     ctx.beginPath();
-    ctx.arc(w - 180, 130, 14, 0, Math.PI * 2);
+    ctx.arc(w - 240, 135, 16, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.font = 'bold 28px "JetBrains Mono", monospace';
+    ctx.font = 'bold 30px "JetBrains Mono", monospace';
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'right';
-    ctx.fillText('LIVE ENGINE', w - 90, 140);
+    ctx.fillText('LIVE ENGINE', w - 90, 145);
 
-    // 4. Prominent Brand Logo & Typography
-    const pulse = Math.sin(t * 3.0) * 0.15 + 0.85;
-
-    // Outer glow for brand
+    // 4. MAIN HEADLINE BRANDING: LEADNEX.AI
+    const glowIntensity = Math.sin(t * 3) * 15 + 40;
     ctx.shadowColor = '#00f0ff';
-    ctx.shadowBlur = 45 * pulse;
+    ctx.shadowBlur = glowIntensity;
 
-    ctx.font = '900 132px "Inter", "Helvetica Neue", sans-serif';
+    ctx.font = '900 136px "Inter", sans-serif';
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
-    ctx.fillText('LEADNEX', w / 2, 420);
+    ctx.fillText('LEADNEX', w / 2, 450);
 
     ctx.fillStyle = '#00f0ff';
-    ctx.fillText('.AI', w / 2, 550);
+    ctx.fillText('.AI', w / 2, 580);
 
     // Tagline: AI CALLING. SMARTER CONVERSATIONS.
-    ctx.shadowBlur = 25;
     ctx.shadowColor = '#38bdf8';
+    ctx.shadowBlur = 25;
     ctx.font = 'bold 44px "JetBrains Mono", monospace';
     ctx.fillStyle = '#e0f2fe';
-    ctx.fillText('AI CALLING.', w / 2, 670);
+    ctx.fillText('AI CALLING.', w / 2, 700);
 
-    ctx.font = 'bold 40px "JetBrains Mono", monospace';
-    ctx.fillStyle = '#38bdf8';
-    ctx.fillText('SMARTER CONVERSATIONS.', w / 2, 735);
+    ctx.font = 'bold 42px "JetBrains Mono", monospace';
+    ctx.fillStyle = '#00f0ff';
+    ctx.fillText('SMARTER CONVERSATIONS.', w / 2, 765);
 
-    // Decorative Horizontal Divider with glowing center diamond
-    ctx.shadowBlur = 15;
-    ctx.strokeStyle = 'rgba(0, 240, 255, 0.6)';
-    ctx.lineWidth = 4;
+    // Glowing Divider Line
+    ctx.shadowBlur = 20;
+    ctx.strokeStyle = '#00f0ff';
+    ctx.lineWidth = 6;
     ctx.beginPath();
-    ctx.moveTo(100, 820);
-    ctx.lineTo(w - 100, 820);
+    ctx.moveTo(90, 840);
+    ctx.lineTo(w - 90, 840);
     ctx.stroke();
 
-    ctx.fillStyle = '#00f0ff';
-    ctx.fillRect(w / 2 - 16, 804, 32, 32);
-
-    // 5. Real-Time Telemetry Stats Card
     ctx.shadowBlur = 0;
-    const cardY = 890;
-    ctx.fillStyle = 'rgba(6, 18, 42, 0.7)';
-    ctx.fillRect(80, cardY, w - 160, 480);
-    ctx.strokeStyle = 'rgba(0, 240, 255, 0.35)';
+
+    // 5. Real-Time Telemetry Stats Box
+    const boxY = 910;
+    ctx.fillStyle = 'rgba(4, 16, 40, 0.85)';
+    ctx.fillRect(80, boxY, w - 160, 480);
+    ctx.strokeStyle = 'rgba(0, 240, 255, 0.45)';
     ctx.lineWidth = 3;
-    ctx.strokeRect(80, cardY, w - 160, 480);
+    ctx.strokeRect(80, boxY, w - 160, 480);
 
     const metrics = [
-      { label: 'CONCURRENT LIVE CALLS', val: (12480 + Math.floor(Math.sin(t * 2) * 120)).toLocaleString(), unit: 'ACTIVE' },
+      { label: 'CONCURRENT LIVE CALLS', val: (12480 + Math.floor(Math.sin(t * 2) * 150)).toLocaleString(), unit: 'ACTIVE' },
       { label: 'VOICE SYNTHESIS LATENCY', val: '276', unit: 'MS' },
-      { label: 'SPEECH NATURALNESS MOS', val: '4.92', unit: '/ 5.0' },
+      { label: 'CONVERSATION MOS SCORE', val: '4.92', unit: '/ 5.0' },
       { label: 'ENTERPRISE SYSTEM SLA', val: '99.99', unit: '% ONLINE' },
     ];
 
     metrics.forEach((m, i) => {
-      const my = cardY + 70 + i * 105;
+      const my = boxY + 75 + i * 105;
       ctx.font = '600 26px "JetBrains Mono", monospace';
       ctx.fillStyle = '#94a3b8';
       ctx.textAlign = 'left';
@@ -191,33 +190,33 @@ export default function LeadnexBillboard({ position = [0, 0, 0], rotation = [0, 
       ctx.fillText(m.unit, w - 120, my + 8);
 
       if (i < 3) {
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
         ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(120, my + 35);
-        ctx.lineTo(w - 120, my + 35);
+        ctx.moveTo(120, my + 38);
+        ctx.lineTo(w - 120, my + 38);
         ctx.stroke();
       }
     });
 
-    // 6. Dynamic 3D Voice Waveform Frequency Bars (Audio visualizer)
-    const waveY = 1430;
+    // 6. Dynamic Audio Frequency Spectrum Analyzer
+    const waveY = 1450;
     ctx.font = 'bold 30px "JetBrains Mono", monospace';
     ctx.fillStyle = '#38bdf8';
     ctx.textAlign = 'center';
-    ctx.fillText('LIVE NEURAL VOICE STREAM', w / 2, waveY);
+    ctx.fillText('NEURAL SPEECH STREAM · LIVE', w / 2, waveY);
 
-    const barCount = 36;
+    const barCount = 38;
     const barWidth = 16;
     const barSpacing = 8;
-    const totalBarsWidth = barCount * (barWidth + barSpacing) - barSpacing;
-    const startX = (w - totalBarsWidth) / 2;
+    const totalW = barCount * (barWidth + barSpacing) - barSpacing;
+    const startX = (w - totalW) / 2;
 
     for (let i = 0; i < barCount; i++) {
-      const freq = Math.sin(t * 5 + i * 0.35) * Math.cos(t * 3 - i * 0.2);
-      const barH = Math.max(12, Math.abs(freq) * 160 + 20);
+      const freq = Math.sin(t * 5 + i * 0.35) * Math.cos(t * 3 - i * 0.22);
+      const barH = Math.max(14, Math.abs(freq) * 180 + 20);
       const bx = startX + i * (barWidth + barSpacing);
-      const by = waveY + 220 - barH;
+      const by = waveY + 230 - barH;
 
       const grad = ctx.createLinearGradient(0, by, 0, by + barH);
       grad.addColorStop(0, '#ffffff');
@@ -226,63 +225,69 @@ export default function LeadnexBillboard({ position = [0, 0, 0], rotation = [0, 
 
       ctx.fillStyle = grad;
       ctx.shadowColor = '#00f0ff';
-      ctx.shadowBlur = 10;
+      ctx.shadowBlur = 12;
       ctx.fillRect(bx, by, barWidth, barH);
     }
 
-    // 7. Dynamic Animated Scanline Sweep
-    const scanlineY = ((t * 220) % (h - 100)) + 50;
-    const scanGrad = ctx.createLinearGradient(0, scanlineY - 40, 0, scanlineY + 40);
+    // 7. Scanning Laser Line
+    const scanlineY = ((t * 240) % (h - 100)) + 50;
+    const scanGrad = ctx.createLinearGradient(0, scanlineY - 45, 0, scanlineY + 45);
     scanGrad.addColorStop(0, 'rgba(0, 240, 255, 0)');
-    scanGrad.addColorStop(0.5, 'rgba(0, 240, 255, 0.28)');
+    scanGrad.addColorStop(0.5, 'rgba(0, 240, 255, 0.35)');
     scanGrad.addColorStop(1, 'rgba(0, 240, 255, 0)');
     ctx.fillStyle = scanGrad;
-    ctx.fillRect(40, scanlineY - 40, w - 80, 80);
+    ctx.fillRect(40, scanlineY - 45, w - 80, 90);
 
-    // 8. Footer Badge
+    // 8. Footer Telemetry Tag
     ctx.shadowBlur = 0;
-    ctx.font = 'bold 26px "JetBrains Mono", monospace';
+    ctx.font = 'bold 28px "JetBrains Mono", monospace';
     ctx.fillStyle = '#64748b';
     ctx.textAlign = 'center';
     ctx.fillText('GLOBAL VOICE MESH · AUTONOMOUS AGENTS', w / 2, h - 80);
 
-    // Notify Three.js that texture updated
-    textureRef.current.needsUpdate = true;
+    if (textureRef.current) {
+      textureRef.current.needsUpdate = true;
+    }
+  };
+
+  useEffect(() => {
+    drawBillboard(0);
+  }, []);
+
+  useFrame((state, delta) => {
+    animTimeRef.current += delta;
+    drawBillboard(animTimeRef.current);
   });
 
   return (
     <group position={position} rotation={rotation} scale={scale}>
-      {/* Billboard Backing Housing / Mounting Frame */}
-      <mesh position={[0, 0, -0.2]}>
-        <boxGeometry args={[7.2, 14.4, 0.4]} />
-        <meshStandardMaterial
-          color="#060c18"
-          roughness={0.4}
-          metalness={0.9}
-        />
+      {/* Housing Frame (Placed at z = -0.15) */}
+      <mesh position={[0, 0, -0.15]}>
+        <boxGeometry args={[7.2, 14.4, 0.3]} />
+        <meshStandardMaterial color="#040b18" roughness={0.3} metalness={0.9} />
       </mesh>
 
-      {/* Billboard Outer Neon Rim Light */}
-      <lineSegments>
-        <edgesGeometry args={[new THREE.BoxGeometry(7.22, 14.42, 0.42)]} />
-        <lineBasicMaterial color="#00f0ff" linewidth={2} transparent opacity={0.9} />
+      {/* Outer Neon Rim Light Frame */}
+      <lineSegments position={[0, 0, 0.02]}>
+        <edgesGeometry args={[new THREE.BoxGeometry(7.22, 14.42, 0.32)]} />
+        <lineBasicMaterial color="#00f0ff" transparent opacity={0.95} />
       </lineSegments>
 
-      {/* Active High-Res LED Screen Display */}
-      <mesh ref={meshRef}>
+      {/* Active High-Res LED Screen (Placed in front at z = 0.08, NO Z-FIGHTING!) */}
+      <mesh ref={meshRef} position={[0, 0, 0.08]}>
         <planeGeometry args={[7.0, 14.0]} />
         <meshBasicMaterial
           map={texture}
           toneMapped={false}
+          side={THREE.DoubleSide}
           transparent
-          opacity={0.98}
+          opacity={1.0}
         />
       </mesh>
 
-      {/* Emissive glow & point light illuminating the tower facade */}
-      <pointLight color="#00f0ff" intensity={6.0} distance={24} decay={2} position={[0, 0, 1.2]} />
-      <pointLight color="#0284c7" intensity={4.0} distance={18} decay={2} position={[0, -4, 1.0]} />
+      {/* Neon Light Casting */}
+      <pointLight color="#00f0ff" intensity={5.0} distance={22} position={[0, 0, 1.5]} />
+      <pointLight color="#0284c7" intensity={3.5} distance={18} position={[0, -3.5, 1.2]} />
     </group>
   );
 }
-
