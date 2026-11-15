@@ -3,7 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
 /* ─────────────────────────────────────────────────────────────────────────
-   Shared plumbing for the LeadNex 3D scene.
+   Shared plumbing for the LEADNEX.AI 3D scene.
 
    One fixed WebGL canvas sits over the page. Every 3D object is an <Actor>
    that is pinned to an empty placeholder element in the DOM

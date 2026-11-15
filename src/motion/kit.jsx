@@ -325,20 +325,33 @@ const AURA_BY_ID = {
 };
 
 export function Section({ id, children, className, hairline = true, tone = 'base', bleed = false, aura }) {
+  const sectionRef = useRef(null);
+  const reduced = useFMMotionReduced();
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+
+  const opacity = useTransform(scrollYProgress, [0, 0.12, 0.88, 1], [0.65, 1, 1, 0.65]);
+  const y = useTransform(scrollYProgress, [0, 0.12, 0.88, 1], [24, 0, 0, -20]);
+  const scale = useTransform(scrollYProgress, [0, 0.12, 0.88, 1], [0.985, 1, 1, 0.985]);
+
   const tone_ = aura ?? AURA_BY_ID[id] ?? 'indigo';
   return (
-    <section
+    <motion.section
+      ref={sectionRef}
       id={id}
+      style={reduced ? undefined : { opacity, y, scale }}
       className={cn(
-        'isolate relative scroll-mt-24 overflow-clip py-16 sm:py-24 lg:py-28',
+        'isolate relative scroll-mt-24 overflow-clip py-16 sm:py-24 lg:py-28 will-change-transform',
         hairline && 'border-t border-line',
-        tone === 'surface' && 'bg-white/[0.015]',
+        tone === 'surface' && 'bg-white/[0.012]',
         className,
       )}
     >
       <SectionAura tone={tone_} flip={['workflow', 'pricing', 'contact'].includes(id)} />
       {bleed ? children : <div className="u-shell">{children}</div>}
-    </section>
+    </motion.section>
   );
 }
 

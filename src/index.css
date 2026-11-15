@@ -343,18 +343,20 @@ select:focus-visible,
 
 .card-hairline {
   position: relative;
-  border: 1px solid rgba(255, 255, 255, 0.075);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   background:
-    radial-gradient(120% 100% at 0% 0%, rgba(91, 124, 250, 0.07) 0%, transparent 55%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.025) 0%, rgba(255, 255, 255, 0.006) 100%);
+    radial-gradient(120% 100% at 0% 0%, rgba(0, 240, 255, 0.06) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(6, 12, 28, 0.55) 0%, rgba(3, 7, 18, 0.45) 100%);
   transition: border-color 0.45s var(--ease-out), background 0.45s var(--ease-out), transform 0.45s var(--ease-out), box-shadow 0.45s var(--ease-out);
 }
 .card-hairline:hover {
-  border-color: rgba(140, 165, 255, 0.28);
+  border-color: rgba(0, 240, 255, 0.35);
   background:
-    radial-gradient(120% 100% at 0% 0%, rgba(91, 124, 250, 0.13) 0%, transparent 60%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.012) 100%);
-  box-shadow: 0 24px 70px -40px rgba(91, 124, 250, 0.65);
+    radial-gradient(120% 100% at 0% 0%, rgba(0, 240, 255, 0.12) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(8, 16, 36, 0.65) 0%, rgba(4, 9, 24, 0.55) 100%);
+  box-shadow: 0 24px 70px -40px rgba(0, 240, 255, 0.45);
 }
 
 /* Ambient colour wash used behind sections */
@@ -658,3 +660,60 @@ select:focus-visible,
   border: 2px solid #07080a;
 }
 ::-webkit-scrollbar-thumb:hover { background: rgba(140, 165, 255, 0.85); }
+
+/* =========================================================
+   TheFinansol 3D Immersive Experience Glassmorphism & Glow
+   ========================================================= */
+.glass-hero {
+  background: radial-gradient(130% 120% at 10% 10%, rgba(14, 25, 48, 0.55) 0%, rgba(6, 10, 22, 0.72) 100%);
+  backdrop-filter: blur(28px) saturate(1.4);
+  -webkit-backdrop-filter: blur(28px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 30px 80px -20px rgba(0, 0, 0, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 0 40px rgba(14, 165, 233, 0.04),
+    0 0 60px -20px rgba(34, 211, 238, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(34, 211, 238, 0.6) 30%, rgba(139, 92, 246, 0.5) 70%, transparent 100%);
+  pointer-events: none;
+}
+
+.glass-chip {
+  background: rgba(8, 14, 28, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(34, 211, 238, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-chip:hover {
+  border-color: rgba(34, 211, 238, 0.5);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(34, 211, 238, 0.25);
+}
+
+.text-glow-cyan {
+  text-shadow: 0 0 25px rgba(34, 211, 238, 0.55), 0 0 50px rgba(14, 165, 233, 0.3);
+}
+
+.btn-glow {
+  box-shadow: 0 0 25px rgba(14, 165, 233, 0.45), 0 0 60px rgba(14, 165, 233, 0.15);
+  transition: all 0.35s ease;
+}
+
+.btn-glow:hover {
+  box-shadow: 0 0 35px rgba(34, 211, 238, 0.7), 0 0 80px rgba(14, 165, 233, 0.3);
+  transform: translateY(-2px);
+}
+

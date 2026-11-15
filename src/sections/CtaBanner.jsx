@@ -7,7 +7,7 @@ import { Cube3D } from '../motion/ThreeD';
 
 export default function CtaBanner() {
   return (
-    <section className="relative overflow-hidden border-t border-line bg-[var(--base)] py-20 sm:py-28">
+    <section className="relative overflow-hidden border-t border-line bg-[var(--base)]/60 backdrop-blur-md py-20 sm:py-28">
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <Parallax distance={40} className="absolute inset-0">
           <div className="bg-grid absolute inset-0 opacity-[0.35] mask-fade-y" />

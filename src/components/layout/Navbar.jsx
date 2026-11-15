@@ -10,23 +10,23 @@ import ThemePalette from './ThemePalette';
 
 function Logo({ onClick }) {
   return (
-    <Link to="/" onClick={onClick} className="group flex items-center gap-2.5" aria-label="LeadNex AI Home">
+    <Link to="/" onClick={onClick} className="group flex items-center gap-2.5" aria-label="LEADNEX.AI Home">
       <motion.span
         whileHover={{ rotate: 18, scale: 1.06 }}
         transition={SPRING}
         className="relative flex h-7 w-7 items-center justify-center"
       >
-        <span className="absolute inset-0 rounded-[9px] bg-primary/90" />
-        <span className="absolute inset-[3px] rounded-[6px] border border-white/40" />
+        <span className="absolute inset-0 rounded-[9px] bg-gradient-to-tr from-cyan via-blue-600 to-indigo-600 shadow-[0_0_15px_rgba(0,240,255,0.4)]" />
+        <span className="absolute inset-[3px] rounded-[6px] border border-white/50" />
         <motion.span
-          className="relative h-[5px] w-[5px] rounded-full bg-white"
-          animate={{ scale: [1, 1.35, 1], opacity: [1, 0.7, 1] }}
-          transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
+          className="relative h-[6px] w-[6px] rounded-full bg-white shadow-[0_0_8px_#ffffff]"
+          animate={{ scale: [1, 1.4, 1], opacity: [1, 0.7, 1] }}
+          transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
         />
       </motion.span>
-      <span className="flex items-baseline gap-1">
-        <span className="text-[15px] font-semibold tracking-tight text-white">{site.name}</span>
-        <span className="label-mono-xs text-accent-soft">ai</span>
+      <span className="flex items-baseline gap-1.5">
+        <span className="text-[16px] font-extrabold tracking-tight text-white">{site.name}</span>
+        <span className="label-mono-xs text-cyan font-mono tracking-widest text-[10px] uppercase">VOICE</span>
       </span>
     </Link>
   );

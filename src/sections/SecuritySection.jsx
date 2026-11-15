@@ -90,7 +90,7 @@ export default function SecuritySection() {
 
       {/* pipeline */}
       <Reveal>
-        <div className="overflow-hidden rounded-2xl border border-line bg-[var(--base-2)]/80 p-5 sm:p-6">
+        <div className="overflow-hidden rounded-2xl border border-white/10 bg-[rgba(4,8,20,0.65)] backdrop-blur-xl p-5 sm:p-6">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <span className="label-mono text-mint">{security.flowLabel}</span>

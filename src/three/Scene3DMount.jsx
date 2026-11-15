@@ -2,9 +2,8 @@ import { Component, lazy, Suspense, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useReducedMotion } from '../motion/hooks/useReducedMotion';
 
-// three.js is a separate chunk, fetched after the page is already interactive.
-const Scene3D = lazy(() => import('./Scene3D'));
-const Background3D = lazy(() => import('./Background3D'));
+// LeadnexBuildingScene is loaded as a separate chunk
+const LeadnexBuildingScene = lazy(() => import('./LeadnexBuildingScene'));
 
 class Boundary extends Component {
   state = { failed: false };
@@ -12,14 +11,17 @@ class Boundary extends Component {
     return { failed: true };
   }
   componentDidCatch(err) {
-    console.warn('[3D scene disabled]', err);
+    console.warn('[3D building scene disabled]', err);
   }
   render() {
     return this.state.failed ? null : this.props.children;
   }
 }
 
-/** Home page only, desktop widths only, and never under reduced-motion. */
+/**
+ * Scene3DMount — Home page only.
+ * Renders the persistent 3D corporate skyscraper headquarters canvas behind all HTML content.
+ */
 export default function Scene3DMount() {
   const { pathname } = useLocation();
   const reduced = useReducedMotion();
@@ -35,27 +37,17 @@ export default function Scene3DMount() {
   }, []);
 
   useEffect(() => {
-    const t = setTimeout(() => setReady(true), 250);
+    const t = setTimeout(() => setReady(true), 120);
     return () => clearTimeout(t);
   }, []);
 
-  if (pathname !== '/' || reduced || !ready) return null;
+  if (pathname !== '/' || !ready) return null;
+
   return (
-    <>
-      {/* scroll-morphing particle background — every width, home page only */}
-      <Boundary>
-        <Suspense fallback={null}>
-          <Background3D small={!wide} />
-        </Suspense>
-      </Boundary>
-      {/* pinned foreground objects — desktop only */}
-      {wide && (
-        <Boundary>
-          <Suspense fallback={null}>
-            <Scene3D />
-          </Suspense>
-        </Boundary>
-      )}
-    </>
+    <Boundary>
+      <Suspense fallback={null}>
+        <LeadnexBuildingScene small={!wide} reduced={reduced} />
+      </Suspense>
+    </Boundary>
   );
 }

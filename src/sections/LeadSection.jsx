@@ -118,7 +118,7 @@ export default function LeadSection() {
 
         {/* form */}
         <Reveal direction="right" delay={0.1}>
-          <div className="edge-light relative overflow-hidden rounded-xl border border-line bg-[var(--base-2)] p-5 sm:p-6">
+          <div className="edge-light relative overflow-hidden rounded-xl border border-white/10 bg-[rgba(4,8,20,0.65)] backdrop-blur-xl p-5 sm:p-6">
             <AnimatePresence mode="wait">
               {done ? (
                 <motion.div

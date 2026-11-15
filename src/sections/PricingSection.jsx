@@ -94,7 +94,7 @@ export default function PricingSection({ withComparison = true, showHead = true 
                     initial={{ opacity: 0, y: -6 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="absolute right-4 top-4 flex items-center gap-1 rounded-full border border-accent/40 bg-[var(--base-2)] px-2 py-0.5 font-mono text-[8.5px] uppercase tracking-wider text-accent-soft"
+                    className="absolute right-4 top-4 flex items-center gap-1 rounded-full border border-cyan/40 bg-black/60 px-2 py-0.5 font-mono text-[8.5px] uppercase tracking-wider text-cyan"
                   >
                     <Sparkles className="h-2.5 w-2.5" /> popular
                   </motion.span>

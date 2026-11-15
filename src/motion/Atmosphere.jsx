@@ -263,7 +263,7 @@ export function ScrollGlowRail() {
 /* ─────────────────────────────────────────────────────────────────────────
    IntroCurtain — one-shot page-load reveal. Skipped under reduced motion.
    ───────────────────────────────────────────────────────────────────────── */
-export function IntroCurtain({ label = 'LeadNex AI' }) {
+export function IntroCurtain({ label = 'LEADNEX.AI' }) {
   const reduced = useReducedMotion();
   const [open, setOpen] = useState(true);
 

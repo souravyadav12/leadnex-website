@@ -1,12 +1,15 @@
 import { useEffect } from 'react';
 import Lenis from 'lenis';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useReducedMotion } from './hooks/useReducedMotion';
 
+gsap.registerPlugin(ScrollTrigger);
+
 /**
- * SmoothScroll — Lenis-driven inertial scrolling.
+ * SmoothScroll — Lenis-driven inertial scrolling synchronized with GSAP ScrollTrigger.
  *
- * Lenis v1 scrolls the window natively, so framer-motion's useScroll,
- * IntersectionObserver, sticky positioning and anchor links all keep working.
+ * Ticked by GSAP ticker for 0 frame lag.
  * Disabled entirely under prefers-reduced-motion.
  */
 export default function SmoothScroll() {
@@ -21,18 +24,19 @@ export default function SmoothScroll() {
       smoothWheel: true,
       wheelMultiplier: 1,
       touchMultiplier: 1.5,
-      lerp: 0.09,
     });
 
-    let raf = 0;
-    const loop = (time) => {
-      lenis.raf(time);
-      raf = requestAnimationFrame(loop);
-    };
-    raf = requestAnimationFrame(loop);
-
-    // Expose for programmatic scrolls (nav anchors, "back to top").
     window.__lenis = lenis;
+
+    // Immediately update ScrollTrigger when Lenis scrolls
+    lenis.on('scroll', ScrollTrigger.update);
+
+    // Let GSAP's RAF drive Lenis for zero-lag lockstep frame synchronization
+    const updateTicker = (time) => {
+      lenis.raf(time * 1000);
+    };
+    gsap.ticker.add(updateTicker);
+    gsap.ticker.lagSmoothing(0);
 
     const onAnchorClick = (e) => {
       const anchor = e.target.closest?.('a[href*="#"]');
@@ -52,7 +56,7 @@ export default function SmoothScroll() {
 
     return () => {
       document.removeEventListener('click', onAnchorClick);
-      cancelAnimationFrame(raf);
+      gsap.ticker.remove(updateTicker);
       lenis.destroy();
       delete window.__lenis;
     };

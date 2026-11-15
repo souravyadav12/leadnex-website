@@ -103,7 +103,7 @@ export default function WorkflowSection() {
         {/* pinned, scroll-driven live panel — stays put while the steps pass */}
         <div className="relative">
           <div className="lg:sticky lg:top-24">
-            <div className="edge-light relative overflow-hidden rounded-2xl border border-line bg-[var(--base-2)] p-5 shadow-[0_40px_120px_-60px_rgba(0,0,0,0.9)]">
+            <div className="edge-light relative overflow-hidden rounded-2xl border border-white/10 bg-[rgba(4,8,20,0.65)] backdrop-blur-xl p-5 shadow-[0_40px_120px_-60px_rgba(0,0,0,0.9)]">
               {/* header */}
               <div className="flex items-center justify-between">
                 <span className="label-mono-xs text-dim">live conversation</span>

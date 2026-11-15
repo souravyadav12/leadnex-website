@@ -69,7 +69,7 @@ function Conversation({ messages, thinking, scrollRef }) {
               )}
             >
               <span className={cn('mb-0.5 block font-mono text-[9px] uppercase tracking-wider', m.role === 'ai' ? 'text-accent-soft' : 'text-dim')}>
-                {m.role === 'ai' ? 'LeadNex AI' : 'Customer'}
+                {m.role === 'ai' ? 'LEADNEX AI' : 'Customer'}
               </span>
               {m.text}
             </div>
@@ -215,7 +215,7 @@ export default function DemoSection() {
               ))}
             </div>
 
-            <div ref={stageRef} className="gborder overflow-hidden rounded-2xl border border-line bg-[var(--base-2)]/90 shadow-[0_30px_90px_-40px_rgba(0,0,0,0.9)]">
+            <div ref={stageRef} className="gborder overflow-hidden rounded-2xl border border-white/10 bg-[rgba(4,8,20,0.65)] backdrop-blur-xl shadow-[0_30px_90px_-40px_rgba(0,0,0,0.9)]">
               {/* control bar */}
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-3">
                 <div>

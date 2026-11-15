@@ -24,7 +24,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative overflow-hidden border-t border-line bg-[var(--base)]" role="contentinfo">
+    <footer className="relative overflow-hidden border-t border-line bg-[var(--base)]/80 backdrop-blur-md" role="contentinfo">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" aria-hidden="true" />
 
       {/* masthead */}

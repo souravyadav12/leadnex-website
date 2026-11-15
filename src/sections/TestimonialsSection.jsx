@@ -27,8 +27,8 @@ export default function TestimonialsSection() {
               className={cn(
                 'card-sheen group relative flex h-[300px] flex-col overflow-hidden rounded-xl border p-5 transition-all duration-500',
                 isActive
-                  ? 'border-accent/40 bg-[var(--base-2)] shadow-[0_40px_120px_-50px_rgba(var(--a1-rgb),0.7)]'
-                  : 'border-line bg-[var(--base-2)]/80',
+                  ? 'border-cyan/40 bg-[rgba(6,10,24,0.7)] backdrop-blur-xl shadow-[0_40px_120px_-50px_rgba(var(--a1-rgb),0.7)]'
+                  : 'border-white/10 bg-[rgba(4,8,20,0.55)] backdrop-blur-md',
               )}
             >
               <div
