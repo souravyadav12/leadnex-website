@@ -11,6 +11,7 @@ import Scene3DMount from './three/Scene3DMount';
 import Home from './pages/Home';
 import Features from './pages/Features';
 import Pricing from './pages/Pricing';
+import Contact from './pages/Contact';
 import NotFound from './pages/NotFound';
 
 /** Route changes always land at the top (or on the hash target). */
@@ -55,6 +56,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/features" element={<Features />} />
             <Route path="/pricing" element={<Pricing />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </motion.div>

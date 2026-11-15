@@ -16,7 +16,7 @@ export const nav = {
     { number: '01', label: 'Home', to: '/' },
     { number: '02', label: 'Features', to: '/features' },
     { number: '03', label: 'Pricing', to: '/pricing' },
-    { number: '04', label: 'Contact', to: '/#contact' },
+    { number: '04', label: 'Contact', to: '/contact' },
   ],
   cta: 'Book a Demo',
 };

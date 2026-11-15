@@ -65,12 +65,31 @@ export default function SmoothScroll() {
   return null;
 }
 
-/** Scroll to an element id, using Lenis when available. */
+/** Scroll to an element id, using Lenis when available, accounting for ScrollTrigger pin-spacers. */
 export function smoothScrollTo(id, offset = -76) {
   const el = typeof id === 'string' ? document.querySelector(id) : id;
   if (!el) return;
   if (window.__lenis) {
-    window.__lenis.scrollTo(el, { offset, duration: 1.3 });
+    try {
+      ScrollTrigger.refresh();
+      const pinSpacers = Array.from(document.querySelectorAll('.pin-spacer'));
+      const currentScroll = window.__lenis.scroll ?? window.scrollY ?? 0;
+      const elTop = el.getBoundingClientRect().top + currentScroll;
+
+      let extraPin = 0;
+      pinSpacers.forEach((ps) => {
+        const psTop = ps.getBoundingClientRect().top + currentScroll;
+        const psHeight = ps.offsetHeight;
+        if (psTop >= currentScroll && psTop < elTop) {
+          extraPin += Math.max(0, psHeight - window.innerHeight);
+        }
+      });
+
+      const targetPos = elTop + extraPin + offset;
+      window.__lenis.scrollTo(targetPos, { duration: 1.3 });
+    } catch {
+      window.__lenis.scrollTo(el, { offset, duration: 1.3 });
+    }
   } else {
     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
