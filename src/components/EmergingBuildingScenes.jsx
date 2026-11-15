@@ -3,44 +3,22 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
   Mic,
-  PhoneCall,
-  PhoneIncoming,
-  PhoneOutgoing,
-  Activity,
   Zap,
-  BarChart3,
-  GitBranch,
-  CheckCircle2,
-  Calendar,
-  Volume2,
-  ShieldCheck,
   ArrowRight,
-  Sparkles,
   ChevronDown,
-  Play,
-  Pause,
 } from 'lucide-react';
-import { ActionButton, Magnetic } from '../motion/kit';
+import { ActionButton } from '../motion/kit';
 import { smoothScrollTo } from '../motion/SmoothScroll';
 import { cn } from '../utils/cn';
 
 gsap.registerPlugin(ScrollTrigger);
 
-/* ── Interactive Speech Stream Simulator ─────────────────────────────────── */
+/* ── Ultra-Fast Pure-CSS Speech Stream Simulator (Zero React State / Zero CPU Overhead) ── */
 function VoiceStreamSimulator() {
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [bars, setBars] = useState(() => Array.from({ length: 28 }, () => Math.random() * 0.6 + 0.25));
-
-  useEffect(() => {
-    if (!isPlaying) return;
-    const interval = setInterval(() => {
-      setBars(Array.from({ length: 28 }, () => Math.random() * 0.75 + 0.2));
-    }, 110);
-    return () => clearInterval(interval);
-  }, [isPlaying]);
+  const heights = [35, 65, 45, 80, 55, 90, 40, 75, 95, 60, 85, 50, 70, 90, 45, 80, 60, 95, 75, 40, 85, 55, 70, 90, 50, 80, 65, 40];
 
   return (
-    <div className="rounded-2xl border border-cyan/40 bg-black/75 p-5 backdrop-blur-xl shadow-[0_15px_50px_rgba(0,240,255,0.18)]">
+    <div className="rounded-2xl border border-cyan/40 bg-[#040a18]/94 p-5 shadow-[0_15px_50px_rgba(0,240,255,0.18)]">
       <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
         <div className="flex items-center gap-2.5">
           <span className="relative flex h-2.5 w-2.5">
@@ -51,21 +29,22 @@ function VoiceStreamSimulator() {
             Active Audio Stream · Sarah
           </span>
         </div>
-        <button
-          onClick={() => setIsPlaying(!isPlaying)}
-          className="flex items-center gap-1.5 rounded-lg border border-cyan/30 bg-cyan/[0.1] px-2.5 py-1 text-[10px] font-mono font-semibold text-cyan hover:bg-cyan/[0.2] transition-colors"
-        >
-          {isPlaying ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
-          {isPlaying ? 'Pause' : 'Play'}
-        </button>
+        <span className="flex items-center gap-1.5 rounded-lg border border-cyan/30 bg-cyan/[0.1] px-2.5 py-1 text-[10px] font-mono font-semibold text-cyan">
+          ● Live Synthesis
+        </span>
       </div>
 
+      {/* GPU Composited Audio Waveform */}
       <div className="flex items-center justify-between gap-1 h-12 py-2 px-1">
-        {bars.map((h, i) => (
+        {heights.map((h, i) => (
           <div
             key={i}
-            className="w-1.5 rounded-full bg-gradient-to-t from-blue-600 via-cyan to-white transition-all duration-100"
-            style={{ height: `${isPlaying ? h * 100 : 12}%` }}
+            className="w-1.5 rounded-full bg-gradient-to-t from-blue-600 via-cyan to-white animate-pulse"
+            style={{
+              height: `${h}%`,
+              animationDelay: `${(i * 0.05) % 0.8}s`,
+              animationDuration: `${0.8 + ((i % 4) * 0.15)}s`,
+            }}
           />
         ))}
       </div>
@@ -96,78 +75,99 @@ function VoiceStreamSimulator() {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
-   EmergingBuildingScenes — Fast, Punchy 2-Panel 3D Emergence Sequence
-   
-   - Pin distance reduced from 4500px to just 1600px for swift natural scroll.
-   - Panel 1: AI Calling & Voice Agents (Live Stream & Personas).
-   - Panel 2: Speed-to-Lead, 24/7 Reception & Scaling CTA.
-   - Smooth unpin lands directly on Features -> Pricing -> Contact.
+   EmergingBuildingScenes — 60fps Native DOM Transforms (Zero React Diffing Lag)
    ───────────────────────────────────────────────────────────────────────── */
 export default function EmergingBuildingScenes() {
   const containerRef = useRef(null);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const promptRef = useRef(null);
+  const panel1Ref = useRef(null);
+  const panel2Ref = useRef(null);
   const [selectedVoice, setSelectedVoice] = useState('Sarah');
 
   useEffect(() => {
     if (!containerRef.current) return;
 
+    const computeStyle = (p, enterStart, settleStart, settleEnd, exitEnd) => {
+      if (p < enterStart || p > exitEnd) {
+        return { display: 'none', opacity: '0', pointerEvents: 'none', transform: 'none' };
+      }
+
+      let tz = 0;
+      let scale = 1;
+      let opacity = 1;
+
+      if (p >= enterStart && p < settleStart) {
+        const t = (p - enterStart) / (settleStart - enterStart);
+        tz = -600 + t * 600;
+        scale = 0.35 + t * 0.65;
+        opacity = Math.max(0, Math.min(1, t * 1.3));
+      } else if (p >= settleStart && p <= settleEnd) {
+        tz = 0;
+        scale = 1;
+        opacity = 1;
+      } else if (p > settleEnd && p <= exitEnd) {
+        const t = (p - settleEnd) / (exitEnd - settleEnd);
+        tz = t * 280;
+        scale = 1.0 + t * 0.18;
+        opacity = Math.max(0, 1 - t * 1.3);
+      }
+
+      return {
+        display: 'flex',
+        opacity: String(opacity),
+        pointerEvents: p >= settleStart && p <= settleEnd ? 'auto' : 'none',
+        transform: `perspective(1000px) translate3d(0px, 0px, ${tz}px) scale(${scale})`,
+      };
+    };
+
+    const updatePanels = (p) => {
+      // 1. Initial Prompt
+      if (promptRef.current) {
+        if (p < 0.18) {
+          promptRef.current.style.display = 'flex';
+          promptRef.current.style.opacity = String(Math.max(0, 1 - p * 6));
+        } else {
+          promptRef.current.style.display = 'none';
+        }
+      }
+
+      // 2. Panel 1: AI Calling & Voice Agents (p: 0.15 – 0.52)
+      if (panel1Ref.current) {
+        const s = computeStyle(p, 0.15, 0.25, 0.42, 0.52);
+        panel1Ref.current.style.display = s.display;
+        panel1Ref.current.style.opacity = s.opacity;
+        panel1Ref.current.style.pointerEvents = s.pointerEvents;
+        panel1Ref.current.style.transform = s.transform;
+      }
+
+      // 3. Panel 2: Speed-to-Lead & Scale (p: 0.52 – 0.88)
+      if (panel2Ref.current) {
+        const s = computeStyle(p, 0.52, 0.62, 0.78, 0.88);
+        panel2Ref.current.style.display = s.display;
+        panel2Ref.current.style.opacity = s.opacity;
+        panel2Ref.current.style.pointerEvents = s.pointerEvents;
+        panel2Ref.current.style.transform = s.transform;
+      }
+    };
+
     const st = ScrollTrigger.create({
       trigger: containerRef.current,
       start: 'top top',
-      end: '+=1600',
+      end: '+=1400',
       pin: true,
       scrub: true,
       invalidateOnRefresh: true,
       onUpdate: (self) => {
-        setScrollProgress(self.progress);
+        updatePanels(self.progress);
       },
     });
+
+    updatePanels(st.progress || 0);
 
     return () => {
       st.kill();
     };
   }, []);
-
-  const getPanelStyle = (enterStart, settleStart, settleEnd, exitEnd) => {
-    const p = scrollProgress;
-
-    if (p < enterStart || p > exitEnd) {
-      return {
-        display: 'none',
-        opacity: 0,
-        pointerEvents: 'none',
-      };
-    }
-
-    let tz = 0;
-    let scale = 1;
-    let opacity = 1;
-
-    if (p >= enterStart && p < settleStart) {
-      const t = (p - enterStart) / (settleStart - enterStart);
-      tz = -750 + t * 750;
-      scale = 0.25 + t * 0.75;
-      opacity = Math.max(0, Math.min(1, t * 1.3));
-    } else if (p >= settleStart && p <= settleEnd) {
-      tz = 0;
-      scale = 1;
-      opacity = 1;
-    } else if (p > settleEnd && p <= exitEnd) {
-      const t = (p - settleEnd) / (exitEnd - settleEnd);
-      tz = t * 350;
-      scale = 1.0 + t * 0.22;
-      opacity = Math.max(0, 1 - t * 1.3);
-    }
-
-    return {
-      display: 'flex',
-      opacity,
-      transform: `perspective(1000px) translate3d(0px, 0px, ${tz}px) scale(${scale})`,
-      pointerEvents: p >= settleStart && p <= settleEnd ? 'auto' : 'none',
-      transition: 'none',
-      willChange: 'transform, opacity',
-    };
-  };
 
   return (
     <div ref={containerRef} className="relative z-10 w-full h-screen overflow-hidden">
@@ -177,36 +177,32 @@ export default function EmergingBuildingScenes() {
         style={{ perspective: '1100px', transformStyle: 'preserve-3d' }}
       >
         {/* ── INITIAL PROMPT (p: 0.00 – 0.15) ── */}
-        {scrollProgress < 0.18 && (
-          <div
-            style={{
-              opacity: Math.max(0, 1 - scrollProgress * 7),
-              transition: 'opacity 0.2s',
-            }}
-            className="absolute inset-x-0 bottom-12 sm:bottom-16 flex flex-col items-center justify-center text-center pointer-events-auto"
-          >
-            <div className="glass-hero rounded-full px-7 py-3 border border-cyan/50 bg-black/70 shadow-[0_0_35px_rgba(0,240,255,0.35)]">
-              <div className="flex items-center gap-3">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="absolute inset-0 animate-ping rounded-full bg-cyan opacity-75" />
-                  <span className="relative h-2.5 w-2.5 rounded-full bg-cyan" />
-                </span>
-                <span className="font-mono text-[11.5px] font-bold uppercase tracking-[0.22em] text-cyan">
-                  LEADNEX.AI HEADQUARTERS · SCROLL TO EXPLORE
-                </span>
-                <ChevronDown className="h-4 w-4 text-cyan animate-bounce" />
-              </div>
+        <div
+          ref={promptRef}
+          className="absolute inset-x-0 bottom-12 sm:bottom-16 flex flex-col items-center justify-center text-center pointer-events-auto transition-opacity"
+        >
+          <div className="glass-hero rounded-full px-7 py-3 border border-cyan/50 bg-[#040a18]/90 shadow-[0_0_35px_rgba(0,240,255,0.35)]">
+            <div className="flex items-center gap-3">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="absolute inset-0 animate-ping rounded-full bg-cyan opacity-75" />
+                <span className="relative h-2.5 w-2.5 rounded-full bg-cyan" />
+              </span>
+              <span className="font-mono text-[11.5px] font-bold uppercase tracking-[0.22em] text-cyan">
+                LEADNEX.AI HEADQUARTERS · SCROLL TO EXPLORE
+              </span>
+              <ChevronDown className="h-4 w-4 text-cyan animate-bounce" />
             </div>
-            <p className="mt-3 font-mono text-[10.5px] text-slate-300 uppercase tracking-widest drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
-              Twin Corporate Towers · Content Emerges From Central Opening
-            </p>
           </div>
-        )}
+          <p className="mt-3 font-mono text-[10.5px] text-slate-300 uppercase tracking-widest drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
+            Twin Corporate Towers · Content Emerges From Central Opening
+          </p>
+        </div>
 
         {/* ── PANEL 1: AI CALLING & VOICE AGENTS (p: 0.15 – 0.52) ── */}
         <div
-          style={getPanelStyle(0.15, 0.25, 0.42, 0.52)}
-          className="w-full max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border border-cyan/40 bg-black/80 p-6 sm:p-10 backdrop-blur-2xl shadow-[0_25px_90px_rgba(0,240,255,0.25)]"
+          ref={panel1Ref}
+          style={{ display: 'none', willChange: 'transform, opacity' }}
+          className="w-full max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border border-cyan/40 bg-[#030914]/94 p-6 sm:p-10 shadow-[0_25px_90px_rgba(0,240,255,0.22)]"
         >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center w-full">
             <div className="lg:col-span-7">
@@ -278,8 +274,9 @@ export default function EmergingBuildingScenes() {
 
         {/* ── PANEL 2: SPEED-TO-LEAD & AUTONOMOUS SCALE (p: 0.52 – 0.88) ── */}
         <div
-          style={getPanelStyle(0.52, 0.62, 0.78, 0.88)}
-          className="w-full max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border border-blue-500/40 bg-black/80 p-6 sm:p-10 backdrop-blur-2xl shadow-[0_25px_90px_rgba(2,132,199,0.25)]"
+          ref={panel2Ref}
+          style={{ display: 'none', willChange: 'transform, opacity' }}
+          className="w-full max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border border-blue-500/40 bg-[#030914]/94 p-6 sm:p-10 shadow-[0_25px_90px_rgba(2,132,199,0.22)]"
         >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center w-full">
             <div className="lg:col-span-7">
@@ -335,7 +332,7 @@ export default function EmergingBuildingScenes() {
               </div>
             </div>
 
-            <div className="lg:col-span-5 rounded-2xl border border-cyan/30 bg-black/70 p-5 font-mono text-[11px] space-y-3">
+            <div className="lg:col-span-5 rounded-2xl border border-cyan/30 bg-[#040a18]/90 p-5 font-mono text-[11px] space-y-3">
               <div className="text-cyan font-bold pb-2 border-b border-white/[0.08] flex items-center justify-between">
                 <span>ENTERPRISE PIPELINE ENGINE</span>
                 <span className="text-emerald-400 font-bold">● ACTIVE</span>

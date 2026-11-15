@@ -25,41 +25,35 @@ const ELECTRIC_BLUE = new THREE.Color('#0284c7');
 const DEEP_NAVY = new THREE.Color('#051226');
 const WHITE = new THREE.Color('#ffffff');
 
-/* ── Procedural Horizontal Floor Slabs for Towers ───────────────────────── */
-function TowerFloorSlabs({ count = 24, width = 8.5, depth = 9.5, startY = 4, stepY = 1.85, isLeft = true }) {
-  const { slabGeometries, colors } = useMemo(() => {
-    const geos = [];
-    const cols = [];
+/* ── Procedural Horizontal Floor Slabs for Towers (Batched into 1 Draw Call) ── */
+function TowerFloorSlabs({ count = 20, width = 8.5, depth = 9.5, startY = 5, stepY = 1.9, isLeft = true }) {
+  const mergedGeo = useMemo(() => {
+    const pts = [];
     for (let i = 0; i < count; i++) {
       const y = startY + i * stepY;
       const w = width * (1 - (i / count) * 0.12);
       const d = depth * (1 - (i / count) * 0.12);
+      const hw = w / 2;
+      const hd = d / 2;
 
-      const pts = [
-        new THREE.Vector3(-w / 2, y, -d / 2),
-        new THREE.Vector3(w / 2, y, -d / 2),
-        new THREE.Vector3(w / 2, y, d / 2),
-        new THREE.Vector3(-w / 2, y, d / 2),
-      ];
-      geos.push(new THREE.BufferGeometry().setFromPoints(pts));
-      cols.push(i % 3 === 0 ? CYAN : ELECTRIC_BLUE);
+      // 4 line segments per slab
+      pts.push(new THREE.Vector3(-hw, y, -hd), new THREE.Vector3(hw, y, -hd));
+      pts.push(new THREE.Vector3(hw, y, -hd), new THREE.Vector3(hw, y, hd));
+      pts.push(new THREE.Vector3(hw, y, hd), new THREE.Vector3(-hw, y, hd));
+      pts.push(new THREE.Vector3(-hw, y, hd), new THREE.Vector3(-hw, y, -hd));
     }
-    return { slabGeometries: geos, colors: cols };
+    return new THREE.BufferGeometry().setFromPoints(pts);
   }, [count, width, depth, startY, stepY]);
 
   return (
-    <group>
-      {slabGeometries.map((geo, idx) => (
-        <lineLoop key={idx} geometry={geo}>
-          <lineBasicMaterial
-            color={colors[idx]}
-            transparent
-            opacity={idx % 3 === 0 ? 0.75 : 0.3}
-            blending={THREE.AdditiveBlending}
-          />
-        </lineLoop>
-      ))}
-    </group>
+    <lineSegments geometry={mergedGeo}>
+      <lineBasicMaterial
+        color={isLeft ? CYAN : ELECTRIC_BLUE}
+        transparent
+        opacity={0.5}
+        blending={THREE.AdditiveBlending}
+      />
+    </lineSegments>
   );
 }
 
@@ -344,16 +338,10 @@ function AtmosphericParticles({ count = 280 }) {
     return [pos];
   }, [count]);
 
-  useFrame((state, delta) => {
+  useFrame((state) => {
     if (!meshRef.current) return;
-    const posArr = meshRef.current.geometry.attributes.position.array;
-    for (let i = 0; i < count; i++) {
-      posArr[i * 3 + 1] += delta * 1.5;
-      if (posArr[i * 3 + 1] > 65) {
-        posArr[i * 3 + 1] = 0;
-      }
-    }
-    meshRef.current.geometry.attributes.position.needsUpdate = true;
+    meshRef.current.position.y = (state.clock.elapsedTime * 0.6) % 12;
+    meshRef.current.rotation.y = state.clock.elapsedTime * 0.015;
   });
 
   const geo = useMemo(() => {
@@ -418,6 +406,8 @@ export default function LeadnexBuildingScene({ small = false, reduced = false })
           antialias: true,
           alpha: true,
           powerPreference: 'high-performance',
+          stencil: false,
+          depth: true,
           toneMapping: THREE.ACESFilmicToneMapping,
           toneMappingExposure: 1.15,
         }}
@@ -427,7 +417,7 @@ export default function LeadnexBuildingScene({ small = false, reduced = false })
           far: 300,
           position: [0, 14.5, small ? 32.0 : 27.0],
         }}
-        dpr={typeof window !== 'undefined' ? Math.min(window.devicePixelRatio || 1, 1.75) : 1}
+        dpr={[1, 1.25]}
       >
         {/* Deep Cinematic Atmosphere */}
         <color attach="background" args={['#02050e']} />
