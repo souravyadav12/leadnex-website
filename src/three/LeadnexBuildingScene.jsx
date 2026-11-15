@@ -129,9 +129,9 @@ function LeftSkyscraper() {
       </mesh>
 
       {/* 4. PROMINENT FRONT-FACING VERTICAL DIGITAL LED BILLBOARD */}
-      {/* Positioned safely in front of glass facade (z = 4.95) */}
+      {/* Positioned safely in front of glass facade (z = 5.05) */}
       <LeadnexBillboard
-        position={[0, 15.5, 4.95]}
+        position={[0, 15.5, 5.05]}
         rotation={[0, 0, 0]}
         scale={[0.88, 0.95, 0.88]}
       />
@@ -206,7 +206,7 @@ function RightSkyscraper() {
 
       {/* 4. PROMINENT FRONT-FACING VERTICAL DIGITAL LED MATRIX SCREEN ON TOWER 2 */}
       <LeadnexRightScreen
-        position={[0, 15.5, 4.95]}
+        position={[0, 15.5, 5.05]}
         rotation={[0, 0, 0]}
         scale={[0.88, 0.95, 0.88]}
       />

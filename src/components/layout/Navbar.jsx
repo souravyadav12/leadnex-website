@@ -6,7 +6,6 @@ import { nav, site } from '../../data/site';
 import { ActionButton, Magnetic, EASE, SPRING } from '../../motion/kit';
 import { smoothScrollTo } from '../../motion/SmoothScroll';
 import { cn } from '../../utils/cn';
-import ThemePalette from './ThemePalette';
 
 function Logo({ onClick }) {
   return (
@@ -73,43 +72,49 @@ export default function Navbar() {
           <Logo onClick={() => setMobile(false)} />
 
           <nav className="hidden items-center gap-1 lg:flex" aria-label="Main navigation">
-            {nav.links.map((link) => (
-              <NavLink key={link.to} to={link.to} end={link.to === '/'} className="relative">
-                {({ isActive }) => (
-                  <motion.span
-                    whileHover={{ y: -1 }}
-                    className={cn(
-                      'relative flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[13px] transition-colors',
-                      isActive ? 'text-white' : 'text-muted hover:text-white',
-                    )}
-                  >
-                    {isActive && (
+            {nav.links.map((link) => {
+              const isHash = link.to.startsWith('/#');
+              return (
+                <NavLink
+                  key={link.to}
+                  to={link.to}
+                  end={link.to === '/'}
+                  onClick={(e) => {
+                    if (isHash && pathname === '/') {
+                      e.preventDefault();
+                      smoothScrollTo(link.to.replace('/', ''));
+                    }
+                  }}
+                  className="relative"
+                >
+                  {({ isActive }) => {
+                    const active = isHash ? false : isActive;
+                    return (
                       <motion.span
-                        layoutId="nav-pill"
-                        transition={{ type: 'spring', stiffness: 420, damping: 34 }}
-                        className="absolute inset-0 rounded-full border border-line bg-white/[0.06]"
-                      />
-                    )}
-                    <span className="relative font-mono text-[9px] text-accent-soft/70">{link.number}</span>
-                    <span className="relative">{link.label}</span>
-                  </motion.span>
-                )}
-              </NavLink>
-            ))}
+                        whileHover={{ y: -1 }}
+                        className={cn(
+                          'relative flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[13px] transition-colors',
+                          active ? 'text-white' : 'text-muted hover:text-white',
+                        )}
+                      >
+                        {active && (
+                          <motion.span
+                            layoutId="nav-pill"
+                            transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                            className="absolute inset-0 rounded-full border border-line bg-white/[0.06]"
+                          />
+                        )}
+                        <span className="relative font-mono text-[9px] text-accent-soft/70">{link.number}</span>
+                        <span className="relative">{link.label}</span>
+                      </motion.span>
+                    );
+                  }}
+                </NavLink>
+              );
+            })}
           </nav>
 
-          <div className="flex items-center gap-2">
-            <ThemePalette className="mr-1 hidden md:block" />
-
-            <motion.button
-              type="button"
-              whileHover={{ y: -1 }}
-              whileTap={{ scale: 0.97 }}
-              className="hidden rounded-full px-3.5 py-2 text-[13px] text-muted transition-colors hover:text-white sm:block"
-            >
-              {nav.signIn}
-            </motion.button>
-
+          <div className="flex items-center gap-3">
             <Magnetic strength={0.14} className="hidden sm:block">
               <ActionButton
                 onClick={() => smoothScrollTo('#contact')}
@@ -160,21 +165,30 @@ export default function Navbar() {
               variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06, delayChildren: 0.08 } } }}
               className="u-shell py-8"
             >
-              {nav.links.map((link) => (
-                <motion.div
-                  key={link.to}
-                  variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } } }}
-                >
-                  <Link
-                    to={link.to}
-                    onClick={() => setMobile(false)}
-                    className="flex items-baseline justify-between border-b border-line py-3.5 text-xl font-medium tracking-tight text-white"
+              {nav.links.map((link) => {
+                const isHash = link.to.startsWith('/#');
+                return (
+                  <motion.div
+                    key={link.to}
+                    variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } } }}
                   >
-                    {link.label}
-                    <span className="font-mono text-[10px] text-dim">{link.number}</span>
-                  </Link>
-                </motion.div>
-              ))}
+                    <Link
+                      to={link.to}
+                      onClick={(e) => {
+                        setMobile(false);
+                        if (isHash && pathname === '/') {
+                          e.preventDefault();
+                          smoothScrollTo(link.to.replace('/', ''));
+                        }
+                      }}
+                      className="flex items-baseline justify-between border-b border-line py-3.5 text-xl font-medium tracking-tight text-white"
+                    >
+                      {link.label}
+                      <span className="font-mono text-[10px] text-dim">{link.number}</span>
+                    </Link>
+                  </motion.div>
+                );
+              })}
 
               <motion.div
                 variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } } }}
@@ -191,13 +205,6 @@ export default function Navbar() {
                 >
                   {nav.cta}
                 </ActionButton>
-                <ActionButton variant="outline" size="md" className="w-full">
-                  {nav.signIn}
-                </ActionButton>
-                <div className="mt-2 flex items-center justify-between gap-3 rounded-xl border border-line px-3.5 py-3">
-                  <span className="label-mono-xs text-dim">colour palette</span>
-                  <ThemePalette />
-                </div>
               </motion.div>
             </motion.div>
           </motion.div>

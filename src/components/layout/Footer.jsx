@@ -54,18 +54,18 @@ export default function Footer() {
         <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1fr] lg:gap-8">
           {/* brand */}
           <Reveal>
-            <Link to="/" className="flex items-center gap-2.5" aria-label="LeadNex AI Home">
+            <Link to="/" className="flex items-center gap-2.5" aria-label="LEADNEX.AI Home">
               <motion.span
                 whileHover={{ rotate: 16 }}
                 className="relative flex h-7 w-7 items-center justify-center"
               >
-                <span className="absolute inset-0 rounded-[9px] bg-primary/90" />
-                <span className="absolute inset-[3px] rounded-[6px] border border-white/40" />
-                <span className="relative h-[5px] w-[5px] rounded-full bg-white" />
+                <span className="absolute inset-0 rounded-[9px] bg-gradient-to-tr from-cyan via-blue-600 to-indigo-600 shadow-[0_0_15px_rgba(0,240,255,0.4)]" />
+                <span className="absolute inset-[3px] rounded-[6px] border border-white/50" />
+                <span className="relative h-[5px] w-[5px] rounded-full bg-white shadow-[0_0_8px_#ffffff]" />
               </motion.span>
-              <span className="flex items-baseline gap-1">
-                <span className="text-[15px] font-semibold tracking-tight text-white">{site.name}</span>
-                <span className="label-mono-xs text-accent-soft">ai</span>
+              <span className="flex items-baseline gap-1.5">
+                <span className="text-[15px] font-extrabold tracking-tight text-white">{site.name}</span>
+                <span className="label-mono-xs text-cyan font-mono tracking-widest text-[9px] uppercase">VOICE</span>
               </span>
             </Link>
 

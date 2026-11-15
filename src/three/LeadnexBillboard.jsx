@@ -249,13 +249,18 @@ export default function LeadnexBillboard({ position = [0, 0, 0], rotation = [0, 
     }
   };
 
+  const lastDrawRef = useRef(0);
+
   useEffect(() => {
     drawBillboard(0);
   }, []);
 
-  useFrame((state, delta) => {
-    animTimeRef.current += delta;
-    drawBillboard(animTimeRef.current);
+  useFrame((state) => {
+    const now = state.clock.elapsedTime;
+    if (now - lastDrawRef.current > 0.04) {
+      lastDrawRef.current = now;
+      drawBillboard(now);
+    }
   });
 
   return (
@@ -272,14 +277,15 @@ export default function LeadnexBillboard({ position = [0, 0, 0], rotation = [0, 
         <lineBasicMaterial color="#00f0ff" linewidth={3} transparent opacity={1.0} />
       </lineSegments>
 
-      {/* Active High-Res LED Screen (Safe z = 0.18, renderOrder = 10, OPAQUE so never occluded) */}
-      <mesh ref={meshRef} position={[0, 0, 0.18]} renderOrder={10}>
+      {/* Active High-Res LED Screen (Safe z = 0.22, renderOrder = 20, OPAQUE so never occluded) */}
+      <mesh ref={meshRef} position={[0, 0, 0.22]} renderOrder={20}>
         <planeGeometry args={[7.2, 14.4]} />
         <meshBasicMaterial
           map={texture}
           toneMapped={false}
           side={THREE.DoubleSide}
-          transparent={false}
+          depthTest={true}
+          depthWrite={true}
         />
       </mesh>
 
