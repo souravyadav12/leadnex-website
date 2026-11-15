@@ -5,10 +5,10 @@ import * as THREE from 'three';
 /**
  * LeadnexBillboard — Left Skyscraper LED Billboard
  *
- * Prominently displays:
- *   LEADNEX.AI
- *   AI CALLING. SMARTER CONVERSATIONS.
- *   Live voice engine telemetry and active audio spectrum bars.
+ * Guaranteed vibrant front-facing LED screen:
+ * - Solid opaque mesh (transparent={false}, renderOrder={10}) to prevent depth-sorting occlusion.
+ * - Offset in front of building facade (z = 0.2) to prevent z-fighting.
+ * - Bold illuminated typography: "LEADNEX.AI" + "AI CALLING. SMARTER CONVERSATIONS."
  */
 export default function LeadnexBillboard({ position = [0, 0, 0], rotation = [0, 0, 0], scale = [1, 1, 1] }) {
   const meshRef = useRef();
@@ -40,171 +40,170 @@ export default function LeadnexBillboard({ position = [0, 0, 0], rotation = [0, 
     const w = 1024;
     const h = 2048;
 
-    // 1. Deep Midnight Blue LED Panel Background
-    ctx.fillStyle = '#061329';
+    // 1. High-Contrast Deep Navy Blue Background (Bright enough to be clearly seen)
+    ctx.fillStyle = '#071630';
     ctx.fillRect(0, 0, w, h);
 
     // Glowing Cyber Grid Pattern
-    ctx.strokeStyle = 'rgba(0, 240, 255, 0.08)';
-    ctx.lineWidth = 2;
-    for (let x = 0; x < w; x += 32) {
+    ctx.strokeStyle = 'rgba(0, 240, 255, 0.15)';
+    ctx.lineWidth = 3;
+    for (let x = 0; x < w; x += 48) {
       ctx.beginPath();
       ctx.moveTo(x, 0);
       ctx.lineTo(x, h);
       ctx.stroke();
     }
-    for (let y = 0; y < h; y += 32) {
+    for (let y = 0; y < h; y += 48) {
       ctx.beginPath();
       ctx.moveTo(0, y);
       ctx.lineTo(w, y);
       ctx.stroke();
     }
 
-    // 2. Neon Cyan Outer Framing & Corner Accents
+    // 2. Thick Neon Cyan Outer Border
     ctx.strokeStyle = '#00f0ff';
-    ctx.lineWidth = 16;
-    ctx.shadowColor = '#00f0ff';
-    ctx.shadowBlur = 35;
-    ctx.strokeRect(32, 32, w - 64, h - 64);
-
-    // High-tech Corner Brackets
-    ctx.strokeStyle = '#ffffff';
     ctx.lineWidth = 20;
-    const corner = 90;
+    ctx.shadowColor = '#00f0ff';
+    ctx.shadowBlur = 40;
+    ctx.strokeRect(30, 30, w - 60, h - 60);
+
+    // White Corner Brackets
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 24;
+    const corner = 100;
     // Top-Left
     ctx.beginPath();
-    ctx.moveTo(32, 32 + corner);
-    ctx.lineTo(32, 32);
-    ctx.lineTo(32 + corner, 32);
+    ctx.moveTo(30, 30 + corner);
+    ctx.lineTo(30, 30);
+    ctx.lineTo(30 + corner, 30);
     ctx.stroke();
     // Top-Right
     ctx.beginPath();
-    ctx.moveTo(w - 32 - corner, 32);
-    ctx.lineTo(w - 32, 32);
-    ctx.lineTo(w - 32, 32 + corner);
+    ctx.moveTo(w - 30 - corner, 30);
+    ctx.lineTo(w - 30, 30);
+    ctx.lineTo(w - 30, 30 + corner);
     ctx.stroke();
     // Bottom-Left
     ctx.beginPath();
-    ctx.moveTo(32, h - 32 - corner);
-    ctx.lineTo(32, h - 32);
-    ctx.lineTo(32 + corner, h - 32);
+    ctx.moveTo(30, h - 30 - corner);
+    ctx.lineTo(30, h - 30);
+    ctx.lineTo(30 + corner, h - 30);
     ctx.stroke();
     // Bottom-Right
     ctx.beginPath();
-    ctx.moveTo(w - 32 - corner, h - 32);
-    ctx.lineTo(w - 32, h - 32);
-    ctx.lineTo(w - 32, h - 32 - corner);
+    ctx.moveTo(w - 30 - corner, h - 30);
+    ctx.lineTo(w - 30, h - 30);
+    ctx.lineTo(w - 30, h - 30 - corner);
     ctx.stroke();
 
     ctx.shadowBlur = 0;
 
-    // 3. Top Status Ribbon
-    ctx.fillStyle = 'rgba(0, 240, 255, 0.2)';
-    ctx.fillRect(60, 80, w - 120, 110);
+    // 3. Top Status Header Ribbon
+    ctx.fillStyle = 'rgba(0, 240, 255, 0.25)';
+    ctx.fillRect(60, 80, w - 120, 120);
     ctx.strokeStyle = '#00f0ff';
-    ctx.lineWidth = 4;
-    ctx.strokeRect(60, 80, w - 120, 110);
+    ctx.lineWidth = 5;
+    ctx.strokeRect(60, 80, w - 120, 120);
 
-    ctx.font = 'bold 38px "JetBrains Mono", monospace';
+    ctx.font = 'bold 42px "JetBrains Mono", monospace';
     ctx.fillStyle = '#00f0ff';
     ctx.textAlign = 'left';
-    ctx.fillText('LEADNEX // TOWER 01', 95, 150);
+    ctx.fillText('LEADNEX // TOWER 01', 95, 155);
 
-    // Live Pulse Dot
-    const pulseAlpha = Math.sin(t * 4) * 0.3 + 0.7;
-    ctx.fillStyle = `rgba(16, 185, 129, ${pulseAlpha})`;
+    // Green Active Beacon
+    ctx.fillStyle = '#10b981';
     ctx.beginPath();
-    ctx.arc(w - 240, 135, 16, 0, Math.PI * 2);
+    ctx.arc(w - 240, 140, 18, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.font = 'bold 30px "JetBrains Mono", monospace';
+    ctx.font = 'bold 32px "JetBrains Mono", monospace';
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'right';
-    ctx.fillText('LIVE ENGINE', w - 90, 145);
+    ctx.fillText('LIVE ENGINE', w - 90, 150);
 
     // 4. MAIN HEADLINE BRANDING: LEADNEX.AI
-    const glowIntensity = Math.sin(t * 3) * 15 + 40;
+    const glow = Math.sin(t * 3.5) * 15 + 45;
     ctx.shadowColor = '#00f0ff';
-    ctx.shadowBlur = glowIntensity;
+    ctx.shadowBlur = glow;
 
-    ctx.font = '900 136px "Inter", sans-serif';
+    ctx.font = '900 148px "Inter", sans-serif';
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
-    ctx.fillText('LEADNEX', w / 2, 450);
+    ctx.fillText('LEADNEX', w / 2, 440);
 
     ctx.fillStyle = '#00f0ff';
     ctx.fillText('.AI', w / 2, 580);
 
     // Tagline: AI CALLING. SMARTER CONVERSATIONS.
     ctx.shadowColor = '#38bdf8';
-    ctx.shadowBlur = 25;
+    ctx.shadowBlur = 30;
+    ctx.font = 'bold 48px "JetBrains Mono", monospace';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText('AI CALLING.', w / 2, 690);
+
     ctx.font = 'bold 44px "JetBrains Mono", monospace';
-    ctx.fillStyle = '#e0f2fe';
-    ctx.fillText('AI CALLING.', w / 2, 700);
-
-    ctx.font = 'bold 42px "JetBrains Mono", monospace';
     ctx.fillStyle = '#00f0ff';
-    ctx.fillText('SMARTER CONVERSATIONS.', w / 2, 765);
+    ctx.fillText('SMARTER CONVERSATIONS.', w / 2, 755);
 
-    // Glowing Divider Line
-    ctx.shadowBlur = 20;
+    // Glowing Divider
+    ctx.shadowBlur = 25;
     ctx.strokeStyle = '#00f0ff';
-    ctx.lineWidth = 6;
+    ctx.lineWidth = 8;
     ctx.beginPath();
-    ctx.moveTo(90, 840);
-    ctx.lineTo(w - 90, 840);
+    ctx.moveTo(80, 830);
+    ctx.lineTo(w - 80, 830);
     ctx.stroke();
 
     ctx.shadowBlur = 0;
 
-    // 5. Real-Time Telemetry Stats Box
-    const boxY = 910;
-    ctx.fillStyle = 'rgba(4, 16, 40, 0.85)';
-    ctx.fillRect(80, boxY, w - 160, 480);
-    ctx.strokeStyle = 'rgba(0, 240, 255, 0.45)';
-    ctx.lineWidth = 3;
-    ctx.strokeRect(80, boxY, w - 160, 480);
+    // 5. Telemetry Stats Panel
+    const boxY = 890;
+    ctx.fillStyle = 'rgba(2, 10, 28, 0.9)';
+    ctx.fillRect(80, boxY, w - 160, 500);
+    ctx.strokeStyle = '#00f0ff';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(80, boxY, w - 160, 500);
 
     const metrics = [
       { label: 'CONCURRENT LIVE CALLS', val: (12480 + Math.floor(Math.sin(t * 2) * 150)).toLocaleString(), unit: 'ACTIVE' },
       { label: 'VOICE SYNTHESIS LATENCY', val: '276', unit: 'MS' },
-      { label: 'CONVERSATION MOS SCORE', val: '4.92', unit: '/ 5.0' },
+      { label: 'SPEECH MOS QUALITY', val: '4.92', unit: '/ 5.0' },
       { label: 'ENTERPRISE SYSTEM SLA', val: '99.99', unit: '% ONLINE' },
     ];
 
     metrics.forEach((m, i) => {
-      const my = boxY + 75 + i * 105;
-      ctx.font = '600 26px "JetBrains Mono", monospace';
+      const my = boxY + 80 + i * 110;
+      ctx.font = 'bold 28px "JetBrains Mono", monospace';
       ctx.fillStyle = '#94a3b8';
       ctx.textAlign = 'left';
       ctx.fillText(m.label, 120, my);
 
-      ctx.font = 'bold 46px "JetBrains Mono", monospace';
+      ctx.font = 'bold 48px "JetBrains Mono", monospace';
       ctx.fillStyle = '#00f0ff';
       ctx.textAlign = 'right';
       ctx.fillText(m.val, w - 210, my + 8);
 
-      ctx.font = '600 24px "JetBrains Mono", monospace';
+      ctx.font = 'bold 24px "JetBrains Mono", monospace';
       ctx.fillStyle = '#ffffff';
       ctx.textAlign = 'right';
       ctx.fillText(m.unit, w - 120, my + 8);
 
       if (i < 3) {
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
         ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(120, my + 38);
-        ctx.lineTo(w - 120, my + 38);
+        ctx.moveTo(120, my + 42);
+        ctx.lineTo(w - 120, my + 42);
         ctx.stroke();
       }
     });
 
-    // 6. Dynamic Audio Frequency Spectrum Analyzer
+    // 6. Dynamic Audio Spectrum Analyzer
     const waveY = 1450;
-    ctx.font = 'bold 30px "JetBrains Mono", monospace';
+    ctx.font = 'bold 32px "JetBrains Mono", monospace';
     ctx.fillStyle = '#38bdf8';
     ctx.textAlign = 'center';
-    ctx.fillText('NEURAL SPEECH STREAM · LIVE', w / 2, waveY);
+    ctx.fillText('LIVE NEURAL VOICE SPECTRUM', w / 2, waveY);
 
     const barCount = 38;
     const barWidth = 16;
@@ -214,9 +213,9 @@ export default function LeadnexBillboard({ position = [0, 0, 0], rotation = [0, 
 
     for (let i = 0; i < barCount; i++) {
       const freq = Math.sin(t * 5 + i * 0.35) * Math.cos(t * 3 - i * 0.22);
-      const barH = Math.max(14, Math.abs(freq) * 180 + 20);
+      const barH = Math.max(16, Math.abs(freq) * 190 + 25);
       const bx = startX + i * (barWidth + barSpacing);
-      const by = waveY + 230 - barH;
+      const by = waveY + 240 - barH;
 
       const grad = ctx.createLinearGradient(0, by, 0, by + barH);
       grad.addColorStop(0, '#ffffff');
@@ -225,23 +224,23 @@ export default function LeadnexBillboard({ position = [0, 0, 0], rotation = [0, 
 
       ctx.fillStyle = grad;
       ctx.shadowColor = '#00f0ff';
-      ctx.shadowBlur = 12;
+      ctx.shadowBlur = 15;
       ctx.fillRect(bx, by, barWidth, barH);
     }
 
     // 7. Scanning Laser Line
-    const scanlineY = ((t * 240) % (h - 100)) + 50;
-    const scanGrad = ctx.createLinearGradient(0, scanlineY - 45, 0, scanlineY + 45);
+    const scanlineY = ((t * 260) % (h - 100)) + 50;
+    const scanGrad = ctx.createLinearGradient(0, scanlineY - 50, 0, scanlineY + 50);
     scanGrad.addColorStop(0, 'rgba(0, 240, 255, 0)');
-    scanGrad.addColorStop(0.5, 'rgba(0, 240, 255, 0.35)');
+    scanGrad.addColorStop(0.5, 'rgba(0, 240, 255, 0.4)');
     scanGrad.addColorStop(1, 'rgba(0, 240, 255, 0)');
     ctx.fillStyle = scanGrad;
-    ctx.fillRect(40, scanlineY - 45, w - 80, 90);
+    ctx.fillRect(40, scanlineY - 50, w - 80, 100);
 
     // 8. Footer Telemetry Tag
     ctx.shadowBlur = 0;
-    ctx.font = 'bold 28px "JetBrains Mono", monospace';
-    ctx.fillStyle = '#64748b';
+    ctx.font = 'bold 30px "JetBrains Mono", monospace';
+    ctx.fillStyle = '#94a3b8';
     ctx.textAlign = 'center';
     ctx.fillText('GLOBAL VOICE MESH · AUTONOMOUS AGENTS', w / 2, h - 80);
 
@@ -261,33 +260,32 @@ export default function LeadnexBillboard({ position = [0, 0, 0], rotation = [0, 
 
   return (
     <group position={position} rotation={rotation} scale={scale}>
-      {/* Housing Frame (Placed at z = -0.15) */}
-      <mesh position={[0, 0, -0.15]}>
-        <boxGeometry args={[7.2, 14.4, 0.3]} />
-        <meshStandardMaterial color="#040b18" roughness={0.3} metalness={0.9} />
+      {/* Housing Frame Backing (z = 0.0) */}
+      <mesh position={[0, 0, 0]}>
+        <boxGeometry args={[7.4, 14.6, 0.2]} />
+        <meshStandardMaterial color="#020814" roughness={0.2} metalness={0.9} />
       </mesh>
 
       {/* Outer Neon Rim Light Frame */}
-      <lineSegments position={[0, 0, 0.02]}>
-        <edgesGeometry args={[new THREE.BoxGeometry(7.22, 14.42, 0.32)]} />
-        <lineBasicMaterial color="#00f0ff" transparent opacity={0.95} />
+      <lineSegments position={[0, 0, 0.12]}>
+        <edgesGeometry args={[new THREE.BoxGeometry(7.42, 14.62, 0.22)]} />
+        <lineBasicMaterial color="#00f0ff" linewidth={3} transparent opacity={1.0} />
       </lineSegments>
 
-      {/* Active High-Res LED Screen (Placed in front at z = 0.08, NO Z-FIGHTING!) */}
-      <mesh ref={meshRef} position={[0, 0, 0.08]}>
-        <planeGeometry args={[7.0, 14.0]} />
+      {/* Active High-Res LED Screen (Safe z = 0.18, renderOrder = 10, OPAQUE so never occluded) */}
+      <mesh ref={meshRef} position={[0, 0, 0.18]} renderOrder={10}>
+        <planeGeometry args={[7.2, 14.4]} />
         <meshBasicMaterial
           map={texture}
           toneMapped={false}
           side={THREE.DoubleSide}
-          transparent
-          opacity={1.0}
+          transparent={false}
         />
       </mesh>
 
-      {/* Neon Light Casting */}
-      <pointLight color="#00f0ff" intensity={5.0} distance={22} position={[0, 0, 1.5]} />
-      <pointLight color="#0284c7" intensity={3.5} distance={18} position={[0, -3.5, 1.2]} />
+      {/* Direct Ambient Face Illumination */}
+      <pointLight color="#00f0ff" intensity={6.0} distance={25} position={[0, 0, 2.0]} />
+      <pointLight color="#0284c7" intensity={4.5} distance={20} position={[0, -3.5, 1.8]} />
     </group>
   );
 }

@@ -14,13 +14,12 @@ export const site = {
 export const nav = {
   links: [
     { number: '01', label: 'Home', to: '/' },
-    { number: '02', label: 'Features', to: '/#features' },
-    { number: '03', label: 'Pricing', to: '/#pricing' },
-    { number: '04', label: 'Contact', to: '/#contact' },
+    { number: '02', label: 'Features', to: '/features' },
+    { number: '03', label: 'Pricing', to: '/pricing' },
   ],
   signIn: 'Console Login',
-  cta: 'Book a Demo',
-  contact: { label: 'Book a Demo', to: '/#contact' },
+  cta: 'Contact',
+  contact: { label: 'Contact', to: '/#contact' },
 };
 
 /* ── Hero ───────────────────────────────────────────────────────────────── */

@@ -5,10 +5,10 @@ import * as THREE from 'three';
 /**
  * LeadnexRightScreen — Right Skyscraper LED Telemetry Matrix
  *
- * Displays:
- *   LEADNEX GLOBAL TELEPHONY GRID
- *   Active Edge Nodes: Tokyo, London, New York, Frankfurt
- *   Live Dialing Concurrency & Real-Time Call Telemetry Radar
+ * Guaranteed vibrant front-facing LED screen:
+ * - Solid opaque mesh (transparent={false}, renderOrder={10}) to prevent depth-sorting occlusion.
+ * - Offset in front of building facade (z = 0.18) to prevent z-fighting.
+ * - High-tech Global Telephony Grid, live radar sweep, and active cluster status.
  */
 export default function LeadnexRightScreen({ position = [0, 0, 0], rotation = [0, 0, 0], scale = [1, 1, 1] }) {
   const meshRef = useRef();
@@ -40,74 +40,74 @@ export default function LeadnexRightScreen({ position = [0, 0, 0], rotation = [0
     const w = 1024;
     const h = 2048;
 
-    // 1. Dark Blue High-Tech Matrix Background
-    ctx.fillStyle = '#061126';
+    // 1. High-Contrast Deep Navy Blue Background
+    ctx.fillStyle = '#071630';
     ctx.fillRect(0, 0, w, h);
 
-    // Glowing Circuit Lines
-    ctx.strokeStyle = 'rgba(2, 132, 199, 0.12)';
-    ctx.lineWidth = 2;
-    for (let x = 0; x < w; x += 40) {
+    // Glowing Circuit Grid Lines
+    ctx.strokeStyle = 'rgba(2, 132, 199, 0.2)';
+    ctx.lineWidth = 3;
+    for (let x = 0; x < w; x += 48) {
       ctx.beginPath();
       ctx.moveTo(x, 0);
       ctx.lineTo(x, h);
       ctx.stroke();
     }
-    for (let y = 0; y < h; y += 40) {
+    for (let y = 0; y < h; y += 48) {
       ctx.beginPath();
       ctx.moveTo(0, y);
       ctx.lineTo(w, y);
       ctx.stroke();
     }
 
-    // 2. Electric Blue & Cyan Outer Frame
+    // 2. Thick Outer Frame
     ctx.strokeStyle = '#0284c7';
-    ctx.lineWidth = 14;
+    ctx.lineWidth = 20;
     ctx.shadowColor = '#00f0ff';
-    ctx.shadowBlur = 25;
-    ctx.strokeRect(32, 32, w - 64, h - 64);
+    ctx.shadowBlur = 35;
+    ctx.strokeRect(30, 30, w - 60, h - 60);
 
     ctx.shadowBlur = 0;
 
-    // 3. Header Ribbon
-    ctx.fillStyle = 'rgba(2, 132, 199, 0.2)';
-    ctx.fillRect(60, 80, w - 120, 110);
+    // 3. Header Status Ribbon
+    ctx.fillStyle = 'rgba(2, 132, 199, 0.3)';
+    ctx.fillRect(60, 80, w - 120, 120);
     ctx.strokeStyle = '#0284c7';
-    ctx.lineWidth = 4;
-    ctx.strokeRect(60, 80, w - 120, 110);
+    ctx.lineWidth = 5;
+    ctx.strokeRect(60, 80, w - 120, 120);
 
-    ctx.font = 'bold 36px "JetBrains Mono", monospace';
+    ctx.font = 'bold 40px "JetBrains Mono", monospace';
     ctx.fillStyle = '#38bdf8';
     ctx.textAlign = 'left';
-    ctx.fillText('LEADNEX // TOWER 02', 95, 150);
+    ctx.fillText('LEADNEX // TOWER 02', 95, 155);
 
-    ctx.font = 'bold 30px "JetBrains Mono", monospace';
+    ctx.font = 'bold 32px "JetBrains Mono", monospace';
     ctx.fillStyle = '#10b981';
     ctx.textAlign = 'right';
-    ctx.fillText('GLOBAL GRID ACTIVE', w - 90, 145);
+    ctx.fillText('● GLOBAL GRID LIVE', w - 90, 150);
 
     // 4. Main Section: Global Telephony Cluster
     ctx.shadowColor = '#0284c7';
-    ctx.shadowBlur = 30;
-    ctx.font = '900 76px "Inter", sans-serif';
+    ctx.shadowBlur = 35;
+    ctx.font = '900 84px "Inter", sans-serif';
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
-    ctx.fillText('TELEPHONY GRID', w / 2, 310);
+    ctx.fillText('TELEPHONY GRID', w / 2, 330);
 
-    ctx.font = 'bold 34px "JetBrains Mono", monospace';
+    ctx.font = 'bold 36px "JetBrains Mono", monospace';
     ctx.fillStyle = '#00f0ff';
-    ctx.fillText('HIGH-CONCURRENCY AUDIO ROUTE', w / 2, 375);
+    ctx.fillText('HIGH-CONCURRENCY AUDIO ROUTE', w / 2, 400);
 
-    // 5. Radar Radar Scan Circle
+    // 5. Radar Scan Circle
     ctx.shadowBlur = 0;
     const radarCenterX = w / 2;
-    const radarCenterY = 590;
-    const radarRadius = 150;
+    const radarCenterY = 620;
+    const radarRadius = 160;
 
     // Concentric Radar Rings
-    ctx.strokeStyle = 'rgba(0, 240, 255, 0.3)';
-    ctx.lineWidth = 3;
-    [50, 100, 150].forEach((r) => {
+    ctx.strokeStyle = 'rgba(0, 240, 255, 0.4)';
+    ctx.lineWidth = 4;
+    [55, 110, 160].forEach((r) => {
       ctx.beginPath();
       ctx.arc(radarCenterX, radarCenterY, r, 0, Math.PI * 2);
       ctx.stroke();
@@ -115,34 +115,34 @@ export default function LeadnexRightScreen({ position = [0, 0, 0], rotation = [0
 
     // Crosshairs
     ctx.beginPath();
-    ctx.moveTo(radarCenterX - 160, radarCenterY);
-    ctx.lineTo(radarCenterX + 160, radarCenterY);
-    ctx.moveTo(radarCenterX, radarCenterY - 160);
-    ctx.lineTo(radarCenterX, radarCenterY + 160);
+    ctx.moveTo(radarCenterX - 170, radarCenterY);
+    ctx.lineTo(radarCenterX + 170, radarCenterY);
+    ctx.moveTo(radarCenterX, radarCenterY - 170);
+    ctx.lineTo(radarCenterX, radarCenterY + 170);
     ctx.stroke();
 
     // Rotating Radar Sweep
-    const angle = t * 2.5;
+    const angle = t * 2.8;
     const sweepGrad = ctx.createRadialGradient(radarCenterX, radarCenterY, 0, radarCenterX, radarCenterY, radarRadius);
-    sweepGrad.addColorStop(0, 'rgba(0, 240, 255, 0.4)');
+    sweepGrad.addColorStop(0, 'rgba(0, 240, 255, 0.5)');
     sweepGrad.addColorStop(1, 'rgba(0, 240, 255, 0)');
     ctx.fillStyle = sweepGrad;
     ctx.beginPath();
     ctx.moveTo(radarCenterX, radarCenterY);
-    ctx.arc(radarCenterX, radarCenterY, radarRadius, angle, angle + 0.6);
+    ctx.arc(radarCenterX, radarCenterY, radarRadius, angle, angle + 0.65);
     ctx.closePath();
     ctx.fill();
 
     // 6. Global Edge Nodes Status Card
-    const cardY = 820;
-    ctx.fillStyle = 'rgba(4, 16, 40, 0.85)';
+    const cardY = 850;
+    ctx.fillStyle = 'rgba(2, 10, 28, 0.9)';
     ctx.fillRect(80, cardY, w - 160, 680);
-    ctx.strokeStyle = 'rgba(2, 132, 199, 0.5)';
-    ctx.lineWidth = 3;
+    ctx.strokeStyle = 'rgba(2, 132, 199, 0.6)';
+    ctx.lineWidth = 4;
     ctx.strokeRect(80, cardY, w - 160, 680);
 
-    ctx.font = 'bold 32px "JetBrains Mono", monospace';
-    ctx.fillStyle = '#e2e8f0';
+    ctx.font = 'bold 34px "JetBrains Mono", monospace';
+    ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'left';
     ctx.fillText('EDGE CLUSTER STATUS', 120, cardY + 70);
 
@@ -167,14 +167,14 @@ export default function LeadnexRightScreen({ position = [0, 0, 0], rotation = [0
       ctx.textAlign = 'right';
       ctx.fillText(n.calls, w - 120, ny);
 
-      ctx.font = '22px "JetBrains Mono", monospace';
+      ctx.font = '24px "JetBrains Mono", monospace';
       ctx.fillStyle = '#94a3b8';
       ctx.fillText(`Ping: ${n.ping}`, w - 120, ny + 42);
 
       ctx.textAlign = 'left';
 
       if (i < 3) {
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(120, ny + 70);
@@ -184,11 +184,11 @@ export default function LeadnexRightScreen({ position = [0, 0, 0], rotation = [0
     });
 
     // 7. Security Certification Banner at Bottom
-    const secY = 1580;
-    ctx.fillStyle = 'rgba(16, 185, 129, 0.12)';
+    const secY = 1600;
+    ctx.fillStyle = 'rgba(16, 185, 129, 0.15)';
     ctx.fillRect(80, secY, w - 160, 240);
-    ctx.strokeStyle = 'rgba(16, 185, 129, 0.4)';
-    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 4;
     ctx.strokeRect(80, secY, w - 160, 240);
 
     ctx.font = 'bold 36px "Inter", sans-serif';
@@ -196,14 +196,14 @@ export default function LeadnexRightScreen({ position = [0, 0, 0], rotation = [0
     ctx.textAlign = 'center';
     ctx.fillText('ENTERPRISE SECURITY & COMPLIANCE', w / 2, secY + 75);
 
-    ctx.font = 'bold 28px "JetBrains Mono", monospace';
+    ctx.font = 'bold 30px "JetBrains Mono", monospace';
     ctx.fillStyle = '#34d399';
     ctx.fillText('SOC 2 TYPE II · HIPAA READY · TLS 1.3', w / 2, secY + 140);
     ctx.fillText('ZERO PUBLIC TRAINING · AES-256 VAULT', w / 2, secY + 195);
 
     // 8. Bottom Ticker
-    ctx.font = 'bold 26px "JetBrains Mono", monospace';
-    ctx.fillStyle = '#64748b';
+    ctx.font = 'bold 28px "JetBrains Mono", monospace';
+    ctx.fillStyle = '#94a3b8';
     ctx.fillText('LEADNEX CORE TELEPHONY · 99.99% SLA', w / 2, h - 80);
 
     if (textureRef.current) {
@@ -222,34 +222,32 @@ export default function LeadnexRightScreen({ position = [0, 0, 0], rotation = [0
 
   return (
     <group position={position} rotation={rotation} scale={scale}>
-      {/* Housing Frame (At z = -0.15) */}
-      <mesh position={[0, 0, -0.15]}>
-        <boxGeometry args={[7.2, 14.4, 0.3]} />
-        <meshStandardMaterial color="#040b18" roughness={0.3} metalness={0.9} />
+      {/* Housing Frame Backing (z = 0.0) */}
+      <mesh position={[0, 0, 0]}>
+        <boxGeometry args={[7.4, 14.6, 0.2]} />
+        <meshStandardMaterial color="#020814" roughness={0.2} metalness={0.9} />
       </mesh>
 
-      {/* Neon Rim Light Frame */}
-      <lineSegments position={[0, 0, 0.02]}>
-        <edgesGeometry args={[new THREE.BoxGeometry(7.22, 14.42, 0.32)]} />
-        <lineBasicMaterial color="#0284c7" transparent opacity={0.95} />
+      {/* Outer Neon Rim Light Frame */}
+      <lineSegments position={[0, 0, 0.12]}>
+        <edgesGeometry args={[new THREE.BoxGeometry(7.42, 14.62, 0.22)]} />
+        <lineBasicMaterial color="#0284c7" linewidth={3} transparent opacity={1.0} />
       </lineSegments>
 
-      {/* Active High-Res LED Screen (Safely in front at z = 0.08, NO Z-FIGHTING!) */}
-      <mesh ref={meshRef} position={[0, 0, 0.08]}>
-        <planeGeometry args={[7.0, 14.0]} />
+      {/* Active High-Res LED Screen (Safe z = 0.18, renderOrder = 10, OPAQUE so never occluded) */}
+      <mesh ref={meshRef} position={[0, 0, 0.18]} renderOrder={10}>
+        <planeGeometry args={[7.2, 14.4]} />
         <meshBasicMaterial
           map={texture}
           toneMapped={false}
           side={THREE.DoubleSide}
-          transparent
-          opacity={1.0}
+          transparent={false}
         />
       </mesh>
 
-      {/* Neon Light Casting */}
-      <pointLight color="#0284c7" intensity={5.0} distance={22} position={[0, 0, 1.5]} />
-      <pointLight color="#00f0ff" intensity={3.5} distance={18} position={[0, -3.5, 1.2]} />
+      {/* Direct Ambient Face Illumination */}
+      <pointLight color="#0284c7" intensity={6.0} distance={25} position={[0, 0, 2.0]} />
+      <pointLight color="#00f0ff" intensity={4.5} distance={20} position={[0, -3.5, 1.8]} />
     </group>
   );
 }
-
