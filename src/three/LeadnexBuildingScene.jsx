@@ -397,17 +397,22 @@ export default function LeadnexBuildingScene({ small = false, reduced = false })
   useEffect(() => {
     const cleanup = initScrollController();
 
+    let featuresTop = 1200;
+    const measureFeatures = () => {
+      const el = document.querySelector('#features');
+      if (el) featuresTop = el.offsetTop;
+    };
+    measureFeatures();
+    window.addEventListener('resize', measureFeatures, { passive: true });
+
+    let isTop = true;
     const updateBackdropState = () => {
       const scrollY = window.__lenis?.scroll ?? window.scrollY ?? 0;
-      const featuresEl = document.querySelector('#features');
-      const featuresTop = featuresEl ? (featuresEl.getBoundingClientRect().top + scrollY) : 1400;
-
-      if (scrollY < featuresTop - window.innerHeight * 0.35) {
-        if (canvasWrapRef.current) canvasWrapRef.current.style.opacity = '1';
-        if (vignetteRef.current) vignetteRef.current.style.opacity = '0';
-      } else {
-        if (canvasWrapRef.current) canvasWrapRef.current.style.opacity = '0.14';
-        if (vignetteRef.current) vignetteRef.current.style.opacity = '0.96';
+      const shouldBeTop = scrollY < featuresTop - window.innerHeight * 0.35;
+      if (shouldBeTop !== isTop) {
+        isTop = shouldBeTop;
+        if (canvasWrapRef.current) canvasWrapRef.current.style.opacity = isTop ? '1' : '0.14';
+        if (vignetteRef.current) vignetteRef.current.style.opacity = isTop ? '0' : '0.96';
       }
     };
 
@@ -426,6 +431,7 @@ export default function LeadnexBuildingScene({ small = false, reduced = false })
       cleanup();
       st.kill();
       window.removeEventListener('scroll', updateBackdropState);
+      window.removeEventListener('resize', measureFeatures);
       window.__lenis?.off?.('scroll', updateBackdropState);
     };
   }, []);
@@ -455,7 +461,7 @@ export default function LeadnexBuildingScene({ small = false, reduced = false })
             far: 300,
             position: [0, 14.5, small ? 32.0 : 27.0],
           }}
-          dpr={[1, 2]}
+          dpr={[1, 1.5]}
         >
           {/* Deep Cinematic Atmosphere */}
           <color attach="background" args={['#02050e']} />

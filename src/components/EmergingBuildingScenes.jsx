@@ -92,57 +92,60 @@ export default function EmergingBuildingScenes() {
         return { display: 'none', opacity: '0', pointerEvents: 'none', transform: 'none' };
       }
 
-      let tz = 0;
+      let ty = 0;
       let scale = 1;
       let opacity = 1;
 
       if (p >= enterStart && p < settleStart) {
         const t = (p - enterStart) / (settleStart - enterStart);
-        tz = -600 + t * 600;
-        scale = 0.35 + t * 0.65;
-        opacity = Math.max(0, Math.min(1, t * 1.3));
+        // Smooth, elegant vertical entrance from +45px below with graceful opacity fade
+        ty = 45 * (1 - t);
+        scale = 0.95 + 0.05 * t;
+        opacity = Math.max(0, Math.min(1, t * 1.25));
       } else if (p >= settleStart && p <= settleEnd) {
-        tz = 0;
+        // Stable, crisp resting view
+        ty = 0;
         scale = 1;
         opacity = 1;
       } else if (p > settleEnd && p <= exitEnd) {
         const t = (p - settleEnd) / (exitEnd - settleEnd);
-        tz = t * 280;
-        scale = 1.0 + t * 0.18;
-        opacity = Math.max(0, 1 - t * 1.3);
+        // Clean upward float with gentle fade out
+        ty = -40 * t;
+        scale = 1.0 - 0.03 * t;
+        opacity = Math.max(0, 1 - t * 1.25);
       }
 
       return {
         display: 'flex',
         opacity: String(opacity),
         pointerEvents: p >= settleStart && p <= settleEnd ? 'auto' : 'none',
-        transform: `perspective(1000px) translate3d(0px, 0px, ${tz}px) scale(${scale})`,
+        transform: `translate3d(0px, ${ty.toFixed(1)}px, 0px) scale(${scale.toFixed(3)})`,
       };
     };
 
     const updatePanels = (p) => {
       // 1. Initial Prompt
       if (promptRef.current) {
-        if (p < 0.18) {
+        if (p < 0.16) {
           promptRef.current.style.display = 'flex';
-          promptRef.current.style.opacity = String(Math.max(0, 1 - p * 6));
+          promptRef.current.style.opacity = String(Math.max(0, 1 - p * 6.5));
         } else {
           promptRef.current.style.display = 'none';
         }
       }
 
-      // 2. Panel 1: AI Calling & Voice Agents (p: 0.15 – 0.52)
+      // 2. Panel 1: AI Calling & Voice Agents (p: 0.14 – 0.50)
       if (panel1Ref.current) {
-        const s = computeStyle(p, 0.15, 0.25, 0.42, 0.52);
+        const s = computeStyle(p, 0.14, 0.24, 0.42, 0.50);
         panel1Ref.current.style.display = s.display;
         panel1Ref.current.style.opacity = s.opacity;
         panel1Ref.current.style.pointerEvents = s.pointerEvents;
         panel1Ref.current.style.transform = s.transform;
       }
 
-      // 3. Panel 2: Speed-to-Lead & Scale (p: 0.52 – 0.88)
+      // 3. Panel 2: Speed-to-Lead & Scale (p: 0.50 – 0.86)
       if (panel2Ref.current) {
-        const s = computeStyle(p, 0.52, 0.62, 0.78, 0.88);
+        const s = computeStyle(p, 0.50, 0.60, 0.78, 0.86);
         panel2Ref.current.style.display = s.display;
         panel2Ref.current.style.opacity = s.opacity;
         panel2Ref.current.style.pointerEvents = s.pointerEvents;
@@ -153,9 +156,9 @@ export default function EmergingBuildingScenes() {
     const st = ScrollTrigger.create({
       trigger: containerRef.current,
       start: 'top top',
-      end: '+=1400',
+      end: '+=950', // Responsive, fluid scroll distance (eliminates long sticky lag)
       pin: true,
-      scrub: true,
+      scrub: 0.5, // 0.5s smooth inertia dampening eliminates jerky stutter
       invalidateOnRefresh: true,
       onUpdate: (self) => {
         updatePanels(self.progress);
