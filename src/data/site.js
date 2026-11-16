@@ -13,10 +13,10 @@ export const site = {
 
 export const nav = {
   links: [
-    { number: '01', label: 'Home', to: '/' },
-    { number: '02', label: 'Features', to: '/features' },
-    { number: '03', label: 'Pricing', to: '/pricing' },
-    { number: '04', label: 'Contact', to: '/contact' },
+    { label: 'Home', to: '/' },
+    { label: 'Features', to: '/features' },
+    { label: 'Pricing', to: '/pricing' },
+    { label: 'Contact', to: '/contact' },
   ],
   cta: 'Book a Demo',
 };

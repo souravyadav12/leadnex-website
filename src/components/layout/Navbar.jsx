@@ -94,7 +94,7 @@ export default function Navbar() {
                   <motion.span
                     whileHover={{ y: -1 }}
                     className={cn(
-                      'relative flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[13px] transition-colors',
+                      'relative flex items-center rounded-full px-4 py-2 text-[13px] font-medium transition-colors',
                       isActive ? 'text-white' : 'text-muted hover:text-white',
                     )}
                   >
@@ -105,7 +105,6 @@ export default function Navbar() {
                         className="absolute inset-0 rounded-full border border-line bg-white/[0.06]"
                       />
                     )}
-                    <span className="relative font-mono text-[9px] text-accent-soft/70">{link.number}</span>
                     <span className="relative">{link.label}</span>
                   </motion.span>
                 )}
@@ -179,10 +178,9 @@ export default function Navbar() {
                         scrollToTop();
                       }
                     }}
-                    className="flex items-baseline justify-between border-b border-line py-3.5 text-xl font-medium tracking-tight text-white"
+                    className="flex items-center justify-between border-b border-line py-3.5 text-xl font-medium tracking-tight text-white"
                   >
-                    {link.label}
-                    <span className="font-mono text-[10px] text-dim">{link.number}</span>
+                    <span>{link.label}</span>
                   </Link>
                 </motion.div>
               ))}
