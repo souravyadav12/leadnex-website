@@ -1,4 +1,6 @@
 import EmergingBuildingScenes from '../components/EmergingBuildingScenes';
+import MobileHero from '../mobile/MobileHero';
+import { useIsMobile } from '../mobile/useIsMobile';
 import FeaturesSection from '../sections/FeaturesSection';
 import DemoSection from '../sections/DemoSection';
 import WorkflowSection from '../sections/WorkflowSection';
@@ -20,10 +22,12 @@ import { features } from '../data/site';
  * 6. Closing Production Banner
  */
 export default function Home() {
+  const isMobile = useIsMobile();
+
   return (
     <main className="relative z-10 bg-transparent">
       {/* ─ 1. 3D TWIN SKYSCRAPER HEADQUARTERS & CENTRAL EMERGING PANELS ─ */}
-      <EmergingBuildingScenes />
+      {isMobile ? <MobileHero /> : <EmergingBuildingScenes />}
 
       {/* Telephony Technology Marquee */}
       <Band3D
