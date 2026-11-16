@@ -397,48 +397,31 @@ export default function LeadnexBuildingScene({ small = false, reduced = false })
   useEffect(() => {
     const cleanup = initScrollController();
 
-    let featuresTop = 1200;
-    const measureFeatures = () => {
-      const el = document.querySelector('#features');
-      if (el) featuresTop = el.offsetTop;
+    const setBackdrop = (isDark) => {
+      if (canvasWrapRef.current) canvasWrapRef.current.style.opacity = isDark ? '0.14' : '1';
+      if (vignetteRef.current) vignetteRef.current.style.opacity = isDark ? '0.96' : '0';
     };
-    measureFeatures();
-    window.addEventListener('resize', measureFeatures, { passive: true });
-
-    let isTop = true;
-    const updateBackdropState = () => {
-      const scrollY = window.__lenis?.scroll ?? window.scrollY ?? 0;
-      const shouldBeTop = scrollY < featuresTop - window.innerHeight * 0.35;
-      if (shouldBeTop !== isTop) {
-        isTop = shouldBeTop;
-        if (canvasWrapRef.current) canvasWrapRef.current.style.opacity = isTop ? '1' : '0.14';
-        if (vignetteRef.current) vignetteRef.current.style.opacity = isTop ? '0' : '0.96';
-      }
-    };
-
-    updateBackdropState();
-
-    window.addEventListener('scroll', updateBackdropState, { passive: true });
-    window.__lenis?.on?.('scroll', updateBackdropState);
 
     const st = ScrollTrigger.create({
       trigger: '#features',
-      start: 'top 85%',
-      onUpdate: () => updateBackdropState(),
+      start: 'top 80%',
+      onEnter: () => setBackdrop(true),
+      onLeaveBack: () => setBackdrop(false),
+      onEnterBack: () => setBackdrop(true),
+      onRefresh: (self) => {
+        setBackdrop(self.progress > 0 || (self.start != null && window.scrollY >= self.start));
+      },
     });
 
     return () => {
       cleanup();
       st.kill();
-      window.removeEventListener('scroll', updateBackdropState);
-      window.removeEventListener('resize', measureFeatures);
-      window.__lenis?.off?.('scroll', updateBackdropState);
     };
   }, []);
 
   return (
     <>
-      {/* 3D Skyscraper Scene Container — Smoothly fades as user scrolls down into content (60fps GPU compositor) */}
+      {/* 3D Skyscraper Scene Container — Smoothly dims as user scrolls down into Features section */}
       <div
         ref={canvasWrapRef}
         aria-hidden="true"
@@ -489,7 +472,7 @@ export default function LeadnexBuildingScene({ small = false, reduced = false })
         </Canvas>
       </div>
 
-      {/* Cinematic Dark Ambient Vignette that gently obscures backdrop for maximum content contrast */}
+      {/* Cinematic Dark Ambient Vignette for Features & Lower Sections */}
       <div
         ref={vignetteRef}
         aria-hidden="true"

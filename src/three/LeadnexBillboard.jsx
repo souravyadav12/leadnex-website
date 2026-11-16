@@ -76,14 +76,14 @@ function renderBillboardCanvas(canvas, t = 0) {
   ctx.fillText('LIVE ENGINE', w - 65, 90);
 
   // 4. MAIN HEADLINE BRANDING: LEADNEX.AI (Sleek, Balanced, Well-Proportioned)
-  ctx.font = '900 88px "Inter", sans-serif';
+  ctx.font = '900 64px "Inter", sans-serif';
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText('LEADNEX', w / 2, 215);
 
   ctx.fillStyle = '#00f0ff';
-  ctx.fillText('.AI', w / 2, 295);
+  ctx.fillText('.AI', w / 2, 285);
 
   // Taglines
   ctx.font = '900 30px "JetBrains Mono", monospace';
@@ -242,18 +242,10 @@ export default function LeadnexBillboard({ position = [0, 0, 0], rotation = [0, 
     }
   }, [canvas, texture]);
 
-  // Lag-free scroll-aware animation loop:
-  // - Pauses texture upload when scrolled past hero (zero waste!)
-  // - Throttles during active scroll gestures to guarantee 60fps butter-smooth scroll
+  // Continuous 30 FPS animation loop (never stops or pauses anywhere on page)
   useFrame((state) => {
-    const scrollY = window.__lenis?.scroll ?? window.scrollY ?? 0;
-    if (scrollY > window.innerHeight * 0.85) return;
-
-    const isFastScroll = Math.abs(window.__lenis?.velocity || 0) > 0.5;
-    const interval = isFastScroll ? 0.12 : 0.04; // 25 FPS at rest, lightweight 8 FPS during fast fling
-
     const t = state.clock.elapsedTime;
-    if (t - lastUpdateRef.current >= interval) {
+    if (t - lastUpdateRef.current >= 0.033) {
       lastUpdateRef.current = t;
       renderBillboardCanvas(canvas, t);
       texture.needsUpdate = true;

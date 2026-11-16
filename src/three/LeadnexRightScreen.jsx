@@ -289,16 +289,10 @@ export default function LeadnexRightScreen({ position = [0, 0, 0], rotation = [0
     }
   }, [canvas, texture]);
 
-  // Lag-free scroll-aware animation loop
+  // Continuous 30 FPS animation loop (never stops or pauses anywhere on page)
   useFrame((state) => {
-    const scrollY = window.__lenis?.scroll ?? window.scrollY ?? 0;
-    if (scrollY > window.innerHeight * 0.85) return;
-
-    const isFastScroll = Math.abs(window.__lenis?.velocity || 0) > 0.5;
-    const interval = isFastScroll ? 0.12 : 0.04; // 25 FPS at rest, lightweight 8 FPS during fast fling
-
     const t = state.clock.elapsedTime;
-    if (t - lastUpdateRef.current >= interval) {
+    if (t - lastUpdateRef.current >= 0.033) {
       lastUpdateRef.current = t;
       renderRightScreenCanvas(canvas, t);
       texture.needsUpdate = true;
