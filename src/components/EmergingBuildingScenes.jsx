@@ -92,34 +92,37 @@ export default function EmergingBuildingScenes() {
         return { display: 'none', opacity: '0', pointerEvents: 'none', transform: 'none' };
       }
 
-      let ty = 0;
+      let tz = 0;
       let scale = 1;
       let opacity = 1;
 
       if (p >= enterStart && p < settleStart) {
         const t = (p - enterStart) / (settleStart - enterStart);
-        // Smooth, elegant vertical entrance from +45px below with graceful opacity fade
-        ty = 45 * (1 - t);
-        scale = 0.95 + 0.05 * t;
-        opacity = Math.max(0, Math.min(1, t * 1.25));
+        // Smoothstep easing out of the deep center opening:
+        const ease = t * t * (3 - 2 * t);
+        // Emerges from deep in the central runway opening (dur se, center se)
+        tz = -650 * (1 - ease);
+        scale = 0.36 + 0.64 * ease;
+        opacity = Math.max(0, Math.min(1, ease * 1.35));
       } else if (p >= settleStart && p <= settleEnd) {
-        // Stable, crisp resting view
-        ty = 0;
+        // Stable, crisp resting view in front of viewer
+        tz = 0;
         scale = 1;
         opacity = 1;
       } else if (p > settleEnd && p <= exitEnd) {
         const t = (p - settleEnd) / (exitEnd - settleEnd);
-        // Clean upward float with gentle fade out
-        ty = -40 * t;
-        scale = 1.0 - 0.03 * t;
-        opacity = Math.max(0, 1 - t * 1.25);
+        const ease = t * t;
+        // Flies smoothly forward past viewer
+        tz = 260 * ease;
+        scale = 1.0 + 0.14 * ease;
+        opacity = Math.max(0, 1 - ease * 1.35);
       }
 
       return {
         display: 'flex',
         opacity: String(opacity),
         pointerEvents: p >= settleStart && p <= settleEnd ? 'auto' : 'none',
-        transform: `translate3d(0px, ${ty.toFixed(1)}px, 0px) scale(${scale.toFixed(3)})`,
+        transform: `perspective(1100px) translate3d(0px, 0px, ${tz.toFixed(1)}px) scale(${scale.toFixed(3)})`,
       };
     };
 
@@ -136,7 +139,7 @@ export default function EmergingBuildingScenes() {
 
       // 2. Panel 1: AI Calling & Voice Agents (p: 0.14 – 0.50)
       if (panel1Ref.current) {
-        const s = computeStyle(p, 0.14, 0.24, 0.42, 0.50);
+        const s = computeStyle(p, 0.14, 0.25, 0.42, 0.50);
         panel1Ref.current.style.display = s.display;
         panel1Ref.current.style.opacity = s.opacity;
         panel1Ref.current.style.pointerEvents = s.pointerEvents;
@@ -145,7 +148,7 @@ export default function EmergingBuildingScenes() {
 
       // 3. Panel 2: Speed-to-Lead & Scale (p: 0.50 – 0.86)
       if (panel2Ref.current) {
-        const s = computeStyle(p, 0.50, 0.60, 0.78, 0.86);
+        const s = computeStyle(p, 0.50, 0.61, 0.78, 0.86);
         panel2Ref.current.style.display = s.display;
         panel2Ref.current.style.opacity = s.opacity;
         panel2Ref.current.style.pointerEvents = s.pointerEvents;
@@ -156,9 +159,9 @@ export default function EmergingBuildingScenes() {
     const st = ScrollTrigger.create({
       trigger: containerRef.current,
       start: 'top top',
-      end: '+=950', // Responsive, fluid scroll distance (eliminates long sticky lag)
+      end: '+=1200', // Perfect runway distance to experience the deep center emergence
       pin: true,
-      scrub: 0.5, // 0.5s smooth inertia dampening eliminates jerky stutter
+      scrub: 0.35, // Smooth, responsive inertia tracking with zero lag
       invalidateOnRefresh: true,
       onUpdate: (self) => {
         updatePanels(self.progress);

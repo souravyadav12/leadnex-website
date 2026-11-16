@@ -3,9 +3,8 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 /**
- * renderRightScreenCanvas — High-Definition Fully Animated Canvas Renderer for Right Skyscraper Matrix
- * Features 360-degree rotating radar with pinging blips, live network latency jitter,
- * pulsing heartbeat health dots, and scanning cyber laser beam.
+ * renderRightScreenCanvas — High-Definition Synchronous Canvas Renderer for Right Skyscraper Matrix
+ * Features rotating radar, live latency jitter, pulsing heartbeat dots, and scanning beam.
  */
 function renderRightScreenCanvas(canvas, t = 0) {
   const ctx = canvas.getContext('2d');
@@ -19,14 +18,14 @@ function renderRightScreenCanvas(canvas, t = 0) {
   ctx.fillRect(0, 0, w, h);
 
   // Glowing Circuit Grid Lines
-  ctx.strokeStyle = 'rgba(2, 132, 199, 0.25)';
-  ctx.lineWidth = 2.5;
+  ctx.strokeStyle = 'rgba(2, 132, 199, 0.20)';
+  ctx.lineWidth = 2;
   ctx.beginPath();
-  for (let x = 0; x < w; x += 64) {
+  for (let x = 0; x < w; x += 48) {
     ctx.moveTo(x, 0);
     ctx.lineTo(x, h);
   }
-  for (let y = 0; y < h; y += 64) {
+  for (let y = 0; y < h; y += 48) {
     ctx.moveTo(0, y);
     ctx.lineTo(w, y);
   }
@@ -34,64 +33,64 @@ function renderRightScreenCanvas(canvas, t = 0) {
 
   // 2. Thick Outer Border & High-Tech Corner Brackets
   ctx.strokeStyle = '#0284c7';
-  ctx.lineWidth = 20;
-  ctx.strokeRect(28, 28, w - 56, h - 56);
+  ctx.lineWidth = 16;
+  ctx.strokeRect(20, 20, w - 40, h - 40);
 
   ctx.strokeStyle = '#38bdf8';
-  ctx.lineWidth = 24;
-  const corner = 95;
+  ctx.lineWidth = 20;
+  const corner = 75;
   ctx.beginPath();
   // Top-Left
-  ctx.moveTo(28, 28 + corner); ctx.lineTo(28, 28); ctx.lineTo(28 + corner, 28);
+  ctx.moveTo(20, 20 + corner); ctx.lineTo(20, 20); ctx.lineTo(20 + corner, 20);
   // Top-Right
-  ctx.moveTo(w - 28 - corner, 28); ctx.lineTo(w - 28, 28); ctx.lineTo(w - 28, 28 + corner);
+  ctx.moveTo(w - 20 - corner, 20); ctx.lineTo(w - 20, 20); ctx.lineTo(w - 20, 20 + corner);
   // Bottom-Left
-  ctx.moveTo(28, h - 28 - corner); ctx.lineTo(28, h - 28); ctx.lineTo(28 + corner, h - 28);
+  ctx.moveTo(20, h - 20 - corner); ctx.lineTo(20, h - 20); ctx.lineTo(20 + corner, h - 20);
   // Bottom-Right
-  ctx.moveTo(w - 28 - corner, h - 28); ctx.lineTo(w - 28, h - 28); ctx.lineTo(w - 28, h - 28 - corner);
+  ctx.moveTo(w - 20 - corner, h - 20); ctx.lineTo(w - 20, h - 20); ctx.lineTo(w - 20, h - 20 - corner);
   ctx.stroke();
 
   // 3. Status Header with Pulsing Beacon
-  ctx.fillStyle = 'rgba(2, 132, 199, 0.28)';
-  ctx.fillRect(56, 65, w - 112, 115);
+  ctx.fillStyle = 'rgba(2, 132, 199, 0.25)';
+  ctx.fillRect(40, 48, w - 80, 85);
   ctx.strokeStyle = '#0284c7';
-  ctx.lineWidth = 4.5;
-  ctx.strokeRect(56, 65, w - 112, 115);
+  ctx.lineWidth = 3.5;
+  ctx.strokeRect(40, 48, w - 80, 85);
 
-  ctx.font = '900 42px "JetBrains Mono", monospace';
+  ctx.font = '900 32px "JetBrains Mono", monospace';
   ctx.fillStyle = '#38bdf8';
   ctx.textAlign = 'left';
   ctx.textBaseline = 'middle';
-  ctx.fillText('LEADNEX // TOWER 02', 90, 122);
+  ctx.fillText('LEADNEX // TOWER 02', 65, 90);
 
   // Animated Edge Mesh Pulse Dot
   const pulse = 0.5 + 0.5 * Math.sin(t * 5.8);
   ctx.fillStyle = pulse > 0.3 ? '#00f0ff' : '#0284c7';
   ctx.beginPath();
-  ctx.arc(w - 250, 122, 14 + pulse * 5, 0, Math.PI * 2);
+  ctx.arc(w - 205, 90, 11 + pulse * 4, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.font = '900 34px "JetBrains Mono", monospace';
+  ctx.font = '900 26px "JetBrains Mono", monospace';
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'right';
-  ctx.fillText('EDGE MESH', w - 85, 122);
+  ctx.fillText('EDGE MESH', w - 65, 90);
 
   // 4. Section Title: GLOBAL TELEPHONY RADAR
-  ctx.font = '900 58px "Inter", sans-serif';
+  ctx.font = '900 44px "Inter", sans-serif';
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('GLOBAL VOICE GRID', w / 2, 235);
+  ctx.fillText('GLOBAL VOICE GRID', w / 2, 185);
 
-  // 5. High-Tech Rotating Radar Display with Sweeping Sector
+  // 5. High-Tech Rotating Radar Display
   const radarCX = w / 2;
-  const radarCY = 415;
-  const radarR = 145;
+  const radarCY = 330;
+  const radarR = 115;
 
   // Concentric Rings
   ctx.strokeStyle = 'rgba(2, 132, 199, 0.55)';
-  ctx.lineWidth = 3;
-  for (let r = 50; r <= radarR; r += 48) {
+  ctx.lineWidth = 2.5;
+  for (let r = 38; r <= radarR; r += 38) {
     ctx.beginPath();
     ctx.arc(radarCX, radarCY, r, 0, Math.PI * 2);
     ctx.stroke();
@@ -117,19 +116,19 @@ function renderRightScreenCanvas(canvas, t = 0) {
   ctx.fill();
 
   ctx.strokeStyle = '#00f0ff';
-  ctx.lineWidth = 5;
+  ctx.lineWidth = 4;
   ctx.beginPath();
   ctx.moveTo(radarCX, radarCY);
   ctx.lineTo(radarCX + Math.cos(angle) * radarR, radarCY + Math.sin(angle) * radarR);
   ctx.stroke();
   ctx.restore();
 
-  // Active Edge Nodes that ping & flash when radar passes over them
+  // Active Edge Nodes that ping & flash
   const nodes = [
-    { x: radarCX - 75, y: radarCY - 55 },
-    { x: radarCX + 70, y: radarCY - 40 },
-    { x: radarCX + 42, y: radarCY + 78 },
-    { x: radarCX - 62, y: radarCY + 65 },
+    { x: radarCX - 60, y: radarCY - 44 },
+    { x: radarCX + 55, y: radarCY - 32 },
+    { x: radarCX + 34, y: radarCY + 62 },
+    { x: radarCX - 50, y: radarCY + 52 },
   ];
 
   nodes.forEach((n) => {
@@ -139,25 +138,25 @@ function renderRightScreenCanvas(canvas, t = 0) {
 
     ctx.fillStyle = ping > 0.15 ? '#ffffff' : '#00f0ff';
     ctx.beginPath();
-    ctx.arc(n.x, n.y, 8 + ping * 6, 0, Math.PI * 2);
+    ctx.arc(n.x, n.y, 6 + ping * 5, 0, Math.PI * 2);
     ctx.fill();
 
     if (ping > 0.25) {
       ctx.strokeStyle = `rgba(0, 255, 136, ${ping * 0.9})`;
-      ctx.lineWidth = 2.5;
+      ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.arc(n.x, n.y, 14 + (1 - ping) * 18, 0, Math.PI * 2);
+      ctx.arc(n.x, n.y, 11 + (1 - ping) * 14, 0, Math.PI * 2);
       ctx.stroke();
     }
   });
 
-  // 6. Global Edge Clusters List (With Live-Jittering Pings & Heartbeat Dots!)
-  const listY = 620;
-  ctx.font = '900 40px "JetBrains Mono", monospace';
+  // 6. Global Edge Clusters List
+  const listY = 495;
+  ctx.font = '900 30px "JetBrains Mono", monospace';
   ctx.fillStyle = '#38bdf8';
   ctx.textAlign = 'left';
   ctx.textBaseline = 'middle';
-  ctx.fillText('MULTI-REGION EDGE ROUTING', 70, listY);
+  ctx.fillText('MULTI-REGION EDGE ROUTING', 50, listY);
 
   const baseRegions = [
     { name: 'US-EAST (VIRGINIA)', basePing: 12, status: 'HEALTHY' },
@@ -166,55 +165,53 @@ function renderRightScreenCanvas(canvas, t = 0) {
     { name: 'AP-NORTHEAST (TOKYO)', basePing: 38, status: 'HEALTHY' },
   ];
 
-  const cardH = 92;
-  const gap = 16;
-  const regStartY = 660;
+  const cardH = 75;
+  const gap = 12;
+  const regStartY = 530;
 
   baseRegions.forEach((reg, i) => {
     const ry = regStartY + i * (cardH + gap);
 
-    // Live organic ping jitter
     const jitter = Math.floor(Math.sin(t * 3.2 + i * 1.5) * 2);
     const livePing = `${reg.basePing + jitter}ms`;
 
     ctx.fillStyle = 'rgba(2, 12, 34, 0.96)';
-    ctx.fillRect(70, ry, w - 140, cardH);
+    ctx.fillRect(50, ry, w - 100, cardH);
     ctx.strokeStyle = 'rgba(56, 189, 248, 0.65)';
-    ctx.lineWidth = 3;
-    ctx.strokeRect(70, ry, w - 140, cardH);
+    ctx.lineWidth = 2.5;
+    ctx.strokeRect(50, ry, w - 100, cardH);
 
-    ctx.font = '900 32px "JetBrains Mono", monospace';
+    ctx.font = '900 24px "JetBrains Mono", monospace';
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText(reg.name, 105, ry + cardH / 2);
+    ctx.fillText(reg.name, 75, ry + cardH / 2);
 
-    ctx.font = '900 34px "JetBrains Mono", monospace';
+    ctx.font = '900 26px "JetBrains Mono", monospace';
     ctx.fillStyle = '#00f0ff';
     ctx.textAlign = 'right';
-    ctx.fillText(livePing, w - 270, ry + cardH / 2);
+    ctx.fillText(livePing, w - 215, ry + cardH / 2);
 
-    // Heartbeat pulse dot
     const hb = 0.5 + 0.5 * Math.sin(t * 6 + i * 1.3);
     ctx.fillStyle = hb > 0.3 ? '#00ff88' : '#059669';
-    ctx.font = '900 28px "JetBrains Mono", monospace';
-    ctx.fillText(`● ${reg.status}`, w - 105, ry + cardH / 2);
+    ctx.font = '900 22px "JetBrains Mono", monospace';
+    ctx.fillText(`● ${reg.status}`, w - 75, ry + cardH / 2);
   });
 
-  // 7. Security & Compliance Badges with Active Highlighting Shimmer
-  const secY = 1170;
-  const secBoxH = 500;
+  // 7. Security & Compliance Badges
+  const secY = 910;
+  const secBoxH = 410;
   ctx.fillStyle = 'rgba(2, 12, 34, 0.97)';
-  ctx.fillRect(70, secY, w - 140, secBoxH);
+  ctx.fillRect(50, secY, w - 100, secBoxH);
   ctx.strokeStyle = '#0284c7';
-  ctx.lineWidth = 4;
-  ctx.strokeRect(70, secY, w - 140, secBoxH);
+  ctx.lineWidth = 3;
+  ctx.strokeRect(50, secY, w - 100, secBoxH);
 
-  ctx.font = '900 42px "JetBrains Mono", monospace';
+  ctx.font = '900 32px "JetBrains Mono", monospace';
   ctx.fillStyle = '#38bdf8';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('ENTERPRISE SECURITY SUITE', w / 2, secY + 65);
+  ctx.fillText('ENTERPRISE SECURITY SUITE', w / 2, secY + 55);
 
   const badges = [
     'SOC 2 TYPE II CERTIFIED',
@@ -226,10 +223,10 @@ function renderRightScreenCanvas(canvas, t = 0) {
   const activeBadgeIndex = Math.floor((t * 1.5) % badges.length);
 
   badges.forEach((b, i) => {
-    const by = secY + 145 + i * 85;
+    const by = secY + 120 + i * 70;
     const isLit = i === activeBadgeIndex;
 
-    ctx.font = '900 34px "JetBrains Mono", monospace';
+    ctx.font = '900 26px "JetBrains Mono", monospace';
     ctx.fillStyle = isLit ? '#ffffff' : '#00ff88';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -237,25 +234,25 @@ function renderRightScreenCanvas(canvas, t = 0) {
   });
 
   // 8. Scanning Laser Line on Right Screen
-  const scanlineY = ((t * 240) % (h - 140)) + 70;
-  const scanGrad = ctx.createLinearGradient(0, scanlineY - 35, 0, scanlineY + 35);
+  const scanlineY = ((t * 200) % (h - 120)) + 60;
+  const scanGrad = ctx.createLinearGradient(0, scanlineY - 28, 0, scanlineY + 28);
   scanGrad.addColorStop(0, 'rgba(2, 132, 199, 0)');
   scanGrad.addColorStop(0.5, 'rgba(56, 189, 248, 0.35)');
   scanGrad.addColorStop(1, 'rgba(2, 132, 199, 0)');
   ctx.fillStyle = scanGrad;
-  ctx.fillRect(35, scanlineY - 35, w - 70, 70);
+  ctx.fillRect(25, scanlineY - 28, w - 50, 56);
 
   // 9. Bottom Ticker
-  ctx.font = '900 34px "JetBrains Mono", monospace';
+  ctx.font = '900 24px "JetBrains Mono", monospace';
   ctx.fillStyle = '#e2e8f0';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('LEADNEX TELEPHONY CLOUD · 99.99% SLA', w / 2, h - 75);
+  ctx.fillText('LEADNEX TELEPHONY CLOUD · 99.99% SLA', w / 2, h - 55);
 }
 
 /**
  * LeadnexRightScreen — Right Skyscraper LED Telemetry Matrix
- * Fully animated at smooth 30 FPS with rotating radar, live latency jitter and pulsing nodes.
+ * Fully animated with rotating radar and lag-free scroll-aware updates.
  */
 export default function LeadnexRightScreen({ position = [0, 0, 0], rotation = [0, 0, 0], scale = [1, 1, 1] }) {
   const meshRef = useRef();
@@ -292,9 +289,7 @@ export default function LeadnexRightScreen({ position = [0, 0, 0], rotation = [0
     }
   }, [canvas, texture]);
 
-  // Lag-free scroll-aware animation loop:
-  // - Pauses texture upload when scrolled past hero (zero waste!)
-  // - Throttles during active scroll gestures to guarantee 60fps butter-smooth scroll
+  // Lag-free scroll-aware animation loop
   useFrame((state) => {
     const scrollY = window.__lenis?.scroll ?? window.scrollY ?? 0;
     if (scrollY > window.innerHeight * 0.85) return;
