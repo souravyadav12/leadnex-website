@@ -59,7 +59,7 @@ function TowerFloorSlabs({ count = 20, width = 8.5, depth = 9.5, startY = 5, ste
 }
 
 /* ── Left Corporate Tower (with Front-Facing LEADNEX.AI Billboard) ────────── */
-function LeftSkyscraper() {
+function LeftSkyscraper({ posX = 10.2, scale = 1.0 }) {
   const beaconRef = useRef();
 
   useFrame((state) => {
@@ -70,7 +70,7 @@ function LeftSkyscraper() {
   });
 
   return (
-    <group position={[-10.2, 0, 0]}>
+    <group position={[-posX, 0, 0]} scale={[scale, scale, scale]}>
       {/* 1. Tower Podium Base (y: 0 to 6) */}
       <mesh position={[0, 3, 0]}>
         <boxGeometry args={[10.5, 6, 11.5]} />
@@ -135,7 +135,7 @@ function LeftSkyscraper() {
 }
 
 /* ── Right Corporate Tower (Flanking the Right Side) ─────────────────────── */
-function RightSkyscraper() {
+function RightSkyscraper({ posX = 10.2, scale = 1.0 }) {
   const beaconRef = useRef();
 
   useFrame((state) => {
@@ -146,7 +146,7 @@ function RightSkyscraper() {
   });
 
   return (
-    <group position={[10.2, 0, 0]}>
+    <group position={[posX, 0, 0]} scale={[scale, scale, scale]}>
       {/* 1. Tower Podium Base (y: 0 to 6) */}
       <mesh position={[0, 3, 0]}>
         <boxGeometry args={[10.5, 6, 11.5]} />
@@ -210,12 +210,12 @@ function RightSkyscraper() {
 }
 
 /* ── Central Connecting Skybridge Arching Over the Opening ───────────────── */
-function SkybridgeConnector() {
+function SkybridgeConnector({ width = 12.2, posY = 31 }) {
   return (
-    <group position={[0, 31, 0]}>
+    <group position={[0, posY, 0]}>
       {/* Skybridge Glass Enclosure spanning from Left to Right Tower */}
       <mesh>
-        <boxGeometry args={[12.2, 3.6, 4.2]} />
+        <boxGeometry args={[width, 3.6, 4.2]} />
         <meshStandardMaterial
           color="#061a38"
           roughness={0.15}
@@ -225,13 +225,13 @@ function SkybridgeConnector() {
         />
       </mesh>
       <lineSegments>
-        <edgesGeometry args={[new THREE.BoxGeometry(12.24, 3.64, 4.24)]} />
+        <edgesGeometry args={[new THREE.BoxGeometry(width + 0.04, 3.64, 4.24)]} />
         <lineBasicMaterial color="#00f0ff" transparent opacity={0.85} />
       </lineSegments>
 
       {/* Internal Walkway Floor Slab */}
       <mesh position={[0, -1.2, 0]}>
-        <boxGeometry args={[12.0, 0.3, 3.8]} />
+        <boxGeometry args={[Math.max(0.1, width - 0.2), 0.3, 3.8]} />
         <meshStandardMaterial color="#020814" roughness={0.4} metalness={0.8} />
       </mesh>
 
@@ -242,7 +242,7 @@ function SkybridgeConnector() {
 }
 
 /* ── Central Portal Runway & Light Rails (Where Content Emerges) ─────────── */
-function CentralOpeningRunway() {
+function CentralOpeningRunway({ scaleX = 1.0, scaleY = 1.0 }) {
   const lineCount = 6;
   const Z_START = 22;
   const Z_END = -35;
@@ -266,7 +266,7 @@ function CentralOpeningRunway() {
   }, []);
 
   return (
-    <group>
+    <group scale={[scaleX, scaleY, 1]}>
       {/* Dynamic Runway Light Conduits on Ground */}
       <lineSegments geometry={runwayGeo}>
         <lineBasicMaterial
@@ -366,27 +366,64 @@ function AtmosphericParticles({ count = 280 }) {
 }
 
 /* ── Front-Facing Cinematic Scroll Camera Controller ────────────────────── */
-function FrontFacingCameraRig({ small }) {
+function FrontFacingCameraRig({ layout }) {
   const { camera } = useThree();
 
   useFrame(() => {
     // Deterministic scroll progress 0.0 -> 1.0 (freezes instantly on scroll stop)
     const p = Math.max(0, Math.min(1, scrollState.progress));
 
-    // Base front-facing framing:
-    // Both buildings clearly visible on left (x = -10.2) and right (x = +10.2).
-    // Central opening wide open in the middle.
-    // Subtle forward push as scroll progresses (z goes from 27.5 to 23.5)
-    const baseZ = small ? 32.0 : 27.0;
+    const baseZ = layout?.baseZ ?? 27.0;
     const targetZ = baseZ - p * 3.8;
-    const targetY = 14.5 + p * 2.2;
+    const targetY = (layout?.baseY ?? 14.5) + p * 2.2;
     const targetX = 0;
 
     camera.position.set(targetX, targetY, targetZ);
-    camera.lookAt(0, 14.5 + p * 1.2, 0);
+    camera.lookAt(0, (layout?.baseY ?? 14.5) + p * 1.2, 0);
   });
 
   return null;
+}
+
+/* ── Responsive 3D Twin Skyscraper Rig (Dynamically Adapts to Mobile & Desktop) ── */
+function ResponsiveSceneRig({ reduced = false }) {
+  const { size } = useThree();
+  const aspect = size.width / Math.max(1, size.height);
+
+  // Smooth responsive interpolation between Mobile Portrait (aspect <= 0.55) and Desktop (aspect >= 1.25)
+  const k = Math.max(0, Math.min(1, (aspect - 0.55) / (1.25 - 0.55)));
+
+  const layout = useMemo(() => {
+    return {
+      posX: 4.2 + 6.0 * k,
+      scale: 0.74 + 0.26 * k,
+      skybridgeWidth: 3.5 + 8.7 * k,
+      skybridgeY: 31 * (0.74 + 0.26 * k),
+      runwayScaleX: 0.46 + 0.54 * k,
+      baseZ: 34.0 - 7.0 * k,
+      baseY: 13.8 + 0.7 * k,
+      isMobile: aspect < 0.75,
+    };
+  }, [k, aspect]);
+
+  return (
+    <>
+      {/* ── TWO MASSIVE TWIN BUILDINGS SIDE BY SIDE ── */}
+      <LeftSkyscraper posX={layout.posX} scale={layout.scale} />
+      <RightSkyscraper posX={layout.posX} scale={layout.scale} />
+      <SkybridgeConnector width={layout.skybridgeWidth} posY={layout.skybridgeY} />
+
+      {/* ── CENTRAL OPENING RUNWAY (Content Emerges Along Here) ── */}
+      <CentralOpeningRunway scaleX={layout.runwayScaleX} />
+
+      {/* Ground Plaza & Environment */}
+      <GroundPlaza />
+      {!reduced && <AtmosphericParticles count={layout.isMobile ? 120 : 280} />}
+
+      {/* Front-Facing Scroll Camera Rig */}
+      <FrontFacingCameraRig layout={layout} />
+    </>
+  );
 }
 
 /* ── Root 3D Scene Component ─────────────────────────────────────────────── */
@@ -439,10 +476,10 @@ export default function LeadnexBuildingScene({ small = false, reduced = false })
             toneMappingExposure: 1.15,
           }}
           camera={{
-            fov: small ? 54 : 46,
+            fov: 50,
             near: 0.1,
             far: 300,
-            position: [0, 14.5, small ? 32.0 : 27.0],
+            position: [0, 14.5, 27.0],
           }}
           dpr={[1, 1.5]}
         >
@@ -455,20 +492,8 @@ export default function LeadnexBuildingScene({ small = false, reduced = false })
           <directionalLight position={[-15, 45, 25]} color="#38bdf8" intensity={2.6} />
           <directionalLight position={[15, 45, 25]} color="#00f0ff" intensity={2.2} />
 
-          {/* ── TWO MASSIVE TWIN BUILDINGS SIDE BY SIDE ── */}
-          <LeftSkyscraper />
-          <RightSkyscraper />
-          <SkybridgeConnector />
-
-          {/* ── CENTRAL OPENING RUNWAY (Content Emerges Along Here) ── */}
-          <CentralOpeningRunway />
-
-          {/* Ground Plaza & Environment */}
-          <GroundPlaza />
-          {!reduced && <AtmosphericParticles count={small ? 140 : 280} />}
-
-          {/* Front-Facing Scroll Camera Rig */}
-          <FrontFacingCameraRig small={small} />
+          {/* ── RESPONSIVE 3D SCENE RIG ── */}
+          <ResponsiveSceneRig reduced={reduced} />
         </Canvas>
       </div>
 

@@ -185,21 +185,21 @@ export default function EmergingBuildingScenes() {
         {/* ── INITIAL PROMPT (p: 0.00 – 0.15) ── */}
         <div
           ref={promptRef}
-          className="absolute inset-x-0 bottom-12 sm:bottom-16 flex flex-col items-center justify-center text-center pointer-events-auto transition-opacity"
+          className="absolute inset-x-0 bottom-8 sm:bottom-16 flex flex-col items-center justify-center text-center pointer-events-auto transition-opacity px-3"
         >
-          <div className="glass-hero rounded-full px-7 py-3 border border-cyan/50 bg-[#040a18]/90 shadow-[0_0_35px_rgba(0,240,255,0.35)]">
-            <div className="flex items-center gap-3">
-              <span className="relative flex h-2.5 w-2.5">
+          <div className="glass-hero rounded-full px-4 sm:px-7 py-2 sm:py-3 border border-cyan/50 bg-[#040a18]/90 shadow-[0_0_35px_rgba(0,240,255,0.35)] max-w-[92vw]">
+            <div className="flex items-center justify-center gap-2 sm:gap-3">
+              <span className="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5 flex-shrink-0">
                 <span className="absolute inset-0 animate-ping rounded-full bg-cyan opacity-75" />
-                <span className="relative h-2.5 w-2.5 rounded-full bg-cyan" />
+                <span className="relative h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-cyan" />
               </span>
-              <span className="font-mono text-[11.5px] font-bold uppercase tracking-[0.22em] text-cyan">
+              <span className="font-mono text-[9px] sm:text-[11.5px] font-bold uppercase tracking-[0.12em] sm:tracking-[0.22em] text-cyan whitespace-nowrap">
                 LEADNEX.AI HEADQUARTERS · SCROLL TO EXPLORE
               </span>
-              <ChevronDown className="h-4 w-4 text-cyan animate-bounce" />
+              <ChevronDown className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-cyan animate-bounce flex-shrink-0" />
             </div>
           </div>
-          <p className="mt-3 font-mono text-[10.5px] text-slate-300 uppercase tracking-widest drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
+          <p className="mt-2 sm:mt-3 font-mono text-[9px] sm:text-[10.5px] text-slate-300 uppercase tracking-wider sm:tracking-widest drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
             Twin Corporate Towers · Content Emerges From Central Opening
           </p>
         </div>
@@ -208,7 +208,7 @@ export default function EmergingBuildingScenes() {
         <div
           ref={panel1Ref}
           style={{ display: 'none', willChange: 'transform, opacity' }}
-          className="w-full max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border border-cyan/40 bg-[#030914]/94 p-6 sm:p-10 shadow-[0_25px_90px_rgba(0,240,255,0.22)]"
+          className="w-full max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border border-cyan/40 bg-[#030914]/94 p-5 sm:p-10 shadow-[0_25px_90px_rgba(0,240,255,0.22)]"
         >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center w-full">
             <div className="lg:col-span-7">
@@ -282,7 +282,7 @@ export default function EmergingBuildingScenes() {
         <div
           ref={panel2Ref}
           style={{ display: 'none', willChange: 'transform, opacity' }}
-          className="w-full max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border border-blue-500/40 bg-[#030914]/94 p-6 sm:p-10 shadow-[0_25px_90px_rgba(2,132,199,0.22)]"
+          className="w-full max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border border-blue-500/40 bg-[#030914]/94 p-5 sm:p-10 shadow-[0_25px_90px_rgba(2,132,199,0.22)]"
         >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center w-full">
             <div className="lg:col-span-7">
