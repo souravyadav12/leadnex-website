@@ -87,9 +87,9 @@ export const hero = {
   ],
 };
 
-/* ── 01 · Live demo ─────────────────────────────────────────────────────── */
+/* ── 03 · Live demo ─────────────────────────────────────────────────────── */
 export const demo = {
-  index: '01',
+  index: '03',
   badge: 'Interactive Voice Simulation',
   title: 'Experience LEADNEX',
   titleAccent: 'In Real-Time',
@@ -225,9 +225,9 @@ export const workflow = {
   ],
 };
 
-/* ── 03 · Features ──────────────────────────────────────────────────────── */
+/* ── 01 · Features ──────────────────────────────────────────────────────── */
 export const features = {
-  index: '03',
+  index: '01',
   badge: 'Enterprise Platform Capabilities',
   title: 'Everything Required to',
   titleAccent: 'Scale Voice Operations',
@@ -314,9 +314,9 @@ export const features = {
   },
 };
 
-/* ── 04 · Testimonials ──────────────────────────────────────────────────── */
+/* ── 08 · Testimonials ──────────────────────────────────────────────────── */
 export const testimonials = {
-  index: '04',
+  index: '08',
   badge: 'Customer Proof',
   title: 'Trusted by High-Growth',
   titleAccent: 'Enterprises',
@@ -381,9 +381,9 @@ export const testimonials = {
   ],
 };
 
-/* ── 05 · Pricing ───────────────────────────────────────────────────────── */
+/* ── 04 · Pricing ───────────────────────────────────────────────────────── */
 export const pricing = {
-  index: '05',
+  index: '04',
   badge: 'Pricing & Plans',
   title: 'Transparent, Scalable',
   titleAccent: 'Pricing',
@@ -473,9 +473,9 @@ export const pricing = {
   },
 };
 
-/* ── 06 · Security & compliance ─────────────────────────────────────────── */
+/* ── 07 · Security & compliance ─────────────────────────────────────────── */
 export const security = {
-  index: '06',
+  index: '07',
   badge: 'Security & Enterprise Trust',
   title: 'Cryptographic Protection &',
   titleAccent: 'Compliance',
@@ -507,9 +507,9 @@ export const security = {
   ctaLabel: 'REQUEST COMPLIANCE PACK →',
 };
 
-/* ── 07 · FAQ ───────────────────────────────────────────────────────────── */
+/* ── 06 · FAQ ───────────────────────────────────────────────────────────── */
 export const faq = {
-  index: '07',
+  index: '06',
   badge: 'FAQ & Knowledge',
   title: 'Frequently Asked Questions',
   subtitle: 'Everything you need to know about deploying and scaling LEADNEX.AI voice agents.',
@@ -543,9 +543,9 @@ export const faq = {
   ],
 };
 
-/* ── Lead capture / book a demo ─────────────────────────────────────────── */
+/* ── 05 · Lead capture / book a demo ─────────────────────────────────────────── */
 export const lead = {
-  index: '08',
+  index: '05',
   badge: 'Get Started Today',
   title: 'Start Automating',
   titleAccent: 'Your Voice Operations',
