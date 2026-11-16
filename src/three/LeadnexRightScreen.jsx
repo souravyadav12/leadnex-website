@@ -1,9 +1,9 @@
-import { useMemo, useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 
 /**
- * renderRightScreenCanvas — Synchronous Pure Canvas Renderer for Right Skyscraper Matrix
+ * renderRightScreenCanvas — High-Definition Synchronous Canvas Renderer for Right Skyscraper Matrix
+ * Rendered at 1024x2048 with large, crisp typography and high contrast.
  */
 function renderRightScreenCanvas(canvas, t = 0) {
   const ctx = canvas.getContext('2d');
@@ -13,18 +13,18 @@ function renderRightScreenCanvas(canvas, t = 0) {
   const h = canvas.height;
 
   // 1. High-Contrast Deep Navy Blue Background
-  ctx.fillStyle = '#081a3a';
+  ctx.fillStyle = '#06122c';
   ctx.fillRect(0, 0, w, h);
 
   // Glowing Circuit Grid Lines
-  ctx.strokeStyle = 'rgba(2, 132, 199, 0.18)';
-  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = 'rgba(2, 132, 199, 0.22)';
+  ctx.lineWidth = 2;
   ctx.beginPath();
-  for (let x = 0; x < w; x += 32) {
+  for (let x = 0; x < w; x += 64) {
     ctx.moveTo(x, 0);
     ctx.lineTo(x, h);
   }
-  for (let y = 0; y < h; y += 32) {
+  for (let y = 0; y < h; y += 64) {
     ctx.moveTo(0, y);
     ctx.lineTo(w, y);
   }
@@ -32,60 +32,62 @@ function renderRightScreenCanvas(canvas, t = 0) {
 
   // 2. Thick Outer Border & High-Tech Corner Brackets
   ctx.strokeStyle = '#0284c7';
-  ctx.lineWidth = 12;
-  ctx.strokeRect(16, 16, w - 32, h - 32);
+  ctx.lineWidth = 18;
+  ctx.strokeRect(28, 28, w - 56, h - 56);
 
   ctx.strokeStyle = '#38bdf8';
-  ctx.lineWidth = 14;
-  const corner = 50;
+  ctx.lineWidth = 22;
+  const corner = 90;
   ctx.beginPath();
   // Top-Left
-  ctx.moveTo(16, 16 + corner); ctx.lineTo(16, 16); ctx.lineTo(16 + corner, 16);
+  ctx.moveTo(28, 28 + corner); ctx.lineTo(28, 28); ctx.lineTo(28 + corner, 28);
   // Top-Right
-  ctx.moveTo(w - 16 - corner, 16); ctx.lineTo(w - 16, 16); ctx.lineTo(w - 16, 16 + corner);
+  ctx.moveTo(w - 28 - corner, 28); ctx.lineTo(w - 28, 28); ctx.lineTo(w - 28, 28 + corner);
   // Bottom-Left
-  ctx.moveTo(16, h - 16 - corner); ctx.lineTo(16, h - 16); ctx.lineTo(16 + corner, h - 16);
+  ctx.moveTo(28, h - 28 - corner); ctx.lineTo(28, h - 28); ctx.lineTo(28 + corner, h - 28);
   // Bottom-Right
-  ctx.moveTo(w - 16 - corner, h - 16); ctx.lineTo(w - 16, h - 16); ctx.lineTo(w - 16, h - 16 - corner);
+  ctx.moveTo(w - 28 - corner, h - 28); ctx.lineTo(w - 28, h - 28); ctx.lineTo(w - 28, h - 28 - corner);
   ctx.stroke();
 
   // 3. Status Header
   ctx.fillStyle = 'rgba(2, 132, 199, 0.25)';
-  ctx.fillRect(30, 40, w - 60, 58);
+  ctx.fillRect(56, 70, w - 112, 100);
   ctx.strokeStyle = '#0284c7';
-  ctx.lineWidth = 2.5;
-  ctx.strokeRect(30, 40, w - 60, 58);
+  ctx.lineWidth = 4;
+  ctx.strokeRect(56, 70, w - 112, 100);
 
-  ctx.font = 'bold 21px "JetBrains Mono", monospace';
+  ctx.font = 'bold 36px "JetBrains Mono", monospace';
   ctx.fillStyle = '#38bdf8';
   ctx.textAlign = 'left';
-  ctx.fillText('LEADNEX // TOWER 02', 48, 77);
+  ctx.textBaseline = 'middle';
+  ctx.fillText('LEADNEX // TOWER 02', 88, 120);
 
   ctx.fillStyle = '#00f0ff';
   ctx.beginPath();
-  ctx.arc(w - 120, 69, 9, 0, Math.PI * 2);
+  ctx.arc(w - 240, 120, 14, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.font = 'bold 16px "JetBrains Mono", monospace';
+  ctx.font = 'bold 28px "JetBrains Mono", monospace';
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'right';
-  ctx.fillText('EDGE MESH', w - 45, 75);
+  ctx.fillText('EDGE MESH', w - 85, 120);
 
   // 4. Section Title: GLOBAL TELEPHONY RADAR
-  ctx.font = 'bold 25px "Inter", sans-serif';
+  ctx.font = 'bold 44px "Inter", sans-serif';
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'center';
-  ctx.fillText('GLOBAL VOICE GRID', w / 2, 135);
+  ctx.textBaseline = 'middle';
+  ctx.fillText('GLOBAL VOICE GRID', w / 2, 230);
 
   // 5. High-Tech Rotating Radar Display
   const radarCX = w / 2;
-  const radarCY = 230;
-  const radarR = 75;
+  const radarCY = 410;
+  const radarR = 140;
 
   // Concentric Rings
-  ctx.strokeStyle = 'rgba(2, 132, 199, 0.38)';
-  ctx.lineWidth = 1.5;
-  for (let r = 25; r <= radarR; r += 25) {
+  ctx.strokeStyle = 'rgba(2, 132, 199, 0.45)';
+  ctx.lineWidth = 2.5;
+  for (let r = 45; r <= radarR; r += 45) {
     ctx.beginPath();
     ctx.arc(radarCX, radarCY, r, 0, Math.PI * 2);
     ctx.stroke();
@@ -100,7 +102,7 @@ function renderRightScreenCanvas(canvas, t = 0) {
   // Radar Sweep Arm
   const angle = t * 2.8;
   ctx.strokeStyle = '#00f0ff';
-  ctx.lineWidth = 2.5;
+  ctx.lineWidth = 4;
   ctx.beginPath();
   ctx.moveTo(radarCX, radarCY);
   ctx.lineTo(radarCX + Math.cos(angle) * radarR, radarCY + Math.sin(angle) * radarR);
@@ -108,24 +110,25 @@ function renderRightScreenCanvas(canvas, t = 0) {
 
   // Active Edge Nodes
   const nodes = [
-    { x: radarCX - 40, y: radarCY - 30 },
-    { x: radarCX + 35, y: radarCY - 20 },
-    { x: radarCX + 20, y: radarCY + 40 },
-    { x: radarCX - 30, y: radarCY + 35 },
+    { x: radarCX - 75, y: radarCY - 55 },
+    { x: radarCX + 68, y: radarCY - 40 },
+    { x: radarCX + 40, y: radarCY + 75 },
+    { x: radarCX - 58, y: radarCY + 65 },
   ];
   ctx.fillStyle = '#00f0ff';
   nodes.forEach((n) => {
     ctx.beginPath();
-    ctx.arc(n.x, n.y, 4.5, 0, Math.PI * 2);
+    ctx.arc(n.x, n.y, 8, 0, Math.PI * 2);
     ctx.fill();
   });
 
-  // 6. Global Edge Clusters List
-  const listY = 340;
-  ctx.font = 'bold 17px "JetBrains Mono", monospace';
+  // 6. Global Edge Clusters List (High-Contrast & Large Fonts)
+  const listY = 615;
+  ctx.font = 'bold 32px "JetBrains Mono", monospace';
   ctx.fillStyle = '#38bdf8';
   ctx.textAlign = 'left';
-  ctx.fillText('MULTI-REGION EDGE ROUTING', 40, listY);
+  ctx.textBaseline = 'middle';
+  ctx.fillText('MULTI-REGION EDGE ROUTING', 70, listY);
 
   const regions = [
     { name: 'US-EAST (VIRGINIA)', ping: '12ms', status: 'HEALTHY' },
@@ -136,39 +139,42 @@ function renderRightScreenCanvas(canvas, t = 0) {
   ];
 
   regions.forEach((reg, i) => {
-    const ry = listY + 36 + i * 44;
-    ctx.fillStyle = 'rgba(2, 10, 28, 0.88)';
-    ctx.fillRect(40, ry - 22, w - 80, 36);
-    ctx.strokeStyle = 'rgba(2, 132, 199, 0.45)';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(40, ry - 22, w - 80, 36);
+    const ry = listY + 65 + i * 82;
+    ctx.fillStyle = 'rgba(2, 10, 28, 0.94)';
+    ctx.fillRect(70, ry - 35, w - 140, 70);
+    ctx.strokeStyle = 'rgba(2, 132, 199, 0.55)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(70, ry - 35, w - 140, 70);
 
-    ctx.font = 'bold 12.5px "JetBrains Mono", monospace';
+    ctx.font = 'bold 26px "JetBrains Mono", monospace';
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'left';
-    ctx.fillText(reg.name, 52, ry);
+    ctx.textBaseline = 'middle';
+    ctx.fillText(reg.name, 95, ry);
 
+    ctx.font = 'bold 26px "JetBrains Mono", monospace';
     ctx.fillStyle = '#00f0ff';
     ctx.textAlign = 'right';
-    ctx.fillText(reg.ping, w - 120, ry);
+    ctx.fillText(reg.ping, w - 240, ry);
 
     ctx.fillStyle = '#10b981';
-    ctx.font = 'bold 11px "JetBrains Mono", monospace';
-    ctx.fillText(reg.status, w - 52, ry);
+    ctx.font = 'bold 23px "JetBrains Mono", monospace';
+    ctx.fillText(`● ${reg.status}`, w - 95, ry);
   });
 
-  // 7. Security & Compliance Badges
-  const secY = 620;
-  ctx.fillStyle = 'rgba(2, 10, 28, 0.92)';
-  ctx.fillRect(40, secY, w - 80, 270);
+  // 7. Security & Compliance Badges (Crystal Clear & Readable)
+  const secY = 1170;
+  ctx.fillStyle = 'rgba(2, 10, 28, 0.95)';
+  ctx.fillRect(70, secY, w - 140, 520);
   ctx.strokeStyle = '#0284c7';
-  ctx.lineWidth = 1.5;
-  ctx.strokeRect(40, secY, w - 80, 270);
+  ctx.lineWidth = 3;
+  ctx.strokeRect(70, secY, w - 140, 520);
 
-  ctx.font = 'bold 17px "JetBrains Mono", monospace';
+  ctx.font = 'bold 34px "JetBrains Mono", monospace';
   ctx.fillStyle = '#38bdf8';
   ctx.textAlign = 'center';
-  ctx.fillText('ENTERPRISE SECURITY SUITE', w / 2, secY + 40);
+  ctx.textBaseline = 'middle';
+  ctx.fillText('ENTERPRISE SECURITY SUITE', w / 2, secY + 65);
 
   const badges = [
     'SOC 2 TYPE II CERTIFIED',
@@ -179,31 +185,33 @@ function renderRightScreenCanvas(canvas, t = 0) {
   ];
 
   badges.forEach((b, i) => {
-    const by = secY + 80 + i * 36;
-    ctx.font = 'bold 13px "JetBrains Mono", monospace';
-    ctx.fillStyle = '#10b981';
+    const by = secY + 140 + i * 72;
+    ctx.font = 'bold 27px "JetBrains Mono", monospace';
+    ctx.fillStyle = '#34d399';
     ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
     ctx.fillText(`✓  ${b}`, w / 2, by);
   });
 
   // 8. Bottom Ticker
-  ctx.font = 'bold 14px "JetBrains Mono", monospace';
+  ctx.font = 'bold 28px "JetBrains Mono", monospace';
   ctx.fillStyle = '#94a3b8';
   ctx.textAlign = 'center';
-  ctx.fillText('LEADNEX CORE TELEPHONY · 99.99% SLA', w / 2, h - 40);
+  ctx.textBaseline = 'middle';
+  ctx.fillText('LEADNEX CORE TELEPHONY · 99.99% SLA', w / 2, h - 75);
 }
 
 /**
  * LeadnexRightScreen — Right Skyscraper LED Telemetry Matrix
- * Bulletproof synchronous initialization: renders canvas BEFORE creating CanvasTexture.
+ * Rendered at 1024x2048 with anisotropic filtering and mipmapping for crystal clear readability.
  */
 export default function LeadnexRightScreen({ position = [0, 0, 0], rotation = [0, 0, 0], scale = [1, 1, 1] }) {
   const meshRef = useRef();
 
-  const { texture } = useMemo(() => {
+  const { texture, canvas } = useMemo(() => {
     const c = document.createElement('canvas');
-    c.width = 512;
-    c.height = 1024;
+    c.width = 1024;
+    c.height = 2048;
 
     // Render IMMEDIATELY and synchronously so texture is never blank
     renderRightScreenCanvas(c, 0);
@@ -211,13 +219,25 @@ export default function LeadnexRightScreen({ position = [0, 0, 0], rotation = [0
     const tex = new THREE.CanvasTexture(c);
     tex.wrapS = THREE.ClampToEdgeWrapping;
     tex.wrapT = THREE.ClampToEdgeWrapping;
-    tex.minFilter = THREE.LinearFilter;
+    tex.generateMipmaps = true;
+    tex.minFilter = THREE.LinearMipmapLinearFilter;
     tex.magFilter = THREE.LinearFilter;
-    tex.generateMipmaps = false;
+    tex.anisotropy = 16;
+    tex.colorSpace = THREE.SRGBColorSpace;
     tex.needsUpdate = true;
 
-    return { texture: tex };
+    return { texture: tex, canvas: c };
   }, []);
+
+  // When web fonts finish loading, re-render immediately for sharp vector glyphs
+  useEffect(() => {
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(() => {
+        renderRightScreenCanvas(canvas, 0);
+        texture.needsUpdate = true;
+      });
+    }
+  }, [canvas, texture]);
 
   return (
     <group position={position} rotation={rotation} scale={scale}>
