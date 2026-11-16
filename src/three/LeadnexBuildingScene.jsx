@@ -430,6 +430,7 @@ function ResponsiveSceneRig({ reduced = false }) {
 export default function LeadnexBuildingScene({ small = false, reduced = false }) {
   const canvasWrapRef = useRef(null);
   const vignetteRef = useRef(null);
+  const [isHeroActive, setIsHeroActive] = useState(true);
 
   useEffect(() => {
     const cleanup = initScrollController();
@@ -437,6 +438,7 @@ export default function LeadnexBuildingScene({ small = false, reduced = false })
     const setBackdrop = (isDark) => {
       if (canvasWrapRef.current) canvasWrapRef.current.style.opacity = isDark ? '0.14' : '1';
       if (vignetteRef.current) vignetteRef.current.style.opacity = isDark ? '0.96' : '0';
+      setIsHeroActive(!isDark);
     };
 
     const st = ScrollTrigger.create({
@@ -481,7 +483,8 @@ export default function LeadnexBuildingScene({ small = false, reduced = false })
             far: 300,
             position: [0, 14.5, 27.0],
           }}
-          dpr={[1, 1.5]}
+          dpr={[1, 1.25]}
+          frameloop={isHeroActive ? 'always' : 'never'}
         >
           {/* Deep Cinematic Atmosphere */}
           <color attach="background" args={['#02050e']} />

@@ -36,7 +36,7 @@ export default function SmoothScroll() {
       lenis.raf(time * 1000);
     };
     gsap.ticker.add(updateTicker);
-    gsap.ticker.lagSmoothing(0);
+    gsap.ticker.lagSmoothing(500, 33);
 
     const onAnchorClick = (e) => {
       const anchor = e.target.closest?.('a[href*="#"]');

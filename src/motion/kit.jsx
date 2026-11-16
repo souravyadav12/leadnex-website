@@ -174,6 +174,7 @@ export function Parallax({ children, className, distance = 60, offset = ['start 
 /* ── Magnetic — pointer-following hover ─────────────────────────────────── */
 export function Magnetic({ children, strength = 0.28, className, as = 'div' }) {
   const ref = useRef(null);
+  const rectRef = useRef(null);
   const reduced = useFMMotionReduced();
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -186,13 +187,21 @@ export function Magnetic({ children, strength = 0.28, className, as = 'div' }) {
   return (
     <Tag
       ref={ref}
+      onPointerEnter={() => {
+        if (ref.current) rectRef.current = ref.current.getBoundingClientRect();
+      }}
       onPointerMove={(e) => {
-        const r = ref.current?.getBoundingClientRect();
+        let r = rectRef.current;
+        if (!r && ref.current) {
+          r = ref.current.getBoundingClientRect();
+          rectRef.current = r;
+        }
         if (!r) return;
         x.set((e.clientX - r.left - r.width / 2) * strength);
         y.set((e.clientY - r.top - r.height / 2) * strength);
       }}
       onPointerLeave={() => {
+        rectRef.current = null;
         x.set(0);
         y.set(0);
       }}
@@ -207,6 +216,7 @@ export function Magnetic({ children, strength = 0.28, className, as = 'div' }) {
 /* ── Tilt — 3D card tilt on pointer ─────────────────────────────────────── */
 export function Tilt({ children, className, max = 7, glare = true }) {
   const ref = useRef(null);
+  const rectRef = useRef(null);
   const reduced = useFMMotionReduced();
   const mx = useMotionValue(0.5);
   const my = useMotionValue(0.5);
@@ -214,21 +224,27 @@ export function Tilt({ children, className, max = 7, glare = true }) {
   const sy = useSpring(my, { stiffness: 180, damping: 22 });
   const rotateX = useTransform(sy, [0, 1], [max, -max]);
   const rotateY = useTransform(sx, [0, 1], [-max, max]);
-  const glareX = useTransform(sx, [0, 1], ['0%', '100%']);
-  const glareY = useTransform(sy, [0, 1], ['0%', '100%']);
 
   if (reduced) return <div className={className}>{children}</div>;
 
   return (
     <motion.div
       ref={ref}
+      onPointerEnter={() => {
+        if (ref.current) rectRef.current = ref.current.getBoundingClientRect();
+      }}
       onPointerMove={(e) => {
-        const r = ref.current?.getBoundingClientRect();
+        let r = rectRef.current;
+        if (!r && ref.current) {
+          r = ref.current.getBoundingClientRect();
+          rectRef.current = r;
+        }
         if (!r) return;
-        mx.set((e.clientX - r.left) / r.width);
-        my.set((e.clientY - r.top) / r.height);
+        mx.set((e.clientX - r.left) / Math.max(1, r.width));
+        my.set((e.clientY - r.top) / Math.max(1, r.height));
       }}
       onPointerLeave={() => {
+        rectRef.current = null;
         mx.set(0.5);
         my.set(0.5);
       }}
@@ -237,14 +253,9 @@ export function Tilt({ children, className, max = 7, glare = true }) {
     >
       {children}
       {glare && (
-        <motion.span
+        <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 transition-opacity duration-500 group-hover/tilt:opacity-100"
-          style={{
-            background: `radial-gradient(320px circle at ${glareX.get()} ${glareY.get()}, rgba(255,255,255,0.07), transparent 70%)`,
-            backgroundPositionX: glareX,
-            backgroundPositionY: glareY,
-          }}
+          className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 transition-opacity duration-300 group-hover/tilt:opacity-100 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.08),transparent_70%)]"
         />
       )}
     </motion.div>

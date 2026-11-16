@@ -222,10 +222,10 @@ export default function LeadnexBillboard({ position = [0, 0, 0], rotation = [0, 
     const tex = new THREE.CanvasTexture(c);
     tex.wrapS = THREE.ClampToEdgeWrapping;
     tex.wrapT = THREE.ClampToEdgeWrapping;
-    tex.generateMipmaps = true;
-    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    tex.generateMipmaps = false;
+    tex.minFilter = THREE.LinearFilter;
     tex.magFilter = THREE.LinearFilter;
-    tex.anisotropy = 16;
+    tex.anisotropy = 2;
     tex.colorSpace = THREE.SRGBColorSpace;
     tex.needsUpdate = true;
 
@@ -242,10 +242,10 @@ export default function LeadnexBillboard({ position = [0, 0, 0], rotation = [0, 
     }
   }, [canvas, texture]);
 
-  // Continuous 30 FPS animation loop (never stops or pauses anywhere on page)
+  // Optimized 15 FPS animation loop with zero mipmap overhead
   useFrame((state) => {
     const t = state.clock.elapsedTime;
-    if (t - lastUpdateRef.current >= 0.033) {
+    if (t - lastUpdateRef.current >= 0.066) {
       lastUpdateRef.current = t;
       renderBillboardCanvas(canvas, t);
       texture.needsUpdate = true;

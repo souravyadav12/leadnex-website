@@ -27,13 +27,25 @@ export default function Scene3DMount() {
   const reduced = useReducedMotion();
   const [wide, setWide] = useState(false);
   const [ready, setReady] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(max-width: 767px)').matches;
+  });
 
   useEffect(() => {
-    const mq = window.matchMedia('(min-width: 1024px)');
-    const on = () => setWide(mq.matches);
-    on();
-    mq.addEventListener('change', on);
-    return () => mq.removeEventListener('change', on);
+    const mqMobile = window.matchMedia('(max-width: 767px)');
+    const onMobileChange = () => setIsMobile(mqMobile.matches);
+    mqMobile.addEventListener('change', onMobileChange);
+
+    const mqWide = window.matchMedia('(min-width: 1024px)');
+    const onWideChange = () => setWide(mqWide.matches);
+    onWideChange();
+    mqWide.addEventListener('change', onWideChange);
+
+    return () => {
+      mqMobile.removeEventListener('change', onMobileChange);
+      mqWide.removeEventListener('change', onWideChange);
+    };
   }, []);
 
   useEffect(() => {
@@ -41,7 +53,7 @@ export default function Scene3DMount() {
     return () => clearTimeout(t);
   }, []);
 
-  if (pathname !== '/' || !ready) return null;
+  if (pathname !== '/' || !ready || isMobile) return null;
 
   return (
     <Boundary>

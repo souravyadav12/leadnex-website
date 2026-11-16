@@ -113,8 +113,8 @@ function MouseAura() {
     const onMove = (e) => {
       if (raf) return;
       raf = requestAnimationFrame(() => {
-        x.set(e.clientX / window.innerWidth);
-        y.set(e.clientY / window.innerHeight);
+        x.set(e.clientX);
+        y.set(e.clientY);
         raf = null;
       });
     };
@@ -125,19 +125,16 @@ function MouseAura() {
     };
   }, [x, y, reduced]);
 
-  const left = useTransform(sx, (v) => `${v * 100}%`);
-  const top = useTransform(sy, (v) => `${v * 100}%`);
-
   if (!enabled) return null;
 
   return (
     <motion.div
-      className="absolute h-[36vw] w-[36vw] rounded-full will-change-transform"
+      className="pointer-events-none fixed top-0 left-0 h-[36vw] w-[36vw] rounded-full will-change-transform"
       style={{
-        left,
-        top,
-        x: '-50%',
-        y: '-50%',
+        x: sx,
+        y: sy,
+        translateX: '-50%',
+        translateY: '-50%',
         background: 'radial-gradient(circle, rgba(120,146,255,0.12) 0%, rgba(var(--a2-rgb),0.06) 45%, transparent 70%)',
       }}
     />

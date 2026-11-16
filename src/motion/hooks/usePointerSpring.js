@@ -23,6 +23,7 @@ export function usePointerSpring({
 } = {}) {
   const ref = useRef(null);
   const reducedMotion = useReducedMotion();
+  const rectRef = useRef(null);
 
   const mx = useMotionValue(idleX);
   const my = useMotionValue(idleY);
@@ -38,12 +39,17 @@ export function usePointerSpring({
     }
     const el = ref.current;
     if (!el) return;
-    const rect = el.getBoundingClientRect();
-    mx.set((e.clientX - rect.left) / rect.width);
-    my.set((e.clientY - rect.top) / rect.height);
+    let rect = rectRef.current;
+    if (!rect) {
+      rect = el.getBoundingClientRect();
+      rectRef.current = rect;
+    }
+    mx.set((e.clientX - rect.left) / Math.max(1, rect.width));
+    my.set((e.clientY - rect.top) / Math.max(1, rect.height));
   };
 
   const onPointerLeave = () => {
+    rectRef.current = null;
     mx.set(idleX);
     my.set(idleY);
   };

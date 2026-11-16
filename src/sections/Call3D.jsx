@@ -129,6 +129,7 @@ function DepthCard({ x, y, z, delay = 0, className, children }) {
 
 function Scene({ step, lineIdx, clock, reduced, near }) {
   const stageRef = useRef(null);
+  const rectRef = useRef(null);
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
   const sx = useSpring(mx, { stiffness: 90, damping: 18 });
@@ -145,13 +146,21 @@ function Scene({ step, lineIdx, clock, reduced, near }) {
   return (
     <div
       ref={stageRef}
+      onPointerEnter={() => {
+        if (stageRef.current) rectRef.current = stageRef.current.getBoundingClientRect();
+      }}
       onPointerMove={(e) => {
-        const r = stageRef.current?.getBoundingClientRect();
+        let r = rectRef.current;
+        if (!r && stageRef.current) {
+          r = stageRef.current.getBoundingClientRect();
+          rectRef.current = r;
+        }
         if (!r) return;
         mx.set(((e.clientX - r.left) / r.width - 0.5) * 2);
         my.set(((e.clientY - r.top) / r.height - 0.5) * 2);
       }}
       onPointerLeave={() => {
+        rectRef.current = null;
         mx.set(0);
         my.set(0);
       }}
