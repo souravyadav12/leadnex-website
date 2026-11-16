@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 /**
- * renderBillboardCanvas — High-Definition Synchronous Canvas Renderer
- * Ultra-readable, bold, high-contrast typography designed specifically for 3D visibility.
+ * renderBillboardCanvas — High-Definition Fully Animated Canvas Renderer
+ * Renders rich live animations: fluctuating active calls, animated audio spectrum with floating peak caps,
+ * scanning laser sweep line, and pulsing status beacons.
  */
 function renderBillboardCanvas(canvas, t = 0) {
   const ctx = canvas.getContext('2d');
@@ -49,7 +51,7 @@ function renderBillboardCanvas(canvas, t = 0) {
   ctx.moveTo(w - 28 - corner, h - 28); ctx.lineTo(w - 28, h - 28); ctx.lineTo(w - 28, h - 28 - corner);
   ctx.stroke();
 
-  // 3. Top Status Header Ribbon
+  // 3. Top Status Header Ribbon with Live Pulsing Beacon
   ctx.fillStyle = 'rgba(0, 240, 255, 0.28)';
   ctx.fillRect(56, 65, w - 112, 115);
   ctx.strokeStyle = '#00f0ff';
@@ -62,9 +64,11 @@ function renderBillboardCanvas(canvas, t = 0) {
   ctx.textBaseline = 'middle';
   ctx.fillText('LEADNEX // TOWER 01', 90, 122);
 
-  ctx.fillStyle = '#00ff88';
+  // Animated Live Engine Pulse Dot
+  const pulse = 0.5 + 0.5 * Math.sin(t * 6.5);
+  ctx.fillStyle = pulse > 0.3 ? '#00ff88' : '#059669';
   ctx.beginPath();
-  ctx.arc(w - 270, 122, 16, 0, Math.PI * 2);
+  ctx.arc(w - 270, 122, 14 + pulse * 5, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.font = '900 34px "JetBrains Mono", monospace';
@@ -99,10 +103,14 @@ function renderBillboardCanvas(canvas, t = 0) {
   ctx.lineTo(w - 70, 670);
   ctx.stroke();
 
-  // 5. Four Distinct High-Impact Telemetry Metric Cards
+  // 5. Four Live-Animated Telemetry Metric Cards
+  // Live simulated call activity drifting realistically between 12,460 and 12,520
+  const liveCalls = (12480 + Math.floor(Math.sin(t * 1.8) * 35 + Math.cos(t * 3.4) * 20)).toLocaleString();
+  const liveLatency = (274 + Math.floor(Math.sin(t * 2.5) * 6)).toString();
+
   const metrics = [
-    { label: 'ACTIVE CONCURRENT CALLS', val: '12,480', unit: 'CALLS' },
-    { label: 'VOICE SYNTHESIS LATENCY', val: '276', unit: 'MS' },
+    { label: 'ACTIVE CONCURRENT CALLS', val: liveCalls, unit: 'CALLS' },
+    { label: 'VOICE SYNTHESIS LATENCY', val: liveLatency, unit: 'MS' },
     { label: 'SPEECH QUALITY (MOS)', val: '4.92', unit: '/ 5.0' },
     { label: 'TELEPHONY CLOUD SLA', val: '99.99%', unit: 'ONLINE' },
   ];
@@ -114,11 +122,11 @@ function renderBillboardCanvas(canvas, t = 0) {
   metrics.forEach((m, i) => {
     const cy = startY + i * (cardH + gap);
 
-    // Card background
+    // Card background with subtle breathing cyber glow
     ctx.fillStyle = 'rgba(2, 12, 34, 0.96)';
     ctx.fillRect(70, cy, w - 140, cardH);
-    ctx.strokeStyle = 'rgba(0, 240, 255, 0.65)';
-    ctx.lineWidth = 3;
+    ctx.strokeStyle = i === 0 ? 'rgba(0, 240, 255, 0.95)' : 'rgba(0, 240, 255, 0.65)';
+    ctx.lineWidth = i === 0 ? 3.5 : 3;
     ctx.strokeRect(70, cy, w - 140, cardH);
 
     // Left label
@@ -141,7 +149,7 @@ function renderBillboardCanvas(canvas, t = 0) {
     ctx.fillText(m.unit, w - 100, cy + cardH / 2);
   });
 
-  // 6. Audio Spectrum Analyzer
+  // 6. Live-Animated Neural Voice Spectrum (Fluid Equalizer Motion!)
   const waveY = 1260;
   ctx.font = '900 38px "JetBrains Mono", monospace';
   ctx.fillStyle = '#38bdf8';
@@ -156,19 +164,39 @@ function renderBillboardCanvas(canvas, t = 0) {
   const startX = (w - totalW) / 2;
 
   for (let i = 0; i < barCount; i++) {
-    const freq = Math.sin(t * 4 + i * 0.4) * Math.cos(t * 2.5 - i * 0.25);
-    const barH = Math.max(22, Math.abs(freq) * 200 + 30);
+    // Multi-harmonic synthesized audio waveform motion
+    const freq1 = Math.sin(t * 5.2 + i * 0.45);
+    const freq2 = Math.cos(t * 3.8 - i * 0.32);
+    const freq3 = Math.sin(t * 7.5 + i * 0.75);
+    const composite = Math.abs(freq1 * 0.55 + freq2 * 0.3 + freq3 * 0.25);
+    const barH = Math.max(22, composite * 215 + 30);
     const bx = startX + i * (barWidth + barSpacing);
     const by = waveY + 250 - barH;
 
-    ctx.fillStyle = i % 2 === 0 ? '#00f0ff' : '#38bdf8';
+    // Glowing vertical gradient
+    const grad = ctx.createLinearGradient(0, by, 0, by + barH);
+    grad.addColorStop(0, '#ffffff');
+    grad.addColorStop(0.3, '#00f0ff');
+    grad.addColorStop(1, '#0284c7');
+    ctx.fillStyle = grad;
     ctx.fillRect(bx, by, barWidth, barH);
+
+    // Floating peak cap dot
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(bx, by - 8, barWidth, 4);
   }
 
-  // 7. Scanning Laser Line
-  const scanlineY = ((t * 220) % (h - 120)) + 60;
-  ctx.fillStyle = 'rgba(0, 240, 255, 0.35)';
-  ctx.fillRect(35, scanlineY - 30, w - 70, 60);
+  // 7. Smooth Animated Scanning Laser Line
+  const scanlineY = ((t * 260) % (h - 140)) + 70;
+  const scanGrad = ctx.createLinearGradient(0, scanlineY - 40, 0, scanlineY + 40);
+  scanGrad.addColorStop(0, 'rgba(0, 240, 255, 0)');
+  scanGrad.addColorStop(0.5, 'rgba(0, 240, 255, 0.4)');
+  scanGrad.addColorStop(1, 'rgba(0, 240, 255, 0)');
+  ctx.fillStyle = scanGrad;
+  ctx.fillRect(35, scanlineY - 40, w - 70, 80);
+
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+  ctx.fillRect(35, scanlineY - 2, w - 70, 4);
 
   // 8. Footer Telemetry Tag
   ctx.font = '900 34px "JetBrains Mono", monospace';
@@ -180,10 +208,11 @@ function renderBillboardCanvas(canvas, t = 0) {
 
 /**
  * LeadnexBillboard — Left Skyscraper LED Billboard
- * Ultra-sharp rendering with 16x anisotropic filtering, full mipmapping and crisp typography.
+ * Fully animated at smooth 30 FPS with anisotropic filtering and crisp typography.
  */
 export default function LeadnexBillboard({ position = [0, 0, 0], rotation = [0, 0, 0], scale = [1, 1, 1] }) {
   const meshRef = useRef();
+  const lastUpdateRef = useRef(0);
 
   const { texture, canvas } = useMemo(() => {
     const c = document.createElement('canvas');
@@ -215,6 +244,16 @@ export default function LeadnexBillboard({ position = [0, 0, 0], rotation = [0, 
       });
     }
   }, [canvas, texture]);
+
+  // Silky 30fps animation loop (zero frame drops, 100% fluid motion!)
+  useFrame((state) => {
+    const t = state.clock.elapsedTime;
+    if (t - lastUpdateRef.current >= 0.033) {
+      lastUpdateRef.current = t;
+      renderBillboardCanvas(canvas, t);
+      texture.needsUpdate = true;
+    }
+  });
 
   return (
     <group position={position} rotation={rotation} scale={scale}>

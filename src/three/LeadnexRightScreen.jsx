@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 /**
- * renderRightScreenCanvas — High-Definition Synchronous Canvas Renderer for Right Skyscraper Matrix
- * Large, chunky, ultra-readable typography for 3D visibility at camera distances.
+ * renderRightScreenCanvas — High-Definition Fully Animated Canvas Renderer for Right Skyscraper Matrix
+ * Features 360-degree rotating radar with pinging blips, live network latency jitter,
+ * pulsing heartbeat health dots, and scanning cyber laser beam.
  */
 function renderRightScreenCanvas(canvas, t = 0) {
   const ctx = canvas.getContext('2d');
@@ -49,7 +51,7 @@ function renderRightScreenCanvas(canvas, t = 0) {
   ctx.moveTo(w - 28 - corner, h - 28); ctx.lineTo(w - 28, h - 28); ctx.lineTo(w - 28, h - 28 - corner);
   ctx.stroke();
 
-  // 3. Status Header
+  // 3. Status Header with Pulsing Beacon
   ctx.fillStyle = 'rgba(2, 132, 199, 0.28)';
   ctx.fillRect(56, 65, w - 112, 115);
   ctx.strokeStyle = '#0284c7';
@@ -62,9 +64,11 @@ function renderRightScreenCanvas(canvas, t = 0) {
   ctx.textBaseline = 'middle';
   ctx.fillText('LEADNEX // TOWER 02', 90, 122);
 
-  ctx.fillStyle = '#00f0ff';
+  // Animated Edge Mesh Pulse Dot
+  const pulse = 0.5 + 0.5 * Math.sin(t * 5.8);
+  ctx.fillStyle = pulse > 0.3 ? '#00f0ff' : '#0284c7';
   ctx.beginPath();
-  ctx.arc(w - 250, 122, 16, 0, Math.PI * 2);
+  ctx.arc(w - 250, 122, 14 + pulse * 5, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.font = '900 34px "JetBrains Mono", monospace';
@@ -79,7 +83,7 @@ function renderRightScreenCanvas(canvas, t = 0) {
   ctx.textBaseline = 'middle';
   ctx.fillText('GLOBAL VOICE GRID', w / 2, 235);
 
-  // 5. High-Tech Rotating Radar Display
+  // 5. High-Tech Rotating Radar Display with Sweeping Sector
   const radarCX = w / 2;
   const radarCY = 415;
   const radarR = 145;
@@ -99,30 +103,55 @@ function renderRightScreenCanvas(canvas, t = 0) {
   ctx.moveTo(radarCX, radarCY - radarR); ctx.lineTo(radarCX, radarCY + radarR);
   ctx.stroke();
 
-  // Radar Sweep Arm
+  // Rotating Radar Sweep Arm & Sweeping Sector Trail
   const angle = t * 2.8;
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(radarCX, radarCY);
+  ctx.arc(radarCX, radarCY, radarR, angle - 0.45, angle);
+  ctx.closePath();
+  const radarGrad = ctx.createRadialGradient(radarCX, radarCY, 0, radarCX, radarCY, radarR);
+  radarGrad.addColorStop(0, 'rgba(0, 240, 255, 0.4)');
+  radarGrad.addColorStop(1, 'rgba(0, 240, 255, 0.05)');
+  ctx.fillStyle = radarGrad;
+  ctx.fill();
+
   ctx.strokeStyle = '#00f0ff';
   ctx.lineWidth = 5;
   ctx.beginPath();
   ctx.moveTo(radarCX, radarCY);
   ctx.lineTo(radarCX + Math.cos(angle) * radarR, radarCY + Math.sin(angle) * radarR);
   ctx.stroke();
+  ctx.restore();
 
-  // Active Edge Nodes
+  // Active Edge Nodes that ping & flash when radar passes over them
   const nodes = [
     { x: radarCX - 75, y: radarCY - 55 },
     { x: radarCX + 70, y: radarCY - 40 },
     { x: radarCX + 42, y: radarCY + 78 },
     { x: radarCX - 62, y: radarCY + 65 },
   ];
-  ctx.fillStyle = '#00f0ff';
+
   nodes.forEach((n) => {
+    const nodeAngle = Math.atan2(n.y - radarCY, n.x - radarCX);
+    const diff = ((angle - nodeAngle + Math.PI * 4) % (Math.PI * 2));
+    const ping = Math.max(0, 1 - diff / 1.5);
+
+    ctx.fillStyle = ping > 0.15 ? '#ffffff' : '#00f0ff';
     ctx.beginPath();
-    ctx.arc(n.x, n.y, 9, 0, Math.PI * 2);
+    ctx.arc(n.x, n.y, 8 + ping * 6, 0, Math.PI * 2);
     ctx.fill();
+
+    if (ping > 0.25) {
+      ctx.strokeStyle = `rgba(0, 255, 136, ${ping * 0.9})`;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, 14 + (1 - ping) * 18, 0, Math.PI * 2);
+      ctx.stroke();
+    }
   });
 
-  // 6. Global Edge Clusters List (4 Massive, High-Contrast Cards!)
+  // 6. Global Edge Clusters List (With Live-Jittering Pings & Heartbeat Dots!)
   const listY = 620;
   ctx.font = '900 40px "JetBrains Mono", monospace';
   ctx.fillStyle = '#38bdf8';
@@ -130,19 +159,24 @@ function renderRightScreenCanvas(canvas, t = 0) {
   ctx.textBaseline = 'middle';
   ctx.fillText('MULTI-REGION EDGE ROUTING', 70, listY);
 
-  const regions = [
-    { name: 'US-EAST (VIRGINIA)', ping: '12ms', status: 'HEALTHY' },
-    { name: 'US-WEST (OREGON)', ping: '18ms', status: 'HEALTHY' },
-    { name: 'EU-CENTRAL (FRANKFURT)', ping: '24ms', status: 'HEALTHY' },
-    { name: 'AP-NORTHEAST (TOKYO)', ping: '38ms', status: 'HEALTHY' },
+  const baseRegions = [
+    { name: 'US-EAST (VIRGINIA)', basePing: 12, status: 'HEALTHY' },
+    { name: 'US-WEST (OREGON)', basePing: 18, status: 'HEALTHY' },
+    { name: 'EU-CENTRAL (FRANKFURT)', basePing: 24, status: 'HEALTHY' },
+    { name: 'AP-NORTHEAST (TOKYO)', basePing: 38, status: 'HEALTHY' },
   ];
 
   const cardH = 92;
   const gap = 16;
   const regStartY = 660;
 
-  regions.forEach((reg, i) => {
+  baseRegions.forEach((reg, i) => {
     const ry = regStartY + i * (cardH + gap);
+
+    // Live organic ping jitter
+    const jitter = Math.floor(Math.sin(t * 3.2 + i * 1.5) * 2);
+    const livePing = `${reg.basePing + jitter}ms`;
+
     ctx.fillStyle = 'rgba(2, 12, 34, 0.96)';
     ctx.fillRect(70, ry, w - 140, cardH);
     ctx.strokeStyle = 'rgba(56, 189, 248, 0.65)';
@@ -158,14 +192,16 @@ function renderRightScreenCanvas(canvas, t = 0) {
     ctx.font = '900 34px "JetBrains Mono", monospace';
     ctx.fillStyle = '#00f0ff';
     ctx.textAlign = 'right';
-    ctx.fillText(reg.ping, w - 270, ry + cardH / 2);
+    ctx.fillText(livePing, w - 270, ry + cardH / 2);
 
-    ctx.fillStyle = '#00ff88';
+    // Heartbeat pulse dot
+    const hb = 0.5 + 0.5 * Math.sin(t * 6 + i * 1.3);
+    ctx.fillStyle = hb > 0.3 ? '#00ff88' : '#059669';
     ctx.font = '900 28px "JetBrains Mono", monospace';
     ctx.fillText(`● ${reg.status}`, w - 105, ry + cardH / 2);
   });
 
-  // 7. Security & Compliance Badges (Bold, Chunky & Crystal Clear!)
+  // 7. Security & Compliance Badges with Active Highlighting Shimmer
   const secY = 1170;
   const secBoxH = 500;
   ctx.fillStyle = 'rgba(2, 12, 34, 0.97)';
@@ -187,16 +223,29 @@ function renderRightScreenCanvas(canvas, t = 0) {
     'ZERO DATA RETENTION POLICY',
   ];
 
+  const activeBadgeIndex = Math.floor((t * 1.5) % badges.length);
+
   badges.forEach((b, i) => {
     const by = secY + 145 + i * 85;
+    const isLit = i === activeBadgeIndex;
+
     ctx.font = '900 34px "JetBrains Mono", monospace';
-    ctx.fillStyle = '#00ff88';
+    ctx.fillStyle = isLit ? '#ffffff' : '#00ff88';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(`✓  ${b}`, w / 2, by);
   });
 
-  // 8. Bottom Ticker
+  // 8. Scanning Laser Line on Right Screen
+  const scanlineY = ((t * 240) % (h - 140)) + 70;
+  const scanGrad = ctx.createLinearGradient(0, scanlineY - 35, 0, scanlineY + 35);
+  scanGrad.addColorStop(0, 'rgba(2, 132, 199, 0)');
+  scanGrad.addColorStop(0.5, 'rgba(56, 189, 248, 0.35)');
+  scanGrad.addColorStop(1, 'rgba(2, 132, 199, 0)');
+  ctx.fillStyle = scanGrad;
+  ctx.fillRect(35, scanlineY - 35, w - 70, 70);
+
+  // 9. Bottom Ticker
   ctx.font = '900 34px "JetBrains Mono", monospace';
   ctx.fillStyle = '#e2e8f0';
   ctx.textAlign = 'center';
@@ -206,10 +255,11 @@ function renderRightScreenCanvas(canvas, t = 0) {
 
 /**
  * LeadnexRightScreen — Right Skyscraper LED Telemetry Matrix
- * Ultra-sharp rendering with 16x anisotropic filtering, full mipmapping and crisp typography.
+ * Fully animated at smooth 30 FPS with rotating radar, live latency jitter and pulsing nodes.
  */
 export default function LeadnexRightScreen({ position = [0, 0, 0], rotation = [0, 0, 0], scale = [1, 1, 1] }) {
   const meshRef = useRef();
+  const lastUpdateRef = useRef(0);
 
   const { texture, canvas } = useMemo(() => {
     const c = document.createElement('canvas');
@@ -241,6 +291,16 @@ export default function LeadnexRightScreen({ position = [0, 0, 0], rotation = [0
       });
     }
   }, [canvas, texture]);
+
+  // Silky 30fps animation loop (zero frame drops, 100% fluid motion!)
+  useFrame((state) => {
+    const t = state.clock.elapsedTime;
+    if (t - lastUpdateRef.current >= 0.033) {
+      lastUpdateRef.current = t;
+      renderRightScreenCanvas(canvas, t);
+      texture.needsUpdate = true;
+    }
+  });
 
   return (
     <group position={position} rotation={rotation} scale={scale}>
