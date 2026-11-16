@@ -199,9 +199,8 @@ function renderRightScreenCanvas(canvas, t = 0) {
  */
 export default function LeadnexRightScreen({ position = [0, 0, 0], rotation = [0, 0, 0], scale = [1, 1, 1] }) {
   const meshRef = useRef();
-  const lastDrawRef = useRef(0);
 
-  const { canvas, texture } = useMemo(() => {
+  const { texture } = useMemo(() => {
     const c = document.createElement('canvas');
     c.width = 512;
     c.height = 1024;
@@ -217,17 +216,8 @@ export default function LeadnexRightScreen({ position = [0, 0, 0], rotation = [0
     tex.generateMipmaps = false;
     tex.needsUpdate = true;
 
-    return { canvas: c, texture: tex };
+    return { texture: tex };
   }, []);
-
-  useFrame((state) => {
-    const now = state.clock.elapsedTime;
-    if (now - lastDrawRef.current > 0.083) {
-      lastDrawRef.current = now;
-      renderRightScreenCanvas(canvas, now);
-      texture.needsUpdate = true;
-    }
-  });
 
   return (
     <group position={position} rotation={rotation} scale={scale}>

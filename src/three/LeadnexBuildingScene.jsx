@@ -391,17 +391,24 @@ function FrontFacingCameraRig({ small }) {
 
 /* ── Root 3D Scene Component ─────────────────────────────────────────────── */
 export default function LeadnexBuildingScene({ small = false, reduced = false }) {
-  const [blurred, setBlurred] = useState(false);
+  const canvasWrapRef = useRef(null);
+  const vignetteRef = useRef(null);
 
   useEffect(() => {
     const cleanup = initScrollController();
 
-    // Trigger blur when scrolling past the 3D hero into content (#features)
+    // Smoothly dim 3D background when scrolling into content (#features) with ZERO React re-renders
     const st = ScrollTrigger.create({
       trigger: '#features',
       start: 'top 85%',
-      onEnter: () => setBlurred(true),
-      onLeaveBack: () => setBlurred(false),
+      onEnter: () => {
+        if (canvasWrapRef.current) canvasWrapRef.current.style.opacity = '0.14';
+        if (vignetteRef.current) vignetteRef.current.style.opacity = '0.96';
+      },
+      onLeaveBack: () => {
+        if (canvasWrapRef.current) canvasWrapRef.current.style.opacity = '1';
+        if (vignetteRef.current) vignetteRef.current.style.opacity = '0';
+      },
     });
 
     return () => {
@@ -412,17 +419,12 @@ export default function LeadnexBuildingScene({ small = false, reduced = false })
 
   return (
     <>
-      {/* 3D Skyscraper Scene Container — Smoothly blurs and dims as user scrolls down into content */}
+      {/* 3D Skyscraper Scene Container — Smoothly fades as user scrolls down into content (60fps GPU compositor) */}
       <div
+        ref={canvasWrapRef}
         aria-hidden="true"
-        className="fixed inset-0 -z-[5] pointer-events-none select-none overflow-hidden"
-        style={{
-          opacity: blurred ? 0.28 : 1,
-          filter: blurred ? 'blur(14px)' : 'blur(0px)',
-          transform: blurred ? 'scale(1.05)' : 'scale(1.0)',
-          transition: 'filter 0.85s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1)',
-          willChange: 'filter, opacity, transform',
-        }}
+        className="fixed inset-0 -z-[5] pointer-events-none select-none overflow-hidden transition-opacity duration-700 ease-out"
+        style={{ opacity: 1, willChange: 'opacity' }}
       >
         <Canvas
           gl={{
@@ -468,13 +470,15 @@ export default function LeadnexBuildingScene({ small = false, reduced = false })
         </Canvas>
       </div>
 
-      {/* Cinematic Dark Ambient Vignette that gently dims the backdrop for maximum content contrast */}
+      {/* Cinematic Dark Ambient Vignette that gently obscures backdrop for maximum content contrast */}
       <div
+        ref={vignetteRef}
         aria-hidden="true"
         className="fixed inset-0 -z-[4] pointer-events-none select-none transition-opacity duration-700 ease-out"
         style={{
-          opacity: blurred ? 0.92 : 0,
-          background: 'radial-gradient(circle at 50% 35%, rgba(2, 5, 14, 0.65) 0%, rgba(2, 5, 14, 0.92) 75%, #02050e 100%)',
+          opacity: 0,
+          background: 'radial-gradient(circle at 50% 30%, #030816 0%, #02050e 85%)',
+          willChange: 'opacity',
         }}
       />
     </>
