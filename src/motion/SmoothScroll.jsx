@@ -95,8 +95,18 @@ export function smoothScrollTo(id, offset = -76) {
   }
 }
 
-/** Scroll to top on route change (new pages always start at the masthead). */
+/** Scroll to top on route change or when clicking Home. */
 export function scrollToTop() {
-  if (window.__lenis) window.__lenis.scrollTo(0, { immediate: true });
-  else window.scrollTo(0, 0);
+  if (window.__lenis) {
+    window.__lenis.scrollTo(0, { duration: 1.1 });
+  } else {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  setTimeout(() => {
+    try {
+      ScrollTrigger.update();
+      ScrollTrigger.refresh();
+      window.dispatchEvent(new Event('scroll'));
+    } catch {}
+  }, 50);
 }

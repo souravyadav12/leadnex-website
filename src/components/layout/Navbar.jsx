@@ -70,11 +70,26 @@ export default function Navbar() {
         role="banner"
       >
         <div className={cn('u-shell flex items-center justify-between gap-6 transition-all duration-500', scrolled ? 'h-14' : 'h-16')}>
-          <Logo onClick={() => setMobile(false)} />
+          <Logo
+            onClick={() => {
+              setMobile(false);
+              if (pathname === '/') scrollToTop();
+            }}
+          />
 
           <nav className="hidden items-center gap-1 lg:flex" aria-label="Main navigation">
             {nav.links.map((link) => (
-              <NavLink key={link.to} to={link.to} end={link.to === '/'} className="relative">
+              <NavLink
+                key={link.to}
+                to={link.to}
+                end={link.to === '/'}
+                onClick={() => {
+                  if (link.to === '/' && pathname === '/') {
+                    scrollToTop();
+                  }
+                }}
+                className="relative"
+              >
                 {({ isActive }) => (
                   <motion.span
                     whileHover={{ y: -1 }}
@@ -158,7 +173,12 @@ export default function Navbar() {
                 >
                   <Link
                     to={link.to}
-                    onClick={() => setMobile(false)}
+                    onClick={() => {
+                      setMobile(false);
+                      if (link.to === '/' && pathname === '/') {
+                        scrollToTop();
+                      }
+                    }}
                     className="flex items-baseline justify-between border-b border-line py-3.5 text-xl font-medium tracking-tight text-white"
                   >
                     {link.label}

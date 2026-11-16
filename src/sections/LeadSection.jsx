@@ -58,15 +58,20 @@ export default function LeadSection() {
             <p className="mt-4 max-w-md text-[13.5px] leading-relaxed text-muted">{lead.subtitle}</p>
           </Reveal>
 
-          <Stagger className="mt-7 space-y-2.5" step={0.06} delay={0.12}>
+          <Stagger className="mt-7 space-y-2" step={0.05} delay={0.12}>
             <StaggerItem distance={10}>
-              <p className="font-mono text-[9.5px] uppercase tracking-[0.14em] text-dim">What you&apos;ll get:</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-cyan font-bold">What you&apos;ll get:</p>
             </StaggerItem>
             {lead.benefits.map((b) => (
-              <StaggerItem key={b} distance={12}>
-                <motion.div whileHover={{ x: 3 }} className="flex items-start gap-2.5">
-                  <Check className="mt-[3px] h-3.5 w-3.5 shrink-0 text-mint" strokeWidth={3} />
-                  <span className="text-[12.5px] text-white/80">{b}</span>
+              <StaggerItem key={b} distance={10}>
+                <motion.div
+                  whileHover={{ x: 4 }}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-white/[0.08] bg-white/[0.02] hover:border-cyan/40 hover:bg-cyan/[0.04] transition-all"
+                >
+                  <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-cyan/15 text-cyan border border-cyan/40">
+                    <Check className="h-3 w-3 stroke-[3]" />
+                  </div>
+                  <span className="text-[12.5px] sm:text-[13px] text-slate-200 font-medium leading-snug">{b}</span>
                 </motion.div>
               </StaggerItem>
             ))}

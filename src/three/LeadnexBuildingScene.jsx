@@ -397,23 +397,36 @@ export default function LeadnexBuildingScene({ small = false, reduced = false })
   useEffect(() => {
     const cleanup = initScrollController();
 
-    // Smoothly dim 3D background when scrolling into content (#features) with ZERO React re-renders
+    const updateBackdropState = () => {
+      const scrollY = window.__lenis?.scroll ?? window.scrollY ?? 0;
+      const featuresEl = document.querySelector('#features');
+      const featuresTop = featuresEl ? (featuresEl.getBoundingClientRect().top + scrollY) : 1400;
+
+      if (scrollY < featuresTop - window.innerHeight * 0.35) {
+        if (canvasWrapRef.current) canvasWrapRef.current.style.opacity = '1';
+        if (vignetteRef.current) vignetteRef.current.style.opacity = '0';
+      } else {
+        if (canvasWrapRef.current) canvasWrapRef.current.style.opacity = '0.14';
+        if (vignetteRef.current) vignetteRef.current.style.opacity = '0.96';
+      }
+    };
+
+    updateBackdropState();
+
+    window.addEventListener('scroll', updateBackdropState, { passive: true });
+    window.__lenis?.on?.('scroll', updateBackdropState);
+
     const st = ScrollTrigger.create({
       trigger: '#features',
       start: 'top 85%',
-      onEnter: () => {
-        if (canvasWrapRef.current) canvasWrapRef.current.style.opacity = '0.14';
-        if (vignetteRef.current) vignetteRef.current.style.opacity = '0.96';
-      },
-      onLeaveBack: () => {
-        if (canvasWrapRef.current) canvasWrapRef.current.style.opacity = '1';
-        if (vignetteRef.current) vignetteRef.current.style.opacity = '0';
-      },
+      onUpdate: () => updateBackdropState(),
     });
 
     return () => {
       cleanup();
       st.kill();
+      window.removeEventListener('scroll', updateBackdropState);
+      window.__lenis?.off?.('scroll', updateBackdropState);
     };
   }, []);
 

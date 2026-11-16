@@ -83,6 +83,18 @@ function updateStages(p) {
   });
 }
 
+export function resetScrollState() {
+  scrollState.progress = 0;
+  scrollState.velocity = 0;
+  updateStages(0);
+  try {
+    if (scrollTriggerInstance) {
+      scrollTriggerInstance.scroll(0);
+    }
+    ScrollTrigger.update();
+  } catch {}
+}
+
 export function initScrollController() {
   if (typeof window === 'undefined') return () => {};
   if (initialized && scrollTriggerInstance) {
