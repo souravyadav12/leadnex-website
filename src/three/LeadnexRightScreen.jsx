@@ -3,7 +3,7 @@ import * as THREE from 'three';
 
 /**
  * renderRightScreenCanvas — High-Definition Synchronous Canvas Renderer for Right Skyscraper Matrix
- * Rendered at 1024x2048 with large, crisp typography and high contrast.
+ * Large, chunky, ultra-readable typography for 3D visibility at camera distances.
  */
 function renderRightScreenCanvas(canvas, t = 0) {
   const ctx = canvas.getContext('2d');
@@ -13,12 +13,12 @@ function renderRightScreenCanvas(canvas, t = 0) {
   const h = canvas.height;
 
   // 1. High-Contrast Deep Navy Blue Background
-  ctx.fillStyle = '#06122c';
+  ctx.fillStyle = '#040d24';
   ctx.fillRect(0, 0, w, h);
 
   // Glowing Circuit Grid Lines
-  ctx.strokeStyle = 'rgba(2, 132, 199, 0.22)';
-  ctx.lineWidth = 2;
+  ctx.strokeStyle = 'rgba(2, 132, 199, 0.25)';
+  ctx.lineWidth = 2.5;
   ctx.beginPath();
   for (let x = 0; x < w; x += 64) {
     ctx.moveTo(x, 0);
@@ -32,12 +32,12 @@ function renderRightScreenCanvas(canvas, t = 0) {
 
   // 2. Thick Outer Border & High-Tech Corner Brackets
   ctx.strokeStyle = '#0284c7';
-  ctx.lineWidth = 18;
+  ctx.lineWidth = 20;
   ctx.strokeRect(28, 28, w - 56, h - 56);
 
   ctx.strokeStyle = '#38bdf8';
-  ctx.lineWidth = 22;
-  const corner = 90;
+  ctx.lineWidth = 24;
+  const corner = 95;
   ctx.beginPath();
   // Top-Left
   ctx.moveTo(28, 28 + corner); ctx.lineTo(28, 28); ctx.lineTo(28 + corner, 28);
@@ -50,44 +50,44 @@ function renderRightScreenCanvas(canvas, t = 0) {
   ctx.stroke();
 
   // 3. Status Header
-  ctx.fillStyle = 'rgba(2, 132, 199, 0.25)';
-  ctx.fillRect(56, 70, w - 112, 100);
+  ctx.fillStyle = 'rgba(2, 132, 199, 0.28)';
+  ctx.fillRect(56, 65, w - 112, 115);
   ctx.strokeStyle = '#0284c7';
-  ctx.lineWidth = 4;
-  ctx.strokeRect(56, 70, w - 112, 100);
+  ctx.lineWidth = 4.5;
+  ctx.strokeRect(56, 65, w - 112, 115);
 
-  ctx.font = 'bold 36px "JetBrains Mono", monospace';
+  ctx.font = '900 42px "JetBrains Mono", monospace';
   ctx.fillStyle = '#38bdf8';
   ctx.textAlign = 'left';
   ctx.textBaseline = 'middle';
-  ctx.fillText('LEADNEX // TOWER 02', 88, 120);
+  ctx.fillText('LEADNEX // TOWER 02', 90, 122);
 
   ctx.fillStyle = '#00f0ff';
   ctx.beginPath();
-  ctx.arc(w - 240, 120, 14, 0, Math.PI * 2);
+  ctx.arc(w - 250, 122, 16, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.font = 'bold 28px "JetBrains Mono", monospace';
+  ctx.font = '900 34px "JetBrains Mono", monospace';
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'right';
-  ctx.fillText('EDGE MESH', w - 85, 120);
+  ctx.fillText('EDGE MESH', w - 85, 122);
 
   // 4. Section Title: GLOBAL TELEPHONY RADAR
-  ctx.font = 'bold 44px "Inter", sans-serif';
+  ctx.font = '900 58px "Inter", sans-serif';
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('GLOBAL VOICE GRID', w / 2, 230);
+  ctx.fillText('GLOBAL VOICE GRID', w / 2, 235);
 
   // 5. High-Tech Rotating Radar Display
   const radarCX = w / 2;
-  const radarCY = 410;
-  const radarR = 140;
+  const radarCY = 415;
+  const radarR = 145;
 
   // Concentric Rings
-  ctx.strokeStyle = 'rgba(2, 132, 199, 0.45)';
-  ctx.lineWidth = 2.5;
-  for (let r = 45; r <= radarR; r += 45) {
+  ctx.strokeStyle = 'rgba(2, 132, 199, 0.55)';
+  ctx.lineWidth = 3;
+  for (let r = 50; r <= radarR; r += 48) {
     ctx.beginPath();
     ctx.arc(radarCX, radarCY, r, 0, Math.PI * 2);
     ctx.stroke();
@@ -102,7 +102,7 @@ function renderRightScreenCanvas(canvas, t = 0) {
   // Radar Sweep Arm
   const angle = t * 2.8;
   ctx.strokeStyle = '#00f0ff';
-  ctx.lineWidth = 4;
+  ctx.lineWidth = 5;
   ctx.beginPath();
   ctx.moveTo(radarCX, radarCY);
   ctx.lineTo(radarCX + Math.cos(angle) * radarR, radarCY + Math.sin(angle) * radarR);
@@ -111,20 +111,20 @@ function renderRightScreenCanvas(canvas, t = 0) {
   // Active Edge Nodes
   const nodes = [
     { x: radarCX - 75, y: radarCY - 55 },
-    { x: radarCX + 68, y: radarCY - 40 },
-    { x: radarCX + 40, y: radarCY + 75 },
-    { x: radarCX - 58, y: radarCY + 65 },
+    { x: radarCX + 70, y: radarCY - 40 },
+    { x: radarCX + 42, y: radarCY + 78 },
+    { x: radarCX - 62, y: radarCY + 65 },
   ];
   ctx.fillStyle = '#00f0ff';
   nodes.forEach((n) => {
     ctx.beginPath();
-    ctx.arc(n.x, n.y, 8, 0, Math.PI * 2);
+    ctx.arc(n.x, n.y, 9, 0, Math.PI * 2);
     ctx.fill();
   });
 
-  // 6. Global Edge Clusters List (High-Contrast & Large Fonts)
-  const listY = 615;
-  ctx.font = 'bold 32px "JetBrains Mono", monospace';
+  // 6. Global Edge Clusters List (4 Massive, High-Contrast Cards!)
+  const listY = 620;
+  ctx.font = '900 40px "JetBrains Mono", monospace';
   ctx.fillStyle = '#38bdf8';
   ctx.textAlign = 'left';
   ctx.textBaseline = 'middle';
@@ -135,42 +135,46 @@ function renderRightScreenCanvas(canvas, t = 0) {
     { name: 'US-WEST (OREGON)', ping: '18ms', status: 'HEALTHY' },
     { name: 'EU-CENTRAL (FRANKFURT)', ping: '24ms', status: 'HEALTHY' },
     { name: 'AP-NORTHEAST (TOKYO)', ping: '38ms', status: 'HEALTHY' },
-    { name: 'SA-EAST (SAO PAULO)', ping: '42ms', status: 'HEALTHY' },
   ];
 
-  regions.forEach((reg, i) => {
-    const ry = listY + 65 + i * 82;
-    ctx.fillStyle = 'rgba(2, 10, 28, 0.94)';
-    ctx.fillRect(70, ry - 35, w - 140, 70);
-    ctx.strokeStyle = 'rgba(2, 132, 199, 0.55)';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(70, ry - 35, w - 140, 70);
+  const cardH = 92;
+  const gap = 16;
+  const regStartY = 660;
 
-    ctx.font = 'bold 26px "JetBrains Mono", monospace';
+  regions.forEach((reg, i) => {
+    const ry = regStartY + i * (cardH + gap);
+    ctx.fillStyle = 'rgba(2, 12, 34, 0.96)';
+    ctx.fillRect(70, ry, w - 140, cardH);
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.65)';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(70, ry, w - 140, cardH);
+
+    ctx.font = '900 32px "JetBrains Mono", monospace';
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText(reg.name, 95, ry);
+    ctx.fillText(reg.name, 105, ry + cardH / 2);
 
-    ctx.font = 'bold 26px "JetBrains Mono", monospace';
+    ctx.font = '900 34px "JetBrains Mono", monospace';
     ctx.fillStyle = '#00f0ff';
     ctx.textAlign = 'right';
-    ctx.fillText(reg.ping, w - 240, ry);
+    ctx.fillText(reg.ping, w - 270, ry + cardH / 2);
 
-    ctx.fillStyle = '#10b981';
-    ctx.font = 'bold 23px "JetBrains Mono", monospace';
-    ctx.fillText(`● ${reg.status}`, w - 95, ry);
+    ctx.fillStyle = '#00ff88';
+    ctx.font = '900 28px "JetBrains Mono", monospace';
+    ctx.fillText(`● ${reg.status}`, w - 105, ry + cardH / 2);
   });
 
-  // 7. Security & Compliance Badges (Crystal Clear & Readable)
+  // 7. Security & Compliance Badges (Bold, Chunky & Crystal Clear!)
   const secY = 1170;
-  ctx.fillStyle = 'rgba(2, 10, 28, 0.95)';
-  ctx.fillRect(70, secY, w - 140, 520);
+  const secBoxH = 500;
+  ctx.fillStyle = 'rgba(2, 12, 34, 0.97)';
+  ctx.fillRect(70, secY, w - 140, secBoxH);
   ctx.strokeStyle = '#0284c7';
-  ctx.lineWidth = 3;
-  ctx.strokeRect(70, secY, w - 140, 520);
+  ctx.lineWidth = 4;
+  ctx.strokeRect(70, secY, w - 140, secBoxH);
 
-  ctx.font = 'bold 34px "JetBrains Mono", monospace';
+  ctx.font = '900 42px "JetBrains Mono", monospace';
   ctx.fillStyle = '#38bdf8';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -179,31 +183,30 @@ function renderRightScreenCanvas(canvas, t = 0) {
   const badges = [
     'SOC 2 TYPE II CERTIFIED',
     'HIPAA & GDPR COMPLIANT',
-    'TLS 1.3 / SRTP ENCRYPTED',
-    'ZERO DATA RETENTION RETRAINING',
-    'BI-DIRECTIONAL CRM WEBHOOKS',
+    '256-BIT SRTP ENCRYPTION',
+    'ZERO DATA RETENTION POLICY',
   ];
 
   badges.forEach((b, i) => {
-    const by = secY + 140 + i * 72;
-    ctx.font = 'bold 27px "JetBrains Mono", monospace';
-    ctx.fillStyle = '#34d399';
+    const by = secY + 145 + i * 85;
+    ctx.font = '900 34px "JetBrains Mono", monospace';
+    ctx.fillStyle = '#00ff88';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(`✓  ${b}`, w / 2, by);
   });
 
   // 8. Bottom Ticker
-  ctx.font = 'bold 28px "JetBrains Mono", monospace';
-  ctx.fillStyle = '#94a3b8';
+  ctx.font = '900 34px "JetBrains Mono", monospace';
+  ctx.fillStyle = '#e2e8f0';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('LEADNEX CORE TELEPHONY · 99.99% SLA', w / 2, h - 75);
+  ctx.fillText('LEADNEX TELEPHONY CLOUD · 99.99% SLA', w / 2, h - 75);
 }
 
 /**
  * LeadnexRightScreen — Right Skyscraper LED Telemetry Matrix
- * Rendered at 1024x2048 with anisotropic filtering and mipmapping for crystal clear readability.
+ * Ultra-sharp rendering with 16x anisotropic filtering, full mipmapping and crisp typography.
  */
 export default function LeadnexRightScreen({ position = [0, 0, 0], rotation = [0, 0, 0], scale = [1, 1, 1] }) {
   const meshRef = useRef();
@@ -253,7 +256,7 @@ export default function LeadnexRightScreen({ position = [0, 0, 0], rotation = [0
         <lineBasicMaterial color="#0284c7" transparent opacity={0.95} />
       </lineSegments>
 
-      {/* Active High-Res LED Screen (Positioned ahead at z = 0.25, renderOrder = 30) */}
+      {/* Active High-Res LED Screen */}
       <mesh ref={meshRef} position={[0, 0, 0.25]} renderOrder={30}>
         <planeGeometry args={[7.2, 14.4]} />
         <meshBasicMaterial
