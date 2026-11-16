@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import LeadnexBillboard from './LeadnexBillboard';
 import LeadnexRightScreen from './LeadnexRightScreen';
 import { scrollState, initScrollController } from './ScrollController';
@@ -390,59 +391,92 @@ function FrontFacingCameraRig({ small }) {
 
 /* ── Root 3D Scene Component ─────────────────────────────────────────────── */
 export default function LeadnexBuildingScene({ small = false, reduced = false }) {
+  const [blurred, setBlurred] = useState(false);
+
   useEffect(() => {
     const cleanup = initScrollController();
-    return () => cleanup();
+
+    // Trigger blur when scrolling past the 3D hero into content (#features)
+    const st = ScrollTrigger.create({
+      trigger: '#features',
+      start: 'top 85%',
+      onEnter: () => setBlurred(true),
+      onLeaveBack: () => setBlurred(false),
+    });
+
+    return () => {
+      cleanup();
+      st.kill();
+    };
   }, []);
 
   return (
-    <div
-      aria-hidden="true"
-      className="fixed inset-0 -z-[5] pointer-events-none select-none overflow-hidden"
-      style={{ opacity: 1, willChange: 'transform' }}
-    >
-      <Canvas
-        gl={{
-          antialias: true,
-          alpha: true,
-          powerPreference: 'high-performance',
-          stencil: false,
-          depth: true,
-          toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 1.15,
+    <>
+      {/* 3D Skyscraper Scene Container — Smoothly blurs and dims as user scrolls down into content */}
+      <div
+        aria-hidden="true"
+        className="fixed inset-0 -z-[5] pointer-events-none select-none overflow-hidden"
+        style={{
+          opacity: blurred ? 0.28 : 1,
+          filter: blurred ? 'blur(14px)' : 'blur(0px)',
+          transform: blurred ? 'scale(1.05)' : 'scale(1.0)',
+          transition: 'filter 0.85s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1)',
+          willChange: 'filter, opacity, transform',
         }}
-        camera={{
-          fov: small ? 54 : 46,
-          near: 0.1,
-          far: 300,
-          position: [0, 14.5, small ? 32.0 : 27.0],
-        }}
-        dpr={[1, 1.25]}
       >
-        {/* Deep Cinematic Atmosphere */}
-        <color attach="background" args={['#02050e']} />
-        <fogExp2 attach="fog" args={['#02050e', 0.01]} />
+        <Canvas
+          gl={{
+            antialias: true,
+            alpha: true,
+            powerPreference: 'high-performance',
+            stencil: false,
+            depth: true,
+            toneMapping: THREE.ACESFilmicToneMapping,
+            toneMappingExposure: 1.15,
+          }}
+          camera={{
+            fov: small ? 54 : 46,
+            near: 0.1,
+            far: 300,
+            position: [0, 14.5, small ? 32.0 : 27.0],
+          }}
+          dpr={[1, 1.25]}
+        >
+          {/* Deep Cinematic Atmosphere */}
+          <color attach="background" args={['#02050e']} />
+          <fogExp2 attach="fog" args={['#02050e', 0.01]} />
 
-        {/* Lighting */}
-        <ambientLight color="#081836" intensity={1.8} />
-        <directionalLight position={[-15, 45, 25]} color="#38bdf8" intensity={2.6} />
-        <directionalLight position={[15, 45, 25]} color="#00f0ff" intensity={2.2} />
+          {/* Lighting */}
+          <ambientLight color="#081836" intensity={1.8} />
+          <directionalLight position={[-15, 45, 25]} color="#38bdf8" intensity={2.6} />
+          <directionalLight position={[15, 45, 25]} color="#00f0ff" intensity={2.2} />
 
-        {/* ── TWO MASSIVE TWIN BUILDINGS SIDE BY SIDE ── */}
-        <LeftSkyscraper />
-        <RightSkyscraper />
-        <SkybridgeConnector />
+          {/* ── TWO MASSIVE TWIN BUILDINGS SIDE BY SIDE ── */}
+          <LeftSkyscraper />
+          <RightSkyscraper />
+          <SkybridgeConnector />
 
-        {/* ── CENTRAL OPENING RUNWAY (Content Emerges Along Here) ── */}
-        <CentralOpeningRunway />
+          {/* ── CENTRAL OPENING RUNWAY (Content Emerges Along Here) ── */}
+          <CentralOpeningRunway />
 
-        {/* Ground Plaza & Environment */}
-        <GroundPlaza />
-        {!reduced && <AtmosphericParticles count={small ? 140 : 280} />}
+          {/* Ground Plaza & Environment */}
+          <GroundPlaza />
+          {!reduced && <AtmosphericParticles count={small ? 140 : 280} />}
 
-        {/* Front-Facing Scroll Camera Rig */}
-        <FrontFacingCameraRig small={small} />
-      </Canvas>
-    </div>
+          {/* Front-Facing Scroll Camera Rig */}
+          <FrontFacingCameraRig small={small} />
+        </Canvas>
+      </div>
+
+      {/* Cinematic Dark Ambient Vignette that gently dims the backdrop for maximum content contrast */}
+      <div
+        aria-hidden="true"
+        className="fixed inset-0 -z-[4] pointer-events-none select-none transition-opacity duration-700 ease-out"
+        style={{
+          opacity: blurred ? 0.92 : 0,
+          background: 'radial-gradient(circle at 50% 35%, rgba(2, 5, 14, 0.65) 0%, rgba(2, 5, 14, 0.92) 75%, #02050e 100%)',
+        }}
+      />
+    </>
   );
 }
