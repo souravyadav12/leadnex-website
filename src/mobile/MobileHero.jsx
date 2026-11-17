@@ -295,10 +295,10 @@ export default function MobileHero() {
       {/* Hidden 100svh element for measuring small viewport height */}
       <div ref={svhRef} className="fixed top-0 left-0 w-0 h-[100svh] pointer-events-none -z-50 invisible" />
 
-      {/* ── 1. PINNED HERO STAGE (100lvh) ── */}
+      {/* ── 1. PINNED HERO STAGE (100dvh / 100svh safe viewport) ── */}
       <div
         ref={containerRef}
-        className="relative z-10 w-full h-[100lvh] overflow-hidden overflow-x-clip bg-[#02050e]"
+        className="relative z-10 w-full h-[100dvh] min-h-[100svh] overflow-hidden overflow-x-clip bg-[#02050e]"
       >
         {/* Fixed Header (top 0, 56px, 2px cyan progress bar) */}
         <div ref={headerRef} className="fixed inset-x-0 top-0 z-[60]">
@@ -320,7 +320,7 @@ export default function MobileHero() {
         <div
           ref={headlineRef}
           style={{ display: 'flex', visibility: 'visible', opacity: '1' }}
-          className="fixed inset-x-0 top-[76px] z-20 px-4 flex flex-col items-center justify-center text-center pointer-events-none will-change-transform"
+          className="fixed inset-x-0 top-[66px] z-20 px-4 flex flex-col items-center justify-center text-center pointer-events-none will-change-transform"
         >
           <div className="inline-flex items-center gap-1.5 rounded-full border border-cyan/40 bg-cyan/[0.12] px-3 py-0.5 mb-2 backdrop-blur-sm">
             <span className="h-1.5 w-1.5 rounded-full bg-cyan animate-pulse" />
@@ -519,7 +519,7 @@ export default function MobileHero() {
         {/* ── FIXED BOTTOM PILL ── */}
         <div
           ref={pillRef}
-          className="fixed inset-x-0 bottom-[calc(14px+env(safe-area-inset-bottom,0px))] z-20 flex flex-col items-center justify-center text-center pointer-events-none px-4 will-change-transform"
+          className="fixed inset-x-0 bottom-[calc(20px+env(safe-area-inset-bottom,0px))] z-50 flex flex-col items-center justify-center text-center pointer-events-none px-4 will-change-transform"
         >
           <div className="rounded-full px-4 py-2 border border-cyan/40 bg-[#040a18]/90 backdrop-blur-md shadow-[0_0_20px_rgba(0,240,255,0.25)]">
             <div className="flex items-center gap-2">

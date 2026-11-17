@@ -321,13 +321,13 @@ function MobileSceneInternal({
     const p = pSRef.current;
 
     // ── 1. CAMERA ANIMATION ──
-    if (p <= 0.07) {
+    if (p <= 0.05) {
       // ESTABLISH
       camera.position.copy(establishPose.cameraPos);
       camera.lookAt(establishPose.lookAt);
-    } else if (p > 0.07 && p < 0.17) {
+    } else if (p > 0.05 && p < 0.14) {
       // DIVE: ONE shared eased t (easeInOutCubic)
-      const t = (p - 0.07) / (0.17 - 0.07);
+      const t = (p - 0.05) / 0.09;
       const easeT = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
       camera.position.lerpVectors(establishPose.cameraPos, focusPose.cameraPos, easeT);
@@ -339,14 +339,24 @@ function MobileSceneInternal({
       camera.lookAt(focusPose.lookAt);
     }
 
-    // ── 2. TOWER 01 ANIMATION (ALONE & CENTERED) ──
-    // Visible: 0.00 to 0.31
-    // Dive: 0.07 to 0.17 (opacity 1)
-    // Hold: 0.17 to 0.27 (opacity 1)
+    // ── 2. TOWER 01 ANIMATION (STARTS AT -4.2 ON ESTABLISH, GLIDES TO CENTER ON SCROLL) ──
+    // Initial establish: p <= 0.05 (visible at x = -4.2, opacity 1)
+    // Enters center when user scrolls: 0.05 to 0.14 (smooth glide from -4.2 to 0)
+    // Hold centered alone: 0.14 to 0.27 (opacity 1, x = 0)
     // Exit: 0.27 to 0.31 (moves z+3 easeIn, opacity -> 0 by 80%)
     let opT1 = 0;
     if (tower1GroupRef.current) {
-      if (p <= 0.27) {
+      if (p <= 0.05) {
+        opT1 = 1.0;
+        tower1GroupRef.current.visible = true;
+        tower1GroupRef.current.position.set(-4.2, 0, 0);
+      } else if (p > 0.05 && p < 0.14) {
+        const t = (p - 0.05) / 0.09;
+        const easeT = 1 - Math.pow(1 - t, 3);
+        opT1 = 1.0;
+        tower1GroupRef.current.visible = true;
+        tower1GroupRef.current.position.set(-4.2 * (1 - easeT), 0, 0);
+      } else if (p >= 0.14 && p <= 0.27) {
         opT1 = 1.0;
         tower1GroupRef.current.visible = true;
         tower1GroupRef.current.position.set(0, 0, 0);
@@ -363,15 +373,29 @@ function MobileSceneInternal({
       }
     }
 
-    // ── 3. TOWER 02 ANIMATION (SEPARATE, ENTERS FROM BEHIND AT X = 0) ──
-    // Starts at 0.31 ONLY after Tower 01 is at 0
-    // Starts at z = -8, scale 0.8, opacity 0
-    // Moves to z = 0, scale 1.0 (easeOutCubic), opacity smoothstep 0 to 1 across first 50%
-    // Hold: 0.40 to 0.50 (scale 1.0, opacity 1.0)
+    // ── 3. TOWER 02 ANIMATION (STARTS AT +4.2 ON ESTABLISH, EXITS ON SCROLL, RE-ENTERS CENTER AT 0.31) ──
+    // Initial establish: p <= 0.05 (visible at x = +4.2, opacity 1)
+    // Exits to right on scroll: 0.05 to 0.14 (slides x: 4.2 -> 12, opacity 1 -> 0)
+    // Hidden during Tower 1 solo focus: 0.14 to 0.31 (opacity 0)
+    // Solo Enter from behind at x = 0: 0.31 to 0.40 (starts at z = -8, scale 0.8, opacity 0 -> 1)
+    // Hold centered alone: 0.40 to 0.50 (scale 1.0, opacity 1.0, x = 0, z = 0)
     // Exit: 0.50 to 0.54 (moves z+3 easeIn, opacity -> 0 by 80%)
     let opT2 = 0;
     if (tower2GroupRef.current) {
-      if (p < 0.31 || p > 0.54) {
+      if (p <= 0.05) {
+        opT2 = 1.0;
+        tower2GroupRef.current.visible = true;
+        tower2GroupRef.current.position.set(4.2, 0, 0);
+        tower2GroupRef.current.scale.set(1, 1, 1);
+      } else if (p > 0.05 && p < 0.14) {
+        const t = (p - 0.05) / 0.09;
+        const easeT = t * t * (3 - 2 * t);
+        const posX = 4.2 + 8.0 * easeT;
+        opT2 = Math.max(0, 1.0 - easeT * 1.25);
+        tower2GroupRef.current.visible = opT2 > 0.01;
+        tower2GroupRef.current.position.set(posX, 0, 0);
+        tower2GroupRef.current.scale.set(1, 1, 1);
+      } else if (p >= 0.14 && p < 0.31) {
         opT2 = 0;
         tower2GroupRef.current.visible = false;
       } else if (p >= 0.31 && p < 0.40) {
@@ -399,6 +423,9 @@ function MobileSceneInternal({
         tower2GroupRef.current.visible = opT2 > 0.01;
         tower2GroupRef.current.position.set(0, 0, zOffset);
         tower2GroupRef.current.scale.set(1, 1, 1);
+      } else {
+        opT2 = 0;
+        tower2GroupRef.current.visible = false;
       }
     }
 
@@ -432,10 +459,10 @@ function MobileSceneInternal({
     });
   });
 
-  // Freeze billboard texture updates during movement phases
+  // Freeze billboard texture updates during movement phases, active on establish and holds
   const p = pSRef.current;
-  const isHoldT1 = p >= 0.17 && p <= 0.27;
-  const isHoldT2 = p >= 0.40 && p <= 0.50;
+  const isHoldT1 = p <= 0.05 || (p >= 0.14 && p <= 0.27);
+  const isHoldT2 = p <= 0.05 || (p >= 0.40 && p <= 0.50);
 
   return (
     <>
@@ -446,8 +473,8 @@ function MobileSceneInternal({
       <directionalLight position={[-12, 40, 20]} color="#38bdf8" intensity={2.6} />
       <directionalLight position={[12, 40, 20]} color="#00f0ff" intensity={2.4} />
 
-      {/* ── TOWER 01 GROUP (ALONE & CENTERED) ── */}
-      <group ref={tower1GroupRef} position={[0, 0, 0]}>
+      {/* ── TOWER 01 GROUP (STARTS AT -4.2 ON ESTABLISH, GLIDES TO CENTER ON SCROLL) ── */}
+      <group ref={tower1GroupRef} position={[-4.2, 0, 0]} visible={true}>
         <TowerStructure isLeft={true} opacity={1.0} />
         <MobileTower01Screen
           position={[0, 15.5, 4.65]}
@@ -459,8 +486,8 @@ function MobileSceneInternal({
         />
       </group>
 
-      {/* ── TOWER 02 GROUP (SEPARATE, ENTERS FROM BEHIND) ── */}
-      <group ref={tower2GroupRef} position={[0, 0, 0]} visible={false}>
+      {/* ── TOWER 02 GROUP (STARTS AT +4.2 ON ESTABLISH, EXITS ON SCROLL, RE-ENTERS CENTER AT 0.31) ── */}
+      <group ref={tower2GroupRef} position={[4.2, 0, 0]} visible={true}>
         <TowerStructure isLeft={false} opacity={1.0} />
         <MobileTower02Screen
           position={[0, 15.5, 4.65]}
@@ -483,7 +510,7 @@ function MobileSceneInternal({
 
 /**
  * MobileScene3D
- * Full-bleed canvas container: 100lvh height, width 100%, background #02050e.
+ * Full-bleed canvas container: 100% height, width 100%, background #02050e.
  */
 export default function MobileScene3D({
   pTargetRef,
@@ -495,7 +522,7 @@ export default function MobileScene3D({
   reduced = false,
 }) {
   return (
-    <div className="absolute inset-0 left-0 right-0 w-full h-[100lvh] overflow-hidden pointer-events-none select-none bg-[#02050e]">
+    <div className="absolute inset-0 left-0 right-0 w-full h-full overflow-hidden pointer-events-none select-none bg-[#02050e]">
       <style>{`
         @media (max-width: 767px) {
           [aria-hidden="true"].fixed.-z-\\[5\\] {

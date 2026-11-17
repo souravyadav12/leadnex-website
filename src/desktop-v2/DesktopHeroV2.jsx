@@ -184,51 +184,54 @@ export default function DesktopHeroV2() {
 
       // ── 2. TOWERS (0.10 to 0.28 Center & Grow, 0.28 to 0.46 Hold, 0.46 to 0.52 Exit) ──
       if (tower1Ref.current && tower2Ref.current) {
-        const Ht = 0.627 * H;
-        const Wt = Math.min(0.625 * Ht, 0.22 * W);
-        const initCenter1 = 0.515 * W + Wt / 2;
-        const initCenter2 = 0.750 * W + Wt / 2;
-        const targetCenter1 = 0.274 * W;
-        const targetCenter2 = 0.726 * W;
+        const cardW = Math.max(270, Math.min(0.20 * W, 345));
+        const rightMargin = 64;
+        const gap = 24;
+        const left2 = W - rightMargin - cardW;
+        const left1 = left2 - gap - cardW;
+        const initCenter1 = left1 + cardW / 2;
+        const initCenter2 = left2 + cardW / 2;
+        const targetCenter1 = 0.30 * W;
+        const targetCenter2 = 0.70 * W;
         const deltaX1 = targetCenter1 - initCenter1;
         const deltaX2 = targetCenter2 - initCenter2;
         const holdY = 0.042 * H;
 
         if (p < 0.10) {
-          // Initial position at right
+          // Initial position at right with subtle 5° tilt and >= 48px right margin
           tower1Ref.current.style.display = 'block';
           tower1Ref.current.style.visibility = 'visible';
           tower1Ref.current.style.opacity = '1';
-          tower1Ref.current.style.transform = 'perspective(900px) translate3d(0px, 0px, 0px) rotateY(16deg) scale(1)';
+          tower1Ref.current.style.transform = 'perspective(1200px) translate3d(0px, 0px, 0px) rotateY(5deg) scale(1)';
 
           tower2Ref.current.style.display = 'block';
           tower2Ref.current.style.visibility = 'visible';
           tower2Ref.current.style.opacity = '1';
-          tower2Ref.current.style.transform = 'perspective(900px) translate3d(0px, 0px, 0px) rotateY(-16deg) scale(1)';
+          tower2Ref.current.style.transform = 'perspective(1200px) translate3d(0px, 0px, 0px) rotateY(-5deg) scale(1)';
 
           if (callsDisplayRef.current) {
             callsDisplayRef.current.textContent = telemetry.activeCallsFormatted;
           }
         } else if (p >= 0.10 && p < 0.28) {
-          // Move to center, grow scale 1.15, rotateY -> 0
+          // Move to center, grow scale 1.10, rotateY -> 0
           const t = (p - 0.10) / 0.18;
           const e = smoothstep(t);
           const curX1 = deltaX1 * e;
           const curX2 = deltaX2 * e;
           const curY = holdY * e;
-          const scale = 1.0 + 0.15 * e;
-          const rot1 = 16 * (1 - e);
-          const rot2 = -16 * (1 - e);
+          const scale = 1.0 + 0.10 * e;
+          const rot1 = 5 * (1 - e);
+          const rot2 = -5 * (1 - e);
 
           tower1Ref.current.style.display = 'block';
           tower1Ref.current.style.visibility = 'visible';
           tower1Ref.current.style.opacity = '1';
-          tower1Ref.current.style.transform = `perspective(900px) translate3d(${curX1.toFixed(1)}px, ${curY.toFixed(1)}px, 0px) rotateY(${rot1.toFixed(1)}deg) scale(${scale.toFixed(3)})`;
+          tower1Ref.current.style.transform = `perspective(1200px) translate3d(${curX1.toFixed(1)}px, ${curY.toFixed(1)}px, 0px) rotateY(${rot1.toFixed(1)}deg) scale(${scale.toFixed(3)})`;
 
           tower2Ref.current.style.display = 'block';
           tower2Ref.current.style.visibility = 'visible';
           tower2Ref.current.style.opacity = '1';
-          tower2Ref.current.style.transform = `perspective(900px) translate3d(${curX2.toFixed(1)}px, ${curY.toFixed(1)}px, 0px) rotateY(${rot2.toFixed(1)}deg) scale(${scale.toFixed(3)})`;
+          tower2Ref.current.style.transform = `perspective(1200px) translate3d(${curX2.toFixed(1)}px, ${curY.toFixed(1)}px, 0px) rotateY(${rot2.toFixed(1)}deg) scale(${scale.toFixed(3)})`;
 
           // Calls count-up from 0 to live between 0.14 and 0.28
           if (callsDisplayRef.current) {
@@ -245,33 +248,33 @@ export default function DesktopHeroV2() {
           tower1Ref.current.style.display = 'block';
           tower1Ref.current.style.visibility = 'visible';
           tower1Ref.current.style.opacity = '1';
-          tower1Ref.current.style.transform = `perspective(900px) translate3d(${deltaX1.toFixed(1)}px, ${holdY.toFixed(1)}px, 0px) rotateY(0deg) scale(1.15)`;
+          tower1Ref.current.style.transform = `perspective(1200px) translate3d(${deltaX1.toFixed(1)}px, ${holdY.toFixed(1)}px, 0px) rotateY(0deg) scale(1.10)`;
 
           tower2Ref.current.style.display = 'block';
           tower2Ref.current.style.visibility = 'visible';
           tower2Ref.current.style.opacity = '1';
-          tower2Ref.current.style.transform = `perspective(900px) translate3d(${deltaX2.toFixed(1)}px, ${holdY.toFixed(1)}px, 0px) rotateY(0deg) scale(1.15)`;
+          tower2Ref.current.style.transform = `perspective(1200px) translate3d(${deltaX2.toFixed(1)}px, ${holdY.toFixed(1)}px, 0px) rotateY(0deg) scale(1.10)`;
 
           if (callsDisplayRef.current) {
             callsDisplayRef.current.textContent = telemetry.activeCallsFormatted;
           }
         } else if (p > 0.46 && p <= 0.52) {
-          // Move outward, scale up by 0.25, fade to 0
+          // Move outward, scale up, fade to 0
           const t = (p - 0.46) / 0.06;
           const e = smoothstep(t);
           const dX = 130 * (W / 1360) * e;
-          const scale = 1.15 + 0.25 * e;
+          const scale = 1.10 + 0.20 * e;
           const op = Math.max(0, 1 - e);
 
           tower1Ref.current.style.display = 'block';
           tower1Ref.current.style.visibility = op > 0.01 ? 'visible' : 'hidden';
           tower1Ref.current.style.opacity = op.toFixed(3);
-          tower1Ref.current.style.transform = `perspective(900px) translate3d(${(deltaX1 - dX).toFixed(1)}px, ${holdY.toFixed(1)}px, 0px) scale(${scale.toFixed(3)})`;
+          tower1Ref.current.style.transform = `perspective(1200px) translate3d(${(deltaX1 - dX).toFixed(1)}px, ${holdY.toFixed(1)}px, 0px) scale(${scale.toFixed(3)})`;
 
           tower2Ref.current.style.display = 'block';
           tower2Ref.current.style.visibility = op > 0.01 ? 'visible' : 'hidden';
           tower2Ref.current.style.opacity = op.toFixed(3);
-          tower2Ref.current.style.transform = `perspective(900px) translate3d(${(deltaX2 + dX).toFixed(1)}px, ${holdY.toFixed(1)}px, 0px) scale(${scale.toFixed(3)})`;
+          tower2Ref.current.style.transform = `perspective(1200px) translate3d(${(deltaX2 + dX).toFixed(1)}px, ${holdY.toFixed(1)}px, 0px) scale(${scale.toFixed(3)})`;
         } else {
           // Fully hidden after 0.52
           tower1Ref.current.style.display = 'none';

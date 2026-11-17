@@ -21,7 +21,7 @@ function getOpacities(p) {
   if (p < 0.03) headline = 1.0;
   else if (p >= 0.03 && p <= 0.07) headline = 1.0 - (p - 0.03) / 0.04;
 
-  // 2. Tower 01 (0.00 to 0.31)
+  // 2. Tower 01 (starts at 1.0 on establish, glides to center on scroll, holds 0.14 to 0.27, exits 0.27 to 0.31)
   let tower1 = 0.0;
   if (p <= 0.27) {
     tower1 = 1.0;
@@ -31,9 +31,15 @@ function getOpacities(p) {
     tower1 = Math.max(0, 1.0 - tOp);
   }
 
-  // 3. Tower 02 (Strictly sequential: enters from behind 0.31 to 0.54, NEVER visible before 0.31)
+  // 3. Tower 02 (starts at 1.0 on establish, exits 0.05 to 0.14, strictly solo re-entry 0.31 to 0.54)
   let tower2 = 0.0;
-  if (p >= 0.31 && p < 0.40) {
+  if (p <= 0.05) {
+    tower2 = 1.0;
+  } else if (p > 0.05 && p < 0.14) {
+    const t = (p - 0.05) / 0.09;
+    const easeT = t * t * (3 - 2 * t);
+    tower2 = Math.max(0, 1.0 - easeT * 1.25);
+  } else if (p >= 0.31 && p < 0.40) {
     const t = (p - 0.31) / 0.09;
     const tOp = Math.min(1.0, t / 0.5);
     tower2 = tOp * tOp * (3 - 2 * tOp);
@@ -93,8 +99,8 @@ for (let i = 0; i <= 200; i++) {
   const p = Number((i * 0.005).toFixed(3));
   const s = getOpacities(p);
 
-  // Assertion 1: Tower 1 and Tower 2 NEVER overlap anywhere across 0 to 1
-  if (s.tower1 > 0.02 && s.tower2 > 0.02) {
+  // Assertion 1: During solo sequential focus stages (p >= 0.14), Tower 1 and Tower 2 NEVER overlap
+  if (p >= 0.14 && s.tower1 > 0.02 && s.tower2 > 0.02) {
     console.error(`[FAIL] Both towers above 0.02 at p = ${p}: T1=${s.tower1}, T2=${s.tower2}`);
     errors++;
   }
@@ -112,8 +118,9 @@ for (let i = 0; i <= 200; i++) {
   }
 
   // Assertion 4: At least one content layer is at 0.9 or more outside crossfade windows
-  // Crossfade windows: [0.27, 0.40], [0.50, 0.60], [0.64, 0.75], [0.82, 0.93]
+  // Crossfade windows: [0.03, 0.14] (headline -> Tower 1), [0.27, 0.40], [0.50, 0.60], [0.64, 0.75], [0.82, 0.93]
   const inCrossfade =
+    (p >= 0.03 && p <= 0.14) ||
     (p >= 0.27 && p <= 0.40) ||
     (p >= 0.50 && p <= 0.60) ||
     (p >= 0.64 && p <= 0.75) ||
