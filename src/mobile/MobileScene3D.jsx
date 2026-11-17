@@ -290,18 +290,25 @@ function MobileSceneInternal({
     return fitPose(camera, planeW, planeH, planeCenter, safeRect, size.width, size.height);
   }, [camera, planeW, planeH, planeCenter, safeRect, size.width, size.height]);
 
-  // Compute ESTABLISH pose (single centered tower shot)
+  // Compute ESTABLISH pose (fits both towers comfortably inside mobile viewport without edge clipping)
   const establishPose = useMemo(() => {
     const fovRad = (camera.fov * Math.PI) / 180;
     const tanHalfFov = Math.tan(fovRad / 2);
-    const establishDist = focusPose.distance * 1.55;
-    const yShift = 0.15 * establishDist * tanHalfFov;
+    const safeW = safeRect.width || (size.width - 24);
+    const vh = safeRect.vh || size.height || 844;
+    const totalW = 2 * 3.4 + 7.2 * 0.68;
+    const establishDist = Math.max(
+      focusPose.distance * 1.95,
+      (totalW / (2 * tanHalfFov * (safeW / vh))) * 1.08
+    );
+    const yShift = 0.12 * establishDist * tanHalfFov;
 
     return {
       cameraPos: new THREE.Vector3(0, focusPose.cameraPos.y + yShift, 4.65 + establishDist),
-      lookAt: new THREE.Vector3(0, focusPose.lookAt.y + yShift * 0.4, 4.65),
+      lookAt: new THREE.Vector3(0, focusPose.lookAt.y + yShift * 0.35, 4.65),
+      distance: establishDist,
     };
-  }, [camera.fov, focusPose]);
+  }, [camera.fov, focusPose, safeRect, size]);
 
   // Pre-warm renderer on mount
   useEffect(() => {
@@ -320,102 +327,78 @@ function MobileSceneInternal({
     pSRef.current = THREE.MathUtils.damp(pSRef.current, pTargetRef.current, 7, delta);
     const p = pSRef.current;
 
-    // ── 1. CAMERA ANIMATION ──
-    if (p <= 0.05) {
-      // ESTABLISH
-      camera.position.copy(establishPose.cameraPos);
-      camera.lookAt(establishPose.lookAt);
-    } else if (p > 0.05 && p < 0.14) {
-      // DIVE: ONE shared eased t (easeInOutCubic)
-      const t = (p - 0.05) / 0.09;
-      const easeT = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    // ── 1. CAMERA ANIMATION (FOCUS POSE ACROSS ALL PROGRESS) ──
+    camera.position.copy(focusPose.cameraPos);
+    camera.lookAt(focusPose.lookAt);
 
-      camera.position.lerpVectors(establishPose.cameraPos, focusPose.cameraPos, easeT);
-      const currentLookAt = new THREE.Vector3().lerpVectors(establishPose.lookAt, focusPose.lookAt, easeT);
-      camera.lookAt(currentLookAt);
-    } else {
-      // FOCUS for all remaining stages
-      camera.position.copy(focusPose.cameraPos);
-      camera.lookAt(focusPose.lookAt);
-    }
-
-    // ── 2. TOWER 01 ANIMATION (STARTS AT -4.2 ON ESTABLISH, GLIDES TO CENTER ON SCROLL) ──
-    // Initial establish: p <= 0.05 (visible at x = -4.2, opacity 1)
-    // Enters center when user scrolls: 0.05 to 0.14 (smooth glide from -4.2 to 0)
-    // Hold centered alone: 0.14 to 0.27 (opacity 1, x = 0)
-    // Exit: 0.27 to 0.31 (moves z+3 easeIn, opacity -> 0 by 80%)
+    // ── 2. TOWER 01 ANIMATION (ALONE & CENTERED, ENTERS ON SCROLL) ──
+    // p <= 0.04: clean starting hero, tower 1 hidden (opT1 = 0)
+    // p: 0.04 to 0.12: smooth zoom & fade in (scale 0.88 -> 1.0, op 0 -> 1)
+    // p: 0.12 to 0.26: hold centered alone in full focus (op 1.0)
+    // p: 0.26 to 0.30: exits forward (z -> +3, opacity -> 0)
     let opT1 = 0;
     if (tower1GroupRef.current) {
-      if (p <= 0.05) {
-        opT1 = 1.0;
-        tower1GroupRef.current.visible = true;
-        tower1GroupRef.current.position.set(-4.2, 0, 0);
-      } else if (p > 0.05 && p < 0.14) {
-        const t = (p - 0.05) / 0.09;
+      if (p <= 0.04) {
+        opT1 = 0;
+        tower1GroupRef.current.visible = false;
+        tower1GroupRef.current.position.set(0, 0, 0);
+        tower1GroupRef.current.scale.set(1, 1, 1);
+      } else if (p > 0.04 && p < 0.12) {
+        const t = (p - 0.04) / 0.08;
         const easeT = 1 - Math.pow(1 - t, 3);
-        opT1 = 1.0;
-        tower1GroupRef.current.visible = true;
-        tower1GroupRef.current.position.set(-4.2 * (1 - easeT), 0, 0);
-      } else if (p >= 0.14 && p <= 0.27) {
+        const z = -4.0 * (1 - easeT);
+        const scale = 0.88 + 0.12 * easeT;
+        opT1 = t * t * (3 - 2 * t);
+        tower1GroupRef.current.visible = opT1 > 0.01;
+        tower1GroupRef.current.position.set(0, 0, z);
+        tower1GroupRef.current.scale.set(scale, scale, scale);
+      } else if (p >= 0.12 && p <= 0.26) {
         opT1 = 1.0;
         tower1GroupRef.current.visible = true;
         tower1GroupRef.current.position.set(0, 0, 0);
-      } else if (p > 0.27 && p <= 0.31) {
-        const t = (p - 0.27) / 0.04;
+        tower1GroupRef.current.scale.set(1, 1, 1);
+      } else if (p > 0.26 && p <= 0.30) {
+        const t = (p - 0.26) / 0.04;
         const zOffset = 3.0 * (t * t);
         const tOp = Math.min(1.0, t / 0.8);
         opT1 = Math.max(0, 1.0 - tOp);
         tower1GroupRef.current.visible = opT1 > 0.01;
         tower1GroupRef.current.position.set(0, 0, zOffset);
+        tower1GroupRef.current.scale.set(1, 1, 1);
       } else {
         opT1 = 0;
         tower1GroupRef.current.visible = false;
       }
     }
 
-    // ── 3. TOWER 02 ANIMATION (STARTS AT +4.2 ON ESTABLISH, EXITS ON SCROLL, RE-ENTERS CENTER AT 0.31) ──
-    // Initial establish: p <= 0.05 (visible at x = +4.2, opacity 1)
-    // Exits to right on scroll: 0.05 to 0.14 (slides x: 4.2 -> 12, opacity 1 -> 0)
-    // Hidden during Tower 1 solo focus: 0.14 to 0.31 (opacity 0)
-    // Solo Enter from behind at x = 0: 0.31 to 0.40 (starts at z = -8, scale 0.8, opacity 0 -> 1)
-    // Hold centered alone: 0.40 to 0.50 (scale 1.0, opacity 1.0, x = 0, z = 0)
-    // Exit: 0.50 to 0.54 (moves z+3 easeIn, opacity -> 0 by 80%)
+    // ── 3. TOWER 02 ANIMATION (ALONE & CENTERED, ENTERS ON SCROLL AFTER TOWER 1 EXITS) ──
+    // p < 0.30: tower 2 hidden (opT2 = 0)
+    // p: 0.30 to 0.38: enters from behind at x = 0 (z: -8 -> 0, scale 0.85 -> 1.0, op 0 -> 1)
+    // p: 0.38 to 0.48: hold centered alone in full focus (op 1.0)
+    // p: 0.48 to 0.52: exits forward (z -> +3, opacity -> 0)
     let opT2 = 0;
     if (tower2GroupRef.current) {
-      if (p <= 0.05) {
-        opT2 = 1.0;
-        tower2GroupRef.current.visible = true;
-        tower2GroupRef.current.position.set(4.2, 0, 0);
-        tower2GroupRef.current.scale.set(1, 1, 1);
-      } else if (p > 0.05 && p < 0.14) {
-        const t = (p - 0.05) / 0.09;
-        const easeT = t * t * (3 - 2 * t);
-        const posX = 4.2 + 8.0 * easeT;
-        opT2 = Math.max(0, 1.0 - easeT * 1.25);
-        tower2GroupRef.current.visible = opT2 > 0.01;
-        tower2GroupRef.current.position.set(posX, 0, 0);
-        tower2GroupRef.current.scale.set(1, 1, 1);
-      } else if (p >= 0.14 && p < 0.31) {
+      if (p < 0.30 || p > 0.52) {
         opT2 = 0;
         tower2GroupRef.current.visible = false;
-      } else if (p >= 0.31 && p < 0.40) {
-        const t = (p - 0.31) / 0.09;
+      } else if (p >= 0.30 && p < 0.38) {
+        const t = (p - 0.30) / 0.08;
         const easeT = 1 - Math.pow(1 - t, 3);
         const z = -8.0 + 8.0 * easeT;
-        const scale = 0.8 + 0.2 * easeT;
+        const scale = 0.85 + 0.15 * easeT;
         const tOp = Math.min(1.0, t / 0.5);
         opT2 = tOp * tOp * (3 - 2 * tOp);
 
         tower2GroupRef.current.visible = opT2 > 0.01;
         tower2GroupRef.current.position.set(0, 0, z);
         tower2GroupRef.current.scale.set(scale, scale, scale);
-      } else if (p >= 0.40 && p <= 0.50) {
+      } else if (p >= 0.38 && p <= 0.48) {
         opT2 = 1.0;
         tower2GroupRef.current.visible = true;
         tower2GroupRef.current.position.set(0, 0, 0);
         tower2GroupRef.current.scale.set(1, 1, 1);
-      } else if (p > 0.50 && p <= 0.54) {
-        const t = (p - 0.50) / 0.04;
+      } else if (p > 0.48 && p <= 0.52) {
+        const t = (p - 0.48) / 0.04;
         const zOffset = 3.0 * (t * t);
         const tOp = Math.min(1.0, t / 0.8);
         opT2 = Math.max(0, 1.0 - tOp);
@@ -423,29 +406,26 @@ function MobileSceneInternal({
         tower2GroupRef.current.visible = opT2 > 0.01;
         tower2GroupRef.current.position.set(0, 0, zOffset);
         tower2GroupRef.current.scale.set(1, 1, 1);
-      } else {
-        opT2 = 0;
-        tower2GroupRef.current.visible = false;
       }
     }
 
     // ── 4. GROUND GRID OPACITY ──
     let groundOp = 1.0;
-    if (p > 0.50 && p <= 0.54) {
-      groundOp = Math.max(0, 1.0 - (p - 0.50) / 0.04);
-    } else if (p > 0.54) {
+    if (p > 0.48 && p <= 0.52) {
+      groundOp = Math.max(0, 1.0 - (p - 0.48) / 0.04);
+    } else if (p > 0.52) {
       groundOp = 0.0;
     }
 
     // ── 5. TUNNEL OPACITY ──
     let tunnelOp = 0.0;
-    if (p >= 0.54 && p < 0.60) {
-      tunnelOp = (p - 0.54) / 0.06;
-    } else if (p >= 0.60 && p <= 0.64) {
+    if (p >= 0.52 && p < 0.58) {
+      tunnelOp = (p - 0.52) / 0.06;
+    } else if (p >= 0.58 && p <= 0.62) {
       tunnelOp = 1.0;
-    } else if (p > 0.64 && p <= 0.67) {
-      tunnelOp = THREE.MathUtils.lerp(1.0, 0.45, (p - 0.64) / 0.03);
-    } else if (p > 0.67) {
+    } else if (p > 0.62 && p <= 0.65) {
+      tunnelOp = THREE.MathUtils.lerp(1.0, 0.45, (p - 0.62) / 0.03);
+    } else if (p > 0.65) {
       tunnelOp = 0.45;
     }
 
@@ -459,10 +439,10 @@ function MobileSceneInternal({
     });
   });
 
-  // Freeze billboard texture updates during movement phases, active on establish and holds
+  // Freeze billboard texture updates during movement phases, active only during holds
   const p = pSRef.current;
-  const isHoldT1 = p <= 0.05 || (p >= 0.14 && p <= 0.27);
-  const isHoldT2 = p <= 0.05 || (p >= 0.40 && p <= 0.50);
+  const isHoldT1 = p >= 0.12 && p <= 0.26;
+  const isHoldT2 = p >= 0.38 && p <= 0.48;
 
   return (
     <>
@@ -473,8 +453,8 @@ function MobileSceneInternal({
       <directionalLight position={[-12, 40, 20]} color="#38bdf8" intensity={2.6} />
       <directionalLight position={[12, 40, 20]} color="#00f0ff" intensity={2.4} />
 
-      {/* ── TOWER 01 GROUP (STARTS AT -4.2 ON ESTABLISH, GLIDES TO CENTER ON SCROLL) ── */}
-      <group ref={tower1GroupRef} position={[-4.2, 0, 0]} visible={true}>
+      {/* ── TOWER 01 GROUP (ALONE & CENTERED, ENTERS ON SCROLL) ── */}
+      <group ref={tower1GroupRef} position={[0, 0, 0]} scale={[1, 1, 1]} visible={false}>
         <TowerStructure isLeft={true} opacity={1.0} />
         <MobileTower01Screen
           position={[0, 15.5, 4.65]}
@@ -486,8 +466,8 @@ function MobileSceneInternal({
         />
       </group>
 
-      {/* ── TOWER 02 GROUP (STARTS AT +4.2 ON ESTABLISH, EXITS ON SCROLL, RE-ENTERS CENTER AT 0.31) ── */}
-      <group ref={tower2GroupRef} position={[4.2, 0, 0]} visible={true}>
+      {/* ── TOWER 02 GROUP (ALONE & CENTERED, ENTERS ON SCROLL AFTER TOWER 1) ── */}
+      <group ref={tower2GroupRef} position={[0, 0, 0]} scale={[1, 1, 1]} visible={false}>
         <TowerStructure isLeft={false} opacity={1.0} />
         <MobileTower02Screen
           position={[0, 15.5, 4.65]}

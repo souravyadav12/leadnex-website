@@ -320,22 +320,32 @@ export default function MobileHero() {
         <div
           ref={headlineRef}
           style={{ display: 'flex', visibility: 'visible', opacity: '1' }}
-          className="fixed inset-x-0 top-[66px] z-20 px-4 flex flex-col items-center justify-center text-center pointer-events-none will-change-transform"
+          className="fixed inset-x-0 top-[72px] z-20 px-4 flex flex-col items-center justify-center text-center pointer-events-none will-change-transform"
         >
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-cyan/40 bg-cyan/[0.12] px-3 py-0.5 mb-2 backdrop-blur-sm">
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-cyan/40 bg-cyan/[0.12] px-3.5 py-1 mb-2.5 backdrop-blur-sm">
             <span className="h-1.5 w-1.5 rounded-full bg-cyan animate-pulse" />
             <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-cyan">
               LEADNEX // AI VOICE INFRASTRUCTURE
             </span>
           </div>
 
-          <h1 className="text-[22px] font-extrabold tracking-tight text-white leading-[1.2] max-w-[340px]">
+          <h1 className="text-[26px] font-black tracking-tight text-white leading-[1.18] max-w-[340px]">
             AI voice agents that call, qualify and close
           </h1>
 
-          <p className="mt-1.5 font-mono text-[12px] text-slate-300 max-w-[320px]">
+          <p className="mt-2 font-mono text-[12.5px] text-slate-300 max-w-[320px]">
             Sub-300ms voice in 40+ languages
           </p>
+
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 font-mono text-[11px] text-slate-300 backdrop-blur-md">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Live Carrier Network
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 font-mono text-[11px] text-emerald-400 backdrop-blur-md">
+              99.99% SLA
+            </span>
+          </div>
         </div>
 
         {/* ── TUNNEL TEXT OVERLAY (0.54 to 0.67) ── */}

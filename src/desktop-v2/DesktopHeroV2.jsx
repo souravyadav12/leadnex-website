@@ -195,7 +195,7 @@ export default function DesktopHeroV2() {
         const targetCenter2 = 0.70 * W;
         const deltaX1 = targetCenter1 - initCenter1;
         const deltaX2 = targetCenter2 - initCenter2;
-        const holdY = 0.042 * H;
+        const holdY = 0.015 * H;
 
         if (p < 0.10) {
           // Initial position at right with subtle 5° tilt and >= 48px right margin
@@ -524,7 +524,7 @@ export default function DesktopHeroV2() {
             className="absolute will-change-transform select-none z-20"
             style={{
               left: '5.9vw',
-              top: '20vh',
+              top: '12vh',
               width: '40vw',
               display: 'block',
             }}

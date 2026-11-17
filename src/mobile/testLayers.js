@@ -21,64 +21,61 @@ function getOpacities(p) {
   if (p < 0.03) headline = 1.0;
   else if (p >= 0.03 && p <= 0.07) headline = 1.0 - (p - 0.03) / 0.04;
 
-  // 2. Tower 01 (starts at 1.0 on establish, glides to center on scroll, holds 0.14 to 0.27, exits 0.27 to 0.31)
+  // 2. Tower 01 (Solo Stage: enters 0.04 to 0.12, holds 0.12 to 0.26, exits 0.26 to 0.30)
   let tower1 = 0.0;
-  if (p <= 0.27) {
+  if (p > 0.04 && p < 0.12) {
+    const t = (p - 0.04) / 0.08;
+    tower1 = t * t * (3 - 2 * t);
+  } else if (p >= 0.12 && p <= 0.26) {
     tower1 = 1.0;
-  } else if (p > 0.27 && p <= 0.31) {
-    const t = (p - 0.27) / 0.04;
+  } else if (p > 0.26 && p <= 0.30) {
+    const t = (p - 0.26) / 0.04;
     const tOp = Math.min(1.0, t / 0.8);
     tower1 = Math.max(0, 1.0 - tOp);
   }
 
-  // 3. Tower 02 (starts at 1.0 on establish, exits 0.05 to 0.14, strictly solo re-entry 0.31 to 0.54)
+  // 3. Tower 02 (Solo Stage: strictly enters AFTER Tower 1 exits, 0.30 to 0.52)
   let tower2 = 0.0;
-  if (p <= 0.05) {
-    tower2 = 1.0;
-  } else if (p > 0.05 && p < 0.14) {
-    const t = (p - 0.05) / 0.09;
-    const easeT = t * t * (3 - 2 * t);
-    tower2 = Math.max(0, 1.0 - easeT * 1.25);
-  } else if (p >= 0.31 && p < 0.40) {
-    const t = (p - 0.31) / 0.09;
+  if (p >= 0.30 && p < 0.38) {
+    const t = (p - 0.30) / 0.08;
     const tOp = Math.min(1.0, t / 0.5);
     tower2 = tOp * tOp * (3 - 2 * tOp);
-  } else if (p >= 0.40 && p <= 0.50) {
+  } else if (p >= 0.38 && p <= 0.48) {
     tower2 = 1.0;
-  } else if (p > 0.50 && p <= 0.54) {
-    const t = (p - 0.50) / 0.04;
+  } else if (p > 0.48 && p <= 0.52) {
+    const t = (p - 0.48) / 0.04;
     const tOp = Math.min(1.0, t / 0.8);
     tower2 = Math.max(0, 1.0 - tOp);
   }
 
-  // 4. Tunnel Text (0.54 to 0.67)
+  // 4. Tunnel Text (0.52 to 0.65)
   let tunnelText = 0.0;
-  if (p >= 0.54 && p < 0.60) {
-    tunnelText = (p - 0.54) / 0.06;
-  } else if (p >= 0.60 && p <= 0.64) {
+  if (p >= 0.52 && p < 0.58) {
+    tunnelText = (p - 0.52) / 0.06;
+  } else if (p >= 0.58 && p <= 0.62) {
     tunnelText = 1.0;
-  } else if (p > 0.64 && p <= 0.67) {
-    tunnelText = 1.0 - (p - 0.64) / 0.03;
+  } else if (p > 0.62 && p <= 0.65) {
+    tunnelText = 1.0 - (p - 0.62) / 0.03;
   }
 
-  // 5. Card 1 (0.67 to 0.85)
+  // 5. Card 1 (0.65 to 0.83)
   let card1 = 0.0;
-  if (p >= 0.67 && p < 0.75) {
-    const t = (p - 0.67) / 0.08;
+  if (p >= 0.65 && p < 0.73) {
+    const t = (p - 0.65) / 0.08;
     card1 = t * t * (3 - 2 * t);
-  } else if (p >= 0.75 && p <= 0.82) {
+  } else if (p >= 0.73 && p <= 0.80) {
     card1 = 1.0;
-  } else if (p > 0.82 && p <= 0.85) {
-    const t = (p - 0.82) / 0.03;
+  } else if (p > 0.80 && p <= 0.83) {
+    const t = (p - 0.80) / 0.03;
     card1 = Math.max(0, 1.0 - t);
   }
 
-  // 6. Card 2 (0.85 to 1.00)
+  // 6. Card 2 (0.83 to 1.00)
   let card2 = 0.0;
-  if (p >= 0.85 && p < 0.93) {
-    const t = (p - 0.85) / 0.08;
+  if (p >= 0.83 && p < 0.91) {
+    const t = (p - 0.83) / 0.08;
     card2 = t * t * (3 - 2 * t);
-  } else if (p >= 0.93 && p <= 1.00) {
+  } else if (p >= 0.91 && p <= 1.00) {
     card2 = 1.0;
   }
 
@@ -99,8 +96,8 @@ for (let i = 0; i <= 200; i++) {
   const p = Number((i * 0.005).toFixed(3));
   const s = getOpacities(p);
 
-  // Assertion 1: During solo sequential focus stages (p >= 0.14), Tower 1 and Tower 2 NEVER overlap
-  if (p >= 0.14 && s.tower1 > 0.02 && s.tower2 > 0.02) {
+  // Assertion 1: Tower 1 and Tower 2 NEVER overlap anywhere across 0 to 1 (100% separate / alag alag)
+  if (s.tower1 > 0.02 && s.tower2 > 0.02) {
     console.error(`[FAIL] Both towers above 0.02 at p = ${p}: T1=${s.tower1}, T2=${s.tower2}`);
     errors++;
   }
@@ -118,13 +115,13 @@ for (let i = 0; i <= 200; i++) {
   }
 
   // Assertion 4: At least one content layer is at 0.9 or more outside crossfade windows
-  // Crossfade windows: [0.03, 0.14] (headline -> Tower 1), [0.27, 0.40], [0.50, 0.60], [0.64, 0.75], [0.82, 0.93]
+  // Crossfade windows: [0.03, 0.12] (headline -> Tower 1), [0.26, 0.38], [0.48, 0.58], [0.62, 0.73], [0.80, 0.91]
   const inCrossfade =
-    (p >= 0.03 && p <= 0.14) ||
-    (p >= 0.27 && p <= 0.40) ||
-    (p >= 0.50 && p <= 0.60) ||
-    (p >= 0.64 && p <= 0.75) ||
-    (p >= 0.82 && p <= 0.93);
+    (p >= 0.03 && p <= 0.12) ||
+    (p >= 0.26 && p <= 0.38) ||
+    (p >= 0.48 && p <= 0.58) ||
+    (p >= 0.62 && p <= 0.73) ||
+    (p >= 0.80 && p <= 0.91);
 
   if (!inCrossfade) {
     const maxContentOp = Math.max(s.headline, s.tower1, s.tower2, s.tunnelText, s.card1, s.card2);

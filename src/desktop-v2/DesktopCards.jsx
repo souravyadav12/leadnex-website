@@ -149,10 +149,10 @@ export const DesktopCards = forwardRef(function DesktopCards({ onActionClick }, 
         ref={card1Ref}
         className="absolute select-none will-change-transform"
         style={{
-          top: '20.9vh',
+          top: '12vh',
           left: '10.3vw',
           width: '36.8vw',
-          maxHeight: '62vh',
+          maxHeight: '74vh',
           display: 'none',
           opacity: 0,
           zIndex: 30,
@@ -283,10 +283,10 @@ export const DesktopCards = forwardRef(function DesktopCards({ onActionClick }, 
         ref={card2Ref}
         className="absolute select-none will-change-transform"
         style={{
-          top: '20.9vh',
+          top: '12vh',
           left: '53vw',
           width: '36.8vw',
-          maxHeight: '62vh',
+          maxHeight: '74vh',
           display: 'none',
           opacity: 0,
           zIndex: 30,
@@ -369,11 +369,10 @@ export const DesktopCards = forwardRef(function DesktopCards({ onActionClick }, 
 
           {/* Actively Moving CRM Sync Key-Value Table (Live Sequential Step Wave) */}
           <div className="mt-3 rounded-xl border border-white/[0.08] bg-[#020712] p-3 font-mono text-[11px] space-y-2 shadow-inner">
-            
+
             {/* Step 1: Lead Response Speed */}
-            <div className={`flex items-center justify-between p-1.5 rounded-lg transition-all duration-300 ${
-              activePipelineStep === 0 ? 'bg-cyan-950/40 border border-cyan-500/30' : 'bg-transparent border border-transparent'
-            }`}>
+            <div className={`flex items-center justify-between p-1.5 rounded-lg transition-all duration-300 ${activePipelineStep === 0 ? 'bg-cyan-950/40 border border-cyan-500/30' : 'bg-transparent border border-transparent'
+              }`}>
               <div className="flex items-center gap-1.5 text-slate-300">
                 <span className={`h-1.5 w-1.5 rounded-full ${activePipelineStep === 0 ? 'bg-cyan-400 animate-ping' : 'bg-slate-500'}`} />
                 <span>Lead Response Speed:</span>
@@ -384,9 +383,8 @@ export const DesktopCards = forwardRef(function DesktopCards({ onActionClick }, 
             </div>
 
             {/* Step 2: BANT Lead Qualification */}
-            <div className={`flex items-center justify-between p-1.5 rounded-lg transition-all duration-300 ${
-              activePipelineStep === 1 ? 'bg-emerald-950/40 border border-emerald-500/30' : 'bg-transparent border border-transparent'
-            }`}>
+            <div className={`flex items-center justify-between p-1.5 rounded-lg transition-all duration-300 ${activePipelineStep === 1 ? 'bg-emerald-950/40 border border-emerald-500/30' : 'bg-transparent border border-transparent'
+              }`}>
               <div className="flex items-center gap-1.5 text-slate-300">
                 <span className={`h-1.5 w-1.5 rounded-full ${activePipelineStep === 1 ? 'bg-emerald-400 animate-ping' : 'bg-slate-500'}`} />
                 <span>BANT Lead Qualification:</span>
@@ -397,9 +395,8 @@ export const DesktopCards = forwardRef(function DesktopCards({ onActionClick }, 
             </div>
 
             {/* Step 3: Salesforce & HubSpot Sync */}
-            <div className={`flex items-center justify-between p-1.5 rounded-lg transition-all duration-300 ${
-              activePipelineStep === 2 ? 'bg-cyan-950/40 border border-cyan-500/30' : 'bg-transparent border border-transparent'
-            }`}>
+            <div className={`flex items-center justify-between p-1.5 rounded-lg transition-all duration-300 ${activePipelineStep === 2 ? 'bg-cyan-950/40 border border-cyan-500/30' : 'bg-transparent border border-transparent'
+              }`}>
               <div className="flex items-center gap-1.5 text-slate-300">
                 <span className={`h-1.5 w-1.5 rounded-full ${activePipelineStep === 2 ? 'bg-cyan-400 animate-ping' : 'bg-slate-500'}`} />
                 <span>Salesforce & HubSpot Sync:</span>
@@ -410,9 +407,8 @@ export const DesktopCards = forwardRef(function DesktopCards({ onActionClick }, 
             </div>
 
             {/* Step 4: Calendar Integration */}
-            <div className={`flex items-center justify-between p-1.5 rounded-lg transition-all duration-300 ${
-              activePipelineStep === 3 ? 'bg-cyan-950/40 border border-cyan-500/30' : 'bg-transparent border border-transparent'
-            }`}>
+            <div className={`flex items-center justify-between p-1.5 rounded-lg transition-all duration-300 ${activePipelineStep === 3 ? 'bg-cyan-950/40 border border-cyan-500/30' : 'bg-transparent border border-transparent'
+              }`}>
               <div className="flex items-center gap-1.5 text-slate-300">
                 <span className={`h-1.5 w-1.5 rounded-full ${activePipelineStep === 3 ? 'bg-cyan-400 animate-ping' : 'bg-slate-500'}`} />
                 <span>Calendar Integration:</span>

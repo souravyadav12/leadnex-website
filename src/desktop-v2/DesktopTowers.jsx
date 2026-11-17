@@ -113,9 +113,9 @@ export const DesktopTowers = forwardRef(function DesktopTowers(
         ref={tower1Ref}
         className="absolute will-change-transform select-none"
         style={{
-          top: '14vh',
+          top: '12vh',
           left: 'calc(100vw - 64px - 2 * clamp(270px, 20vw, 345px) - 24px)',
-          height: '66vh',
+          height: '70vh',
           width: 'clamp(270px, 20vw, 345px)',
           transform: 'perspective(1400px) rotateY(2.5deg)',
           transformOrigin: 'center center',
@@ -222,9 +222,9 @@ export const DesktopTowers = forwardRef(function DesktopTowers(
         ref={tower2Ref}
         className="absolute will-change-transform select-none"
         style={{
-          top: '14vh',
+          top: '12vh',
           left: 'calc(100vw - 64px - clamp(270px, 20vw, 345px))',
-          height: '66vh',
+          height: '70vh',
           width: 'clamp(270px, 20vw, 345px)',
           transform: 'perspective(1400px) rotateY(-2.5deg)',
           transformOrigin: 'center center',
