@@ -1,5 +1,7 @@
+import { useState, useEffect } from 'react';
 import EmergingBuildingScenes from '../components/EmergingBuildingScenes';
 import MobileHero from '../mobile/MobileHero';
+import DesktopHeroV2 from '../desktop-v2/DesktopHeroV2';
 import { useIsMobile } from '../mobile/useIsMobile';
 import FeaturesSection from '../sections/FeaturesSection';
 import DemoSection from '../sections/DemoSection';
@@ -9,6 +11,43 @@ import LeadSection from '../sections/LeadSection';
 import CtaBanner from '../sections/CtaBanner';
 import { Band3D } from '../motion/ThreeD';
 import { features } from '../data/site';
+
+const USE_DESKTOP_V2 = true;
+
+/**
+ * useViewportTier
+ * Categorizes viewport into:
+ * - 'mobile': < 768px (renders MobileHero)
+ * - 'tablet': 768px to 1023px (renders EmergingBuildingScenes)
+ * - 'desktop': >= 1024px (renders DesktopHeroV2 if USE_DESKTOP_V2 is true)
+ */
+function useViewportTier() {
+  const [tier, setTier] = useState(() => {
+    if (typeof window === 'undefined') return 'desktop';
+    const w = window.innerWidth;
+    if (w < 768) return 'mobile';
+    if (w >= 1024) return 'desktop';
+    return 'tablet';
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const update = () => {
+      const w = window.innerWidth;
+      if (w < 768) setTier('mobile');
+      else if (w >= 1024) setTier('desktop');
+      else setTier('tablet');
+    };
+    window.addEventListener('resize', update);
+    window.addEventListener('orientationchange', update);
+    return () => {
+      window.removeEventListener('resize', update);
+      window.removeEventListener('orientationchange', update);
+    };
+  }, []);
+
+  return tier;
+}
 
 /**
  * Home — LEADNEX.AI Enterprise Architecture
@@ -23,11 +62,21 @@ import { features } from '../data/site';
  */
 export default function Home() {
   const isMobile = useIsMobile();
+  const tier = useViewportTier();
+
+  let heroComponent;
+  if (isMobile || tier === 'mobile') {
+    heroComponent = <MobileHero />;
+  } else if (tier === 'desktop' && USE_DESKTOP_V2) {
+    heroComponent = <DesktopHeroV2 />;
+  } else {
+    heroComponent = <EmergingBuildingScenes />;
+  }
 
   return (
     <main className="relative z-10 bg-transparent">
       {/* ─ 1. 3D TWIN SKYSCRAPER HEADQUARTERS & CENTRAL EMERGING PANELS ─ */}
-      {isMobile ? <MobileHero /> : <EmergingBuildingScenes />}
+      {heroComponent}
 
       {/* Telephony Technology Marquee */}
       <Band3D
